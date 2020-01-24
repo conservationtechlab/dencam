@@ -1,6 +1,9 @@
+"""Program that tests functioning of GPIO-connected-buttons on a
+Adafruit PiTFT attached to Raspberry Pi.
+"""
+
 import RPi.GPIO as GPIO
 import time
-import subprocess
 
 GPIO.setmode(GPIO.BCM)
 
@@ -14,11 +17,11 @@ while True:
     buttonState_1 = GPIO.input(22)
     buttonState_2 = GPIO.input(23)
     buttonState_3 = GPIO.input(27)
-    
+
     print("Button Output:" +
           str(buttonState_0) +
           str(buttonState_1) +
           str(buttonState_2) +
           str(buttonState_3))
-    
+
     time.sleep(.3)
