@@ -7,6 +7,8 @@ import time
 
 GPIO.setmode(GPIO.BCM)
 
+# cool buttons
+
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
