@@ -1,0 +1,159 @@
+    1  raspi-config
+    2  sudo raspi-config
+    3  sudo apt-get update
+    4  ping 8.8.8.8
+    5  sudo raspi-config
+    6  sudo apt-get update
+    7  sudp apt-get upgrade
+    8  sudo apt-get upgrade
+    9  cd ~
+   10  wget
+   11  wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/adafruit-pitft.sh
+   12  chmod +x adafruit-pitft.sh
+   13  sudo ./adafruit-pitft.sh
+   14  sudo reboot
+   15  sudo raspi-config
+   16  cd ~
+   17  https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/adafruit-pitft.sh
+   18  wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/adafruit-pitft.sh
+   19  chmod +x adafruit-pitft.sh
+   20  udo ./adafruit-pitft.sh
+   21  sudo ./adafruit-pitft.sh
+   22  sudo su
+   23  sudp hwclock -r
+   24  sudo nano /etc/modules
+   25  sudp hwclock -r
+   26  sudo reboot
+   27  sudp hwclock -r
+   28  raspi-config
+   29  sudo raspi-config
+   30  sudo reboot
+   31  sudo apt-get install python-smbus i2c-tools
+   32  sudo i2cdetect -y 1
+   33  sudp hwcloc
+   34  sudo hwclock -r
+   35  sudo nano /boot/config.txt
+   36  sudo reboot
+   37  sudo i2cdetect -y 1
+   38  sudo apt-get -y remove fake-hwclock
+   39  sudo update-rc.d -f fake-hwclock remove
+   40  sudo systemctl disable fake-hwclock
+   41  sudo nano /lib/udev/hwclock-set
+   42  sudo hwclock -w
+   43  sudo hwclock -r
+   44  nano /etc/profile
+   45  sudo reboot
+   46  sudo sh -c 'echo "0" > /sys/class/backlight/soc\:backlight/brightness'
+   47  sudo sh -c 'echo "1" > /sys/class/backlight/soc\:backlight/brightness'
+   48  sudo raspi-config
+   49  tail 
+   50  sudo shutdown
+   51  sudo raspi-config
+   52  sudo reboot
+   53  sudo raspi-config
+   54  sudo reboot
+   55  sudo raspi-config
+   56  sudo reboot
+   57  cd dev
+   58  ls
+   59  cd ..
+   60  ls
+   61  cd ..
+   62  ls
+   63  cd dev
+   64  ls
+   65  cd ..
+   66  ls
+   67  sudo udevadm info -a -p
+   68  sudo udevadm info -a
+   69  sudo reboot
+   70  sudo raspi-config
+   71  sudo reboot
+   72  ping 8.8.8.8
+   73  sudo reboot
+   74  sudo lsub
+   75  lsusb
+   76  1sub
+   77  sudo lsub
+   78  sudo lsusb
+   79  sudo udevadm info -a -p $(udevadm info -q path -n /dev/video0) | grep ATTR{name
+   80  sudo shutdown
+   81  sudo raspi-config
+   82  sudo nano /etc/modules
+   83  sudo reboot
+   84  sudo shutdown
+   85  sudo shutdonw
+   86  sudo shutdown
+   87  ls
+   88  ip a
+   89  sudo raspi-config
+   90  ip a
+   91  sudo shutdown now
+   92  sudo raspi-config
+   93  cat /etc/wpa_supplicant/wpa_supplicant.conf 
+   94  ping 8.8.8.8
+   95  sudo nano /etc/wpa_supplicant/wpa_supplicant.conf 
+   96  sudo reboot
+   97  ls
+   98  ip a
+   99  ping 8.8.8.8
+  100  ip a
+  101  ping 8.8.8.8
+  102  ls
+  103  sudo bash adafruit-pitft.sh
+  104  ip a
+  105  ping 8.8.8.8
+  106  sudo bash adafruit-pitft.sh
+  107  sudo apt update
+  108  sudo apt dist-upgrade
+  109  ping 8.8.8.8
+  110  ip a
+  111  sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+  112  sudo reboot
+  113  sudo raspi-config
+  114  ip a
+  115  ping 8.8.8.8
+  116  sudo reboot
+  117  ping 8.8.8.8
+  118  sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+  119  sudo reboot
+  120  ip a
+  121  ping 8.8.8.8
+  122  sudo ./adafruit-pitft.sh
+  123  sudo hwclock -r
+  124  sudo raspi-config
+  125  sudo hwclock -r
+  126  passwd
+  127  ls
+  128  git help
+  129  pip3 help
+  130  git clone https://github.com/icr-ctl/dencam.git
+  131  ls
+  132  cd dencam/
+  133  ls
+  134  python test_buttons.py 
+  135  cd ..
+  136  ls
+  137  pipe install Virtualenv Virtualenvwrapper
+  138  pip3 install Virtualenv Virtualenvwrapper
+  139  ls
+  140  mkdir ~/Enviroments
+  141  cd Enviroments/
+  142  export WORKON_HOME=~/Environments
+  143  echo -e "\n# Virtualenv and virtualenvwrapper stuff" >> ~/.bashrc
+  144  echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+  145  echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
+  146  echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+  147  source ~/.bashrc
+  148  ls
+  149  cd ..
+  150  ls
+  151  sudo pip3 install Virtualenv Virtualenvwrapper
+  152  echo -e "\n# Virtualenv and virtualenvwrapper stuff" >> ~/.bashrc
+  153  echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+  154  echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
+  155  echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+  156  source ~/.bashrc
+  157  mkvirtualenv dencam -p python3
+  158  history
+  159  history > dencam_setup.txt
