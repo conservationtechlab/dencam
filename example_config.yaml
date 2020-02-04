@@ -1,0 +1,15 @@
+VIDEO_PATH: /home/pi/videos
+
+# length of videos to record in seconds
+RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
+# number of seconds after program starts to init first video recording
+# (in seconds)
+PAUSE_BEFORE_RECORD: 90  # 90 for current spec
+
+# number of seconds shutdown button held down to turn off pi
+OFF_BUTTON_DELAY: 5
+
+CAMERA_RESOLUTION: [1920, 1080]
+
+# 0, 90, 180, 270. have not checked whether 90 and 270 crop image or what
+CAMERA_ROTATION: 180 

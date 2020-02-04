@@ -10,6 +10,8 @@ import os
 import time
 import subprocess
 
+import yaml
+
 import tkinter as tk
 import tkinter.font as tkFont
 
@@ -19,24 +21,21 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 
-VIDEO_PATH = '/home/pi/videos'
-
-# length of videos to record (in seconds)
-RECORD_LENGTH = 300  # 60 * 5 = 300 for 5 minutes
-# number of seconds after program starts to init first video recording
-# (in seconds)
-PAUSE_BEFORE_RECORD = 90  # 90 for current spec
-
-# number of seconds shutdown button held down to turn off pi
-OFF_BUTTON_DELAY = 5
+CONFIG_FILE = '/home/pi/dencam/config.yaml'
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+VIDEO_PATH = configs['VIDEO_PATH']
+RECORD_LENGTH = configs['RECORD_LENGTH']
+PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
+OFF_BUTTON_DELAY = configs['OFF_BUTTON_DELAY']
+CAMERA_RESOLUTION = configs['CAMERA_RESOLUTION']
+CAMERA_ROTATION = configs['CAMERA_ROTATION']
 
 # Button pin number mappings
 SCREEN_BUTTON = 27
 PREVIEW_BUTTON = 23
 RECORD_BUTTON = 22
 OFF_BUTTON = 17
-
-CAMERA_RESOLUTION = (640, 480)
 
 
 class DenCamApp(Thread):
@@ -45,7 +44,7 @@ class DenCamApp(Thread):
 
         # camera setup
         self.camera = PiCamera()
-        self.camera.rotation = 180
+        self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
         self.preview_on = False
         # recording setup
