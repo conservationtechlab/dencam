@@ -1,3 +1,4 @@
+
 """Control code for polar bear maternal den monitoring device.
 
 Target is a Raspberry Pi single board computer with a Picamera-style
@@ -30,6 +31,8 @@ PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
 OFF_BUTTON_DELAY = configs['OFF_BUTTON_DELAY']
 CAMERA_RESOLUTION = configs['CAMERA_RESOLUTION']
 CAMERA_ROTATION = configs['CAMERA_ROTATION']
+VIDEO_QUALITY = configs['VIDEO_QUALITY']
+FRAME_RATE = configs['FRAME_RATE']
 
 # Button pin number mappings
 SCREEN_BUTTON = 27
@@ -43,7 +46,7 @@ class DenCamApp(Thread):
         self.initial_pause_complete = False
 
         # camera setup
-        self.camera = PiCamera()
+        self.camera = PiCamera(framerate=FRAME_RATE)
         self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
         self.preview_on = False
@@ -196,14 +199,21 @@ class DenCamApp(Thread):
         local_time = time.localtime()
 
         hours = local_time.tm_hour
+        mins = local_time.tm_min
+        secs = local_time.tm_sec
+        
         shours = str(hours)
-        smin = str(local_time.tm_min)
+        smins = str(mins)
+        ssecs = str(secs)
+        
         if hours < 10:
             shours = '0' + shours
-        if local_time.tm_min < 10:
-            smin = '0' + smin
+        if mins < 10:
+            smin = '0' + smins
+        if secs < 10:
+            ssecs = '0' + ssecs
 
-        return shours + ':' + smin
+        return shours + ':' + smins + ':' + ssecs
 
     def _start_recording(self):
         self.recording = True
@@ -216,7 +226,7 @@ class DenCamApp(Thread):
             os.makedirs(todays_dir)
         date_time_string = now.strftime("%Y-%m-%d_%H%M%S")
         filename = os.path.join(todays_dir, date_time_string + '.h264')
-        self.camera.start_recording(filename)
+        self.camera.start_recording(filename, quality=VIDEO_QUALITY)
         self.record_start_time = time.time()
 
     def _stop_recording(self):
