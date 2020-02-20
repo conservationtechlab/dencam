@@ -187,7 +187,7 @@ class DenCamApp(Thread):
         """Get the remaining space on SD card in gigabytes
 
         """
-        statvfs = os.statvfs('/home/')
+        statvfs = os.statvfs(VIDEO_PATH)
         bytes_available = statvfs.f_frsize * statvfs.f_bavail
         gigabytes_available = bytes_available/1000000000
         return gigabytes_available
@@ -209,7 +209,7 @@ class DenCamApp(Thread):
         if hours < 10:
             shours = '0' + shours
         if mins < 10:
-            smin = '0' + smins
+            smins = '0' + smins
         if secs < 10:
             ssecs = '0' + ssecs
 
