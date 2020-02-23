@@ -108,6 +108,13 @@ class DenCamApp(Thread):
                                         bg='black')
         self.recording_label.pack(fill=tk.X)
 
+        self.error_label = tk.Label(frame,
+                                    text=' ',
+                                    font=small_font,
+                                    fg='red',
+                                    bg='black')
+        self.error_label.pack(fill=tk.X)
+
     def _gpio_setup(self):
         """Sets up the GPIO pins on the pi that are being used.
 
@@ -187,10 +194,13 @@ class DenCamApp(Thread):
         """Get the remaining space on SD card in gigabytes
 
         """
-        statvfs = os.statvfs(VIDEO_PATH)
-        bytes_available = statvfs.f_frsize * statvfs.f_bavail
-        gigabytes_available = bytes_available/1000000000
-        return gigabytes_available
+        try:
+            statvfs = os.statvfs(VIDEO_PATH)
+            bytes_available = statvfs.f_frsize * statvfs.f_bavail
+            gigabytes_available = bytes_available/1000000000
+            return gigabytes_available
+        except FileNotFoundError:
+            return 0
 
     def _get_time(self):
         """Retrieve current time and format it for screen display
@@ -216,12 +226,21 @@ class DenCamApp(Thread):
         return shours + ':' + smins + ':' + ssecs
 
     def _start_recording(self):
+        global VIDEO_PATH
+        
         self.recording = True
         self.vid_count += 1
 
         now = datetime.now()
         date_string = now.strftime("%Y-%m-%d")
+
+        if not os.path.exists(VIDEO_PATH):
+            self.error_label['text'] = 'Video path error'
+            VIDEO_PATH = '/home/pi/'
+            print('[WARNING] Video path does not exist. Writing files to /home/pi')
+
         todays_dir = os.path.join(VIDEO_PATH, date_string)
+        
         if not os.path.exists(todays_dir):
             os.makedirs(todays_dir)
         date_time_string = now.strftime("%Y-%m-%d_%H%M%S")
