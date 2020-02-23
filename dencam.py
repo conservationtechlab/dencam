@@ -77,40 +77,43 @@ class DenCamApp(Thread):
         small_font = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/9))
 
+        error_font = tkFont.Font(family='Courier New',
+                                 size=-int(scrn_height/12))
+
         big_font = tkFont.Font(family='Courier New',
                                size=-int(scrn_height/5))
 
         self.vid_count_label = tk.Label(frame,
                                         text='|',
                                         font=small_font,
-                                        fg='red',
+                                        fg='blue',
                                         bg='black')
         self.vid_count_label.pack(fill=tk.X)
 
         self.storage_label = tk.Label(frame,
                                       text='|',
                                       font=small_font,
-                                      fg='red',
+                                      fg='blue',
                                       bg='black')
         self.storage_label.pack(fill=tk.X)
 
         self.time_label = tk.Label(frame,
                                    text='|',
                                    font=small_font,
-                                   fg='red',
+                                   fg='blue',
                                    bg='black')
         self.time_label.pack(fill=tk.X)
 
         self.recording_label = tk.Label(frame,
                                         text='|',
                                         font=big_font,
-                                        fg='red',
+                                        fg='blue',
                                         bg='black')
         self.recording_label.pack(fill=tk.X)
 
         self.error_label = tk.Label(frame,
                                     text=' ',
-                                    font=small_font,
+                                    font=error_font,
                                     fg='red',
                                     bg='black')
         self.error_label.pack(fill=tk.X)
@@ -235,9 +238,9 @@ class DenCamApp(Thread):
         date_string = now.strftime("%Y-%m-%d")
 
         if not os.path.exists(VIDEO_PATH):
-            self.error_label['text'] = 'Video path error'
+            self.error_label['text'] = 'ERROR: \n Video path broken. \n Recording to /home/pi'
             VIDEO_PATH = '/home/pi/'
-            print('[WARNING] Video path does not exist. Writing files to /home/pi')
+            print('[ERROR] Video path does not exist. Writing files to /home/pi')
 
         todays_dir = os.path.join(VIDEO_PATH, date_string)
         
