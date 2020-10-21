@@ -1,4 +1,3 @@
-
 """Control code for polar bear maternal den monitoring device.
 
 Target is a Raspberry Pi single board computer with a Picamera-style
@@ -214,11 +213,11 @@ class DenCamApp(Thread):
         hours = local_time.tm_hour
         mins = local_time.tm_min
         secs = local_time.tm_sec
-        
+
         shours = str(hours)
         smins = str(mins)
         ssecs = str(secs)
-        
+
         if hours < 10:
             shours = '0' + shours
         if mins < 10:
@@ -230,7 +229,7 @@ class DenCamApp(Thread):
 
     def _start_recording(self):
         global VIDEO_PATH
-        
+
         self.recording = True
         self.vid_count += 1
 
@@ -243,7 +242,7 @@ class DenCamApp(Thread):
             print('[ERROR] Video path does not exist. Writing files to /home/pi')
 
         todays_dir = os.path.join(VIDEO_PATH, date_string)
-        
+
         if not os.path.exists(todays_dir):
             os.makedirs(todays_dir)
         date_time_string = now.strftime("%Y-%m-%d_%H%M%S")
