@@ -4,6 +4,9 @@ VIDEO_PATH: /media/pi/9016-4EF8
 # length of videos to record in seconds
 RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
 
+# PiTFT SCREEN CHARACTERISTICS
+DISPLAY_RESOLUTION: [640, 480]
+
 # number of seconds after program starts to init first video recording
 # (in seconds)
 PAUSE_BEFORE_RECORD: 90  # 90 for current spec
