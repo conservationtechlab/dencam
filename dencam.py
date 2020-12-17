@@ -5,7 +5,7 @@ camera and the AdaFruit PiTFTscreen (2.8" resistive touch model with 4
 GPIO-connected buttons) attached.
 
 """
-
+import argparse
 import os
 import time
 
@@ -20,8 +20,12 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 from picamera import PiCamera
 
-CONFIG_FILE = '/home/pi/dencam/config.yaml'
-with open(CONFIG_FILE) as f:
+parser = argparse.ArgumentParser()
+parser.add_argument('config_file',
+                    help='Filename of a YAML Mini Den Cam configuration file.')
+args = parser.parse_args()
+
+with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 
 # Recording settings
