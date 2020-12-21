@@ -8,17 +8,14 @@ GPIO-connected buttons) attached.
 import argparse
 import os
 import time
+import tkinter as tk
+import tkinter.font as tkFont
+from threading import Thread
 
 import yaml
 
-import tkinter as tk
-import tkinter.font as tkFont
-
-from threading import Thread
-from datetime import datetime
-
-import RPi.GPIO as GPIO
-from picamera import PiCamera
+from buttons import ButtonHandler
+from recorder import Recorder
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -28,43 +25,17 @@ args = parser.parse_args()
 with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 
-# Recording settings
-VIDEO_PATH = configs['VIDEO_PATH']
-RECORD_LENGTH = configs['RECORD_LENGTH']
 PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
-
-# PiTFT characteristics
-DISPLAY_RESOLUTION = configs['DISPLAY_RESOLUTION']
-
-# Camera settings
-CAMERA_RESOLUTION = configs['CAMERA_RESOLUTION']
-CAMERA_ROTATION = configs['CAMERA_ROTATION']
-VIDEO_QUALITY = configs['VIDEO_QUALITY']
-FRAME_RATE = configs['FRAME_RATE']
-
-# Button pin number mappings
-SCREEN_BUTTON = 27
-PREVIEW_BUTTON = 23
-RECORD_BUTTON = 22
-ZOOM_BUTTON = 17
+RECORD_LENGTH = configs['RECORD_LENGTH']
 
 
 class DenCamApp(Thread):
-    def run(self):
-        self.initial_pause_complete = False
+    def __init__(self, recorder):
+        super().__init__()
+        self.recorder = recorder
 
-        # camera setup
-        self.camera = PiCamera(framerate=FRAME_RATE)
-        self.camera.rotation = CAMERA_ROTATION
-        self.camera.resolution = CAMERA_RESOLUTION
-        self.preview_on = False
-        self.zoom_on = False
-        # recording setup
-        self.recording = False
+    def run(self):
         self.record_start_time = time.time()  # also used in initial countdown
-        self.vid_count = 0
-        # interface setup
-        self._gpio_setup()
         # tkinter setup
         self.window = tk.Tk()
         self._layout_window()
@@ -127,96 +98,12 @@ class DenCamApp(Thread):
                                     bg='black')
         self.error_label.pack(fill=tk.X)
 
-    def _gpio_setup(self):
-        """Sets up the GPIO pins on the pi that are being used.
-
-        Includes the 4 buttons on PiTFT that are connected to Pi GPIO
-        pins and the pin that control the brightness of the backlight
-        on the screen.
-
-        """
-        self.latch_screen_button = False
-        self.latch_record_button = False
-        self.latch_preview_button = False
-        self.latch_zoom_button = False
-
-        GPIO.setmode(GPIO.BCM)
-
-        # button pins
-        GPIO.setup(SCREEN_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(RECORD_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(PREVIEW_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(ZOOM_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        # screen backlight control pin and related
-        GPIO.setup(18, GPIO.OUT)
-        self.backlight_pwm = GPIO.PWM(18, 1000)
-        self.backlight_pwm.start(0)
-        self.screen_on = False
-
-        self.off_countdown = 0
-
-    def _handle_buttons(self):
-        """Handles button presses and the associated responses.
-        """
-
-        if not GPIO.input(SCREEN_BUTTON):
-            if not self.latch_screen_button:
-                self.latch_screen_button = True
-                if self.screen_on:
-                    # turn off screen
-                    self.backlight_pwm.ChangeDutyCycle(0)
-                    self.screen_on = False
-                else:
-                    # turn on screen
-                    self.backlight_pwm.ChangeDutyCycle(100)
-                    self.screen_on = True
-        else:
-            self.latch_screen_button = False
-
-        if not GPIO.input(RECORD_BUTTON) and self.initial_pause_complete:
-            if not self.latch_record_button:
-                self.latch_record_button = True
-                if self.recording:
-                    self._stop_recording()
-                else:
-                    self._start_recording()
-        else:
-            self.latch_record_button = False
-
-        if not GPIO.input(ZOOM_BUTTON):
-            if not self.latch_zoom_button:
-                if not self.zoom_on:
-                    width, height = self.camera.resolution
-                    # zoom_factor = 1/float(ZOOM_FACTOR)
-                    zoom_factor = DISPLAY_RESOLUTION[0]/width
-                    left = 0.5 - zoom_factor/2.
-                    top = 0.5 - zoom_factor/2.
-                    self.camera.zoom = (left, top, zoom_factor, zoom_factor)
-                else:
-                    self.camera.zoom = (0, 0, 1.0, 1.0)
-                self.zoom_on = not self.zoom_on
-                self.latch_zoom_button = True
-        else:
-            self.latch_zoom_button = False
-
-        if not GPIO.input(PREVIEW_BUTTON):
-            if not self.latch_preview_button:
-                self.latch_preview_button = True
-                if not self.preview_on:
-                    self.camera.start_preview()
-                else:
-                    self.camera.stop_preview()
-                self.preview_on = not self.preview_on
-        else:
-            self.latch_preview_button = False
-
     def _get_free_space(self):
         """Get the remaining space on SD card in gigabytes
 
         """
         try:
-            statvfs = os.statvfs(VIDEO_PATH)
+            statvfs = os.statvfs(self.recorder.video_path)
             bytes_available = statvfs.f_frsize * statvfs.f_bavail
             gigabytes_available = bytes_available/1000000000
             return gigabytes_available
@@ -246,47 +133,21 @@ class DenCamApp(Thread):
 
         return shours + ':' + smins + ':' + ssecs
 
-    def _start_recording(self):
-        global VIDEO_PATH
-
-        self.recording = True
-        self.vid_count += 1
-
-        now = datetime.now()
-        date_string = now.strftime("%Y-%m-%d")
-
-        if not os.path.exists(VIDEO_PATH):
-            self.error_label['text'] = 'ERROR: \n Video path broken. \n Recording to /home/pi'
-            VIDEO_PATH = '/home/pi/'
-            print('[ERROR] Video path does not exist. Writing files to /home/pi')
-
-        todays_dir = os.path.join(VIDEO_PATH, date_string)
-
-        if not os.path.exists(todays_dir):
-            os.makedirs(todays_dir)
-        date_time_string = now.strftime("%Y-%m-%d_%H%M%S")
-        filename = os.path.join(todays_dir, date_time_string + '.h264')
-        self.camera.start_recording(filename, quality=VIDEO_QUALITY)
-        self.record_start_time = time.time()
-
-    def _stop_recording(self):
-        self.recording = False
-        self.camera.stop_recording()
-
     def _update(self):
-        """Core loop method run at 10 Hz using tkinters "after" method.
+        """Core loop method run at 10 Hz
 
         """
+
         self.elapsed_time = time.time() - self.record_start_time
 
-        if (self.elapsed_time > PAUSE_BEFORE_RECORD) and not self.initial_pause_complete:
-            self.initial_pause_complete = True
-            self._start_recording()
-        elif self.elapsed_time > RECORD_LENGTH and self.recording:
-            self._stop_recording()
-            self._start_recording()
-
-        self._handle_buttons()
+        if ((self.elapsed_time > PAUSE_BEFORE_RECORD
+             and not self.recorder.initial_pause_complete)):
+            self.recorder.initial_pause_complete = True
+            self.recorder.start_recording()
+        elif (self.elapsed_time > RECORD_LENGTH
+              and self.recorder.recording):
+            self.recorder.stop_recording()
+            self.recorder.start_recording()
 
         self._draw_readout()
         self.window.after(100, self._update)
@@ -296,7 +157,8 @@ class DenCamApp(Thread):
 
         """
 
-        self.vid_count_label['text'] = "Vids this run: " + str(self.vid_count)
+        self.vid_count_label['text'] = ("Vids this run: "
+                                        + str(self.recorder.vid_count))
 
         free_space = self._get_free_space()
         storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
@@ -304,16 +166,23 @@ class DenCamApp(Thread):
 
         self.time_label['text'] = 'Time: ' + self._get_time()
 
-        if not self.initial_pause_complete:
-            rec_text = '{0:.0f}'.format(PAUSE_BEFORE_RECORD - self.elapsed_time)
+        if not self.recorder.initial_pause_complete:
+            remaining = PAUSE_BEFORE_RECORD - self.elapsed_time
+            rec_text = '{0:.0f}'.format(remaining)
         else:
-            rec_text = '{}'.format('Recording' if self.recording else 'Idle')
+            state = 'Recording' if self.recorder.recording else 'Idle'
+            rec_text = '{}'.format(state)
         self.recording_label['text'] = rec_text
 
 
 def main():
-    app = DenCamApp()
+    recorder = Recorder(configs)
+
+    app = DenCamApp(recorder)
     app.start()
+
+    button_handler = ButtonHandler(recorder)
+    button_handler.start()
 
 
 if __name__ == "__main__":
