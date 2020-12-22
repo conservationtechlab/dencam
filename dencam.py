@@ -14,6 +14,7 @@ from threading import Thread
 
 import yaml
 
+import networking
 from buttons import ButtonHandler
 from recorder import Recorder
 from gui import RecordingPage, NetworkPage
@@ -60,7 +61,7 @@ class DenCamApp(Thread):
         self.error_text = tk.StringVar()
         self.error_text.set(' ')
         self.ip_text = tk.StringVar()
-        self.ip_text.set('Place Holder')
+        self.ip_text.set('|')
 
         container = tk.Frame(self.window, bg='black')
         container.pack(side='top', fill='both', expand=True)
@@ -144,7 +145,6 @@ class DenCamApp(Thread):
             self.recorder.stop_recording()
             self.recorder.start_recording()
 
-        print(self.state.value)
         if self.state.value <= 1:
             self.show_frame('NetworkPage')
         elif self.state.value == 2:
@@ -160,12 +160,14 @@ class DenCamApp(Thread):
         self.vid_count_text.set("Vids this run: "
                                 + str(self.recorder.vid_count))
 
+        # prepare storage info text
         free_space = self._get_free_space()
         storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
         self.storage_text.set(storage_string)
 
         self.time_text.set('Time: ' + self._get_time())
 
+        # prepare record state info text
         if not self.recorder.initial_pause_complete:
             remaining = PAUSE_BEFORE_RECORD - self.elapsed_time
             rec_text = '{0:.0f}'.format(remaining)
@@ -173,6 +175,10 @@ class DenCamApp(Thread):
             state = 'Recording' if self.recorder.recording else 'Idle'
             rec_text = '{}'.format(state)
         self.recording_text.set(rec_text)
+
+        # prep network text
+        network_info = networking.get_network_info()
+        self.ip_text.set(network_info)
 
 
 class State():
