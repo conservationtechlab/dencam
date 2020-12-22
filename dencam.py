@@ -16,6 +16,7 @@ import yaml
 
 from buttons import ButtonHandler
 from recorder import Recorder
+from gui import RecordingPage, NetworkPage
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -30,73 +31,67 @@ RECORD_LENGTH = configs['RECORD_LENGTH']
 
 
 class DenCamApp(Thread):
-    def __init__(self, recorder):
+    def __init__(self, recorder, state):
         super().__init__()
         self.recorder = recorder
+        self.state = state
 
     def run(self):
-        self.record_start_time = time.time()  # also used in initial countdown
-        # tkinter setup
-        self.window = tk.Tk()
-        self._layout_window()
-        self.window.attributes('-fullscreen', True)
-
+        self._setup()
         self.window.after(200, self._update)
         self.window.mainloop()
 
-    def _layout_window(self):
-        """Layout the information elements to be rendered to the screen.
+    def _setup(self):
+        self.record_start_time = time.time()  # also used in initial countdown
 
-        """
+        # GUI setup
+        self.window = tk.Tk()
+        self.window.attributes('-fullscreen', True)
         self.window.title('DenCam Control')
-        frame = tk.Frame(self.window, bg='black')
-        frame.pack(fill=tk.BOTH, expand=1)
-        frame.configure(bg='black')
 
+        self.vid_count_text = tk.StringVar()
+        self.vid_count_text.set('|')
+        self.storage_text = tk.StringVar()
+        self.storage_text.set('|')
+        self.recording_text = tk.StringVar()
+        self.recording_text.set('|')
+        self.time_text = tk.StringVar()
+        self.time_text.set('|')
+        self.error_text = tk.StringVar()
+        self.error_text.set(' ')
+        self.ip_text = tk.StringVar()
+        self.ip_text.set('Place Holder')
+
+        container = tk.Frame(self.window, bg='black')
+        container.pack(side='top', fill='both', expand=True)
+        # container.pack(fill=tk.BOTH, expand=1)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+        container.configure(bg='black')
+
+        # set font sizes
         scrn_height = self.window.winfo_screenheight()
-        small_font = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/9))
+        self.small_font = tkFont.Font(family='Courier New',
+                                      size=-int(scrn_height/9))
+        self.error_font = tkFont.Font(family='Courier New',
+                                      size=-int(scrn_height/12))
+        self.big_font = tkFont.Font(family='Courier New',
+                                    size=-int(scrn_height/5))
 
-        error_font = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/12))
+        self.frames = {}
 
-        big_font = tkFont.Font(family='Courier New',
-                               size=-int(scrn_height/5))
+        for Page in (RecordingPage, NetworkPage):
+            page_name = Page.__name__
+            frame = Page(parent=container, controller=self)
+            self.frames[page_name] = frame
 
-        self.vid_count_label = tk.Label(frame,
-                                        text='|',
-                                        font=small_font,
-                                        fg='blue',
-                                        bg='black')
-        self.vid_count_label.pack(fill=tk.X)
+            frame.grid(row=0, column=0, sticky='nsew')
 
-        self.storage_label = tk.Label(frame,
-                                      text='|',
-                                      font=small_font,
-                                      fg='blue',
-                                      bg='black')
-        self.storage_label.pack(fill=tk.X)
+        self.show_frame('RecordingPage')
 
-        self.time_label = tk.Label(frame,
-                                   text='|',
-                                   font=small_font,
-                                   fg='blue',
-                                   bg='black')
-        self.time_label.pack(fill=tk.X)
-
-        self.recording_label = tk.Label(frame,
-                                        text='|',
-                                        font=big_font,
-                                        fg='blue',
-                                        bg='black')
-        self.recording_label.pack(fill=tk.X)
-
-        self.error_label = tk.Label(frame,
-                                    text=' ',
-                                    font=error_font,
-                                    fg='red',
-                                    bg='black')
-        self.error_label.pack(fill=tk.X)
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
 
     def _get_free_space(self):
         """Get the remaining space on SD card in gigabytes
@@ -149,22 +144,27 @@ class DenCamApp(Thread):
             self.recorder.stop_recording()
             self.recorder.start_recording()
 
-        self._draw_readout()
+        print(self.state.value)
+        if self.state.value <= 1:
+            self.show_frame('NetworkPage')
+        elif self.state.value == 2:
+            self.show_frame('RecordingPage')
+
+        self._update_strings()
         self.window.after(100, self._update)
 
-    def _draw_readout(self):
+    def _update_strings(self):
         """Draw the readout for the user to the screen.
 
         """
-
-        self.vid_count_label['text'] = ("Vids this run: "
-                                        + str(self.recorder.vid_count))
+        self.vid_count_text.set("Vids this run: "
+                                + str(self.recorder.vid_count))
 
         free_space = self._get_free_space()
         storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
-        self.storage_label['text'] = storage_string
+        self.storage_text.set(storage_string)
 
-        self.time_label['text'] = 'Time: ' + self._get_time()
+        self.time_text.set('Time: ' + self._get_time())
 
         if not self.recorder.initial_pause_complete:
             remaining = PAUSE_BEFORE_RECORD - self.elapsed_time
@@ -172,17 +172,31 @@ class DenCamApp(Thread):
         else:
             state = 'Recording' if self.recorder.recording else 'Idle'
             rec_text = '{}'.format(state)
-        self.recording_label['text'] = rec_text
+        self.recording_text.set(rec_text)
+
+
+class State():
+    def __init__(self, num_states):
+        self.value = 0
+        self.num_states = num_states
+
+    def goto_next(self):
+        self.value += 1
+        if self.value >= self.num_states:
+            self.value = 0
 
 
 def main():
     recorder = Recorder(configs)
 
-    app = DenCamApp(recorder)
-    app.start()
+    state = State(3)
 
-    button_handler = ButtonHandler(recorder)
+    button_handler = ButtonHandler(recorder, state)
+    button_handler.setDaemon(True)
     button_handler.start()
+
+    app = DenCamApp(recorder, state)
+    app.start()
 
 
 if __name__ == "__main__":

@@ -19,8 +19,10 @@ class ButtonHandler(Thread):
 
     """
 
-    def __init__(self, recorder):
+    def __init__(self, recorder, state):
         super().__init__()
+
+        self.state = state
 
         self.recorder = recorder
 
@@ -57,13 +59,14 @@ class ButtonHandler(Thread):
         if not GPIO.input(SCREEN_BUTTON):
             if not self.latch_screen_button:
                 self.latch_screen_button = True
-                if self.screen_on:
-                    # turn off screen
-                    self.backlight_pwm.ChangeDutyCycle(0)
-                else:
-                    # turn on screen
+
+                self.state.goto_next()
+
+                if self.state.value > 0:
                     self.backlight_pwm.ChangeDutyCycle(100)
-                self.screen_on = not self.screen_on
+                else:
+                    self.backlight_pwm.ChangeDutyCycle(0)
+
         else:
             self.latch_screen_button = False
 
