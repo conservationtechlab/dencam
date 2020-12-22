@@ -9,6 +9,7 @@ DEFAULT_PATH = '/home/pi/'
 
 class Recorder():
     def __init__(self, configs):
+        self.record_start_time = time.time()  # also used in initial countdown
 
         # Recording settings
         self.video_path = configs['VIDEO_PATH']

@@ -43,8 +43,6 @@ class DenCamApp(Thread):
         self.window.mainloop()
 
     def _setup(self):
-        self.record_start_time = time.time()  # also used in initial countdown
-
         # GUI setup
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
@@ -133,8 +131,7 @@ class DenCamApp(Thread):
         """Core loop method run at 10 Hz
 
         """
-
-        self.elapsed_time = time.time() - self.record_start_time
+        self.elapsed_time = time.time() - self.recorder.record_start_time
 
         if ((self.elapsed_time > PAUSE_BEFORE_RECORD
              and not self.recorder.initial_pause_complete)):
