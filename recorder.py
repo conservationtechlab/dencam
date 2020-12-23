@@ -81,7 +81,7 @@ class Recorder():
 
         if not os.path.exists(todays_dir):
             os.makedirs(todays_dir)
-        date_time_string = now.strftime("%Y-%m-%d_%H%M%S")
+        date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
         filename = os.path.join(todays_dir, date_time_string + '.h264')
         self.camera.start_recording(filename, quality=self.VIDEO_QUALITY)
         self.record_start_time = time.time()
