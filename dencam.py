@@ -6,7 +6,6 @@ GPIO-connected buttons) attached.
 
 """
 import argparse
-import os
 import time
 import tkinter as tk
 import tkinter.font as tkFont
@@ -52,6 +51,8 @@ class DenCamApp(Thread):
         self.vid_count_text.set('|')
         self.storage_text = tk.StringVar()
         self.storage_text.set('|')
+        self.device_text = tk.StringVar()
+        self.device_text.set('|')
         self.recording_text = tk.StringVar()
         self.recording_text.set('|')
         self.time_text = tk.StringVar()
@@ -91,18 +92,6 @@ class DenCamApp(Thread):
     def show_frame(self, page_name):
         frame = self.frames[page_name]
         frame.tkraise()
-
-    def _get_free_space(self):
-        """Get the remaining space on SD card in gigabytes
-
-        """
-        try:
-            statvfs = os.statvfs(self.recorder.video_path)
-            bytes_available = statvfs.f_frsize * statvfs.f_bavail
-            gigabytes_available = bytes_available/1000000000
-            return gigabytes_available
-        except FileNotFoundError:
-            return 0
 
     def _get_time(self):
         """Retrieve current time and format it for screen display
@@ -158,9 +147,11 @@ class DenCamApp(Thread):
                                 + str(self.recorder.vid_count))
 
         # prepare storage info text
-        free_space = self._get_free_space()
+        free_space = self.recorder.get_free_space()
         storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
         self.storage_text.set(storage_string)
+
+        self.device_text.set(self.recorder.video_path)
 
         self.time_text.set('Time: ' + self._get_time())
 

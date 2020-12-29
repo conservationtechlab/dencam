@@ -1,18 +1,15 @@
 import os
+import getpass
 import time
 
 from datetime import datetime
 from picamera import PiCamera
 
-DEFAULT_PATH = '/home/pi/'
-
 
 class Recorder():
     def __init__(self, configs):
         self.record_start_time = time.time()  # also used in initial countdown
-
-        # Recording settings
-        self.video_path = configs['VIDEO_PATH']
+        self.video_path = self._video_path_selector()
 
         # PiTFT characteristics
         self.DISPLAY_RESOLUTION = configs['DISPLAY_RESOLUTION']
@@ -36,6 +33,58 @@ class Recorder():
         self.recording = False
 
         self.vid_count = 0
+
+    def _video_path_selector(self):
+        user = getpass.getuser()
+        media_dir = os.path.join('/media', user)
+
+        # this try block protects against the user not even having a folder in
+        # /media which can happen if no media has ever been attached under
+        # that user
+        try:
+            media_devices = os.listdir(media_dir)
+        except FileNotFoundError:
+            media_devices = []
+
+        default_path = os.path.join('/home', user)
+        if media_devices:
+            print('[INFO] Found media in /media')
+            media_devices.sort()
+            for media_device in media_devices:
+                media_path = os.path.join(media_dir, media_device)
+                free_space = self.get_free_space(media_path)
+                if free_space >= 0.5:  # half a gig
+                    print('[INFO] Using {}'.format(media_device))
+                    break
+                else:
+                    print('[INFO] Device {} '.format(media_device)
+                          + 'full or unwriteable.'
+                          + ' Advancing to next device.')
+            else:
+                print('[WARNING] No external device worked. '
+                      + 'Using home directory.')
+                media_path = default_path
+        else:
+            print('[WARNING] Did not find external media. '
+                  + 'Using home directory.')
+            media_path = default_path
+
+        return media_path
+
+    def get_free_space(self, card_path=None):
+        """Get the remaining space on SD card in gigabytes
+
+        """
+        if card_path is None:
+            card_path = self.video_path
+
+        try:
+            statvfs = os.statvfs(card_path)
+            bytes_available = statvfs.f_frsize * statvfs.f_bavail
+            gigabytes_available = bytes_available/1000000000
+            return gigabytes_available
+        except FileNotFoundError:
+            return 0
 
     def toggle_recording(self):
         if self.recording:
@@ -63,19 +112,23 @@ class Recorder():
         self.preview_on = not self.preview_on
 
     def start_recording(self):
+        print('[INFO] Starting new recording.')
         self.recording = True
         self.vid_count += 1
 
         now = datetime.now()
         date_string = now.strftime("%Y-%m-%d")
 
-        if not os.path.exists(self.video_path):
-            strg = ("ERROR: Video path broken. " +
-                    "Recording to {}".format(DEFAULT_PATH))
-            self.error_label['text'] = strg
-            self.video_path = DEFAULT_PATH
-            print("[ERROR] Video path doesn't exist. "
-                  + "Writing files to /home/pi")
+        print('[INFO] Looking for free space on external media.')
+        self.video_path = self._video_path_selector()
+
+        # if not os.path.exists(self.video_path):
+        #     strg = ("ERROR: Video path broken. " +
+        #             "Recording to {}".format(DEFAULT_PATH))
+        #     self.error_label['text'] = strg
+        #     self.video_path = DEFAULT_PATH
+        #     print("[ERROR] Video path doesn't exist. "
+        #           + "Writing files to /home/pi")
 
         todays_dir = os.path.join(self.video_path, date_string)
 

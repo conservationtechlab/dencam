@@ -1,6 +1,3 @@
-# VIDEO_PATH: /home/pi/videos
-VIDEO_PATH: /media/pi/9016-4EF8
-
 # length of videos to record in seconds
 RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
 

@@ -22,6 +22,13 @@ class RecordingPage(tk.Frame):
                                       bg='black')
         self.storage_label.pack(fill=tk.X)
 
+        self.storage_label = tk.Label(self,
+                                      textvariable=controller.device_text,
+                                      font=controller.small_font,
+                                      fg='blue',
+                                      bg='black')
+        self.storage_label.pack(fill=tk.X)
+
         self.time_label = tk.Label(self,
                                    textvariable=controller.time_text,
                                    font=controller.small_font,
