@@ -8,7 +8,6 @@ GPIO-connected buttons) attached.
 import argparse
 import time
 import tkinter as tk
-import tkinter.font as tkFont
 from threading import Thread
 
 import yaml
@@ -68,15 +67,6 @@ class DenCamApp(Thread):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         container.configure(bg='black')
-
-        # set font sizes
-        scrn_height = self.window.winfo_screenheight()
-        self.small_font = tkFont.Font(family='Courier New',
-                                      size=-int(scrn_height/9))
-        self.error_font = tkFont.Font(family='Courier New',
-                                      size=-int(scrn_height/12))
-        self.big_font = tkFont.Font(family='Courier New',
-                                    size=-int(scrn_height/5))
 
         self.frames = {}
 
@@ -143,17 +133,19 @@ class DenCamApp(Thread):
         """Draw the readout for the user to the screen.
 
         """
-        self.vid_count_text.set("Vids this run: "
-                                + str(self.recorder.vid_count))
+        strg = "Vids this run: " + str(self.recorder.vid_count)
+        self.vid_count_text.set(strg)
 
         # prepare storage info text
         free_space = self.recorder.get_free_space()
         storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
         self.storage_text.set(storage_string)
 
-        self.device_text.set(self.recorder.video_path)
+        strg = 'To: {}'.format(self.recorder.video_path)
+        self.device_text.set(strg)
 
-        self.time_text.set('Time: ' + self._get_time())
+        strg = 'Time: ' + self._get_time()
+        self.time_text.set(strg)
 
         # prepare record state info text
         if not self.recorder.initial_pause_complete:
