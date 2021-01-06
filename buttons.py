@@ -1,7 +1,10 @@
+import logging
 import time
 from threading import Thread
 
 import RPi.GPIO as GPIO
+
+log = logging.getLogger(__name__)
 
 # Button pin number mappings
 SCREEN_BUTTON = 27
@@ -19,12 +22,12 @@ class ButtonHandler(Thread):
 
     """
 
-    def __init__(self, recorder, state):
+    def __init__(self, recorder, state, stop_flag):
         super().__init__()
 
-        self.state = state
-
         self.recorder = recorder
+        self.state = state
+        self.stop_flag = stop_flag
 
         self.latch_screen_button = False
         self.latch_record_button = False
@@ -52,7 +55,12 @@ class ButtonHandler(Thread):
         while True:
             self._handle_buttons()
             time.sleep(.05)
+            if self.stop_flag():
+                break
 
+        log.debug('Button management cleaning up and shutting down.')
+        GPIO.cleanup()
+            
     def _handle_buttons(self):
         """Handles button presses and the associated responses.
         """

@@ -21,8 +21,11 @@ from buttons import ButtonHandler
 from recorder import Recorder
 from gui import RecordingPage, NetworkPage
 
-log = logs.setup_logger(logging.DEBUG)
-log.info('MINIDENCAM STARTING UP')
+LOGGING_LEVEL = logging.DEBUG
+log = logs.setup_logger(LOGGING_LEVEL)
+log.info('*** MINIDENCAM STARTING UP ***')
+strg = logging.getLevelName(log.getEffectiveLevel())
+log.critical('Logging level is {}'.format(strg))
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -182,20 +185,37 @@ class State():
 
 
 def main():
+
+    flags = {'stop_buttons_flag': False}
+    def cleanup(flags):
+        flags['stop_buttons_flag'] = True
+        time.sleep(.1)
+    
     try:
         recorder = Recorder(configs)
 
         state = State(3)
 
-        button_handler = ButtonHandler(recorder, state)
+        button_handler = ButtonHandler(recorder,
+                                       state,
+                                       lambda : flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()
 
         app = DenCamApp(recorder, state)
+        app.setDaemon(True)
         app.start()
+
+        while(True):
+            pass
+            time.sleep(.1)
+            
+    except KeyboardInterrupt:
+        log.debug('Keyboard interrupt')
+        cleanup(flags)
     except Exception:
-        log.exception('Exception on primary try block')
-
-
+        log.exception('Exception in primary try block')
+        cleanup(flags)
+        
 if __name__ == "__main__":
     main()
