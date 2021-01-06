@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """Control code for polar bear maternal den monitoring device.
 
 Target is a Raspberry Pi single board computer with a Picamera-style
@@ -5,6 +7,7 @@ camera and the AdaFruit PiTFTscreen (2.8" resistive touch model with 4
 GPIO-connected buttons) attached.
 
 """
+import logging
 import argparse
 import time
 import tkinter as tk
@@ -12,10 +15,14 @@ from threading import Thread
 
 import yaml
 
+import logs
 import networking
 from buttons import ButtonHandler
 from recorder import Recorder
 from gui import RecordingPage, NetworkPage
+
+log = logs.setup_logger(logging.DEBUG)
+log.info('MINIDENCAM STARTING UP')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -27,6 +34,8 @@ with open(args.config_file) as f:
 
 PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
 RECORD_LENGTH = configs['RECORD_LENGTH']
+
+log.info('Parsed arguments and read configurations')
 
 
 class DenCamApp(Thread):
@@ -173,16 +182,19 @@ class State():
 
 
 def main():
-    recorder = Recorder(configs)
+    try:
+        recorder = Recorder(configs)
 
-    state = State(3)
+        state = State(3)
 
-    button_handler = ButtonHandler(recorder, state)
-    button_handler.setDaemon(True)
-    button_handler.start()
+        button_handler = ButtonHandler(recorder, state)
+        button_handler.setDaemon(True)
+        button_handler.start()
 
-    app = DenCamApp(recorder, state)
-    app.start()
+        app = DenCamApp(recorder, state)
+        app.start()
+    except Exception:
+        log.exception('Exception on primary try block')
 
 
 if __name__ == "__main__":

@@ -1,9 +1,12 @@
+import logging
 import os
 import getpass
 import time
 
 from datetime import datetime
 from picamera import PiCamera
+
+log = logging.getLogger(__name__)
 
 
 class Recorder():
@@ -21,6 +24,8 @@ class Recorder():
 
         self.VIDEO_QUALITY = configs['VIDEO_QUALITY']
 
+        log.info('Read recording configurations')
+
         self.initial_pause_complete = False
 
         # camera setup
@@ -36,6 +41,7 @@ class Recorder():
 
     def _video_path_selector(self):
         user = getpass.getuser()
+        log.info("User is '{}'".format(user))
         media_dir = os.path.join('/media', user)
 
         # this try block protects against the user not even having a folder in
@@ -49,26 +55,26 @@ class Recorder():
         default_path = os.path.join('/home', user)
         if media_devices:
             strg = ', '.join(media_devices)
-            print('[INFO] Found media in /media: {}'.format(strg))
+            log.info('Found media in /media: {}'.format(strg))
             media_devices.sort()
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
                 if free_space >= 0.5:  # half a gig
-                    print('[INFO] Using external media: '
-                          + '{}'.format(media_device))
+                    log.info('Using external media: '
+                             + '{}'.format(media_device))
                     break
                 else:
-                    print('[INFO] Device {} '.format(media_device)
-                          + 'full or unwriteable.'
-                          + ' Advancing to next device.')
+                    log.info('Device {} is '.format(media_device)
+                             + 'full or unwritable.'
+                             + ' Advancing to next device.')
             else:
-                print('[WARNING] No external device worked. '
-                      + 'Using home directory.')
+                log.warning('No external device worked. '
+                            + 'Using home directory.')
                 media_path = default_path
         else:
-            print('[WARNING] Did not find external media. '
-                  + 'Using home directory.')
+            log.warning('Did not find external media. '
+                        + 'Using home directory.')
             media_path = default_path
 
         return media_path
@@ -114,14 +120,14 @@ class Recorder():
         self.preview_on = not self.preview_on
 
     def start_recording(self):
-        print('[INFO] Starting new recording.')
+        log.info('Starting new recording.')
         self.recording = True
         self.vid_count += 1
 
         now = datetime.now()
         date_string = now.strftime("%Y-%m-%d")
 
-        print('[INFO] Looking for free space on external media.')
+        log.info('Looking for free space on external media.')
         self.video_path = self._video_path_selector()
 
         # if not os.path.exists(self.video_path):
@@ -129,7 +135,7 @@ class Recorder():
         #             "Recording to {}".format(DEFAULT_PATH))
         #     self.error_label['text'] = strg
         #     self.video_path = DEFAULT_PATH
-        #     print("[ERROR] Video path doesn't exist. "
+        #     log.error("Video path doesn't exist. "
         #           + "Writing files to /home/pi")
 
         todays_dir = os.path.join(self.video_path, date_string)
@@ -142,5 +148,6 @@ class Recorder():
         self.record_start_time = time.time()
 
     def stop_recording(self):
+        log.info('Ending current recording')
         self.recording = False
         self.camera.stop_recording()
