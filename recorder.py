@@ -41,7 +41,7 @@ class Recorder():
 
     def _video_path_selector(self):
         user = getpass.getuser()
-        log.info("User is '{}'".format(user))
+        log.debug("User is '{}'".format(user))
         media_dir = os.path.join('/media', user)
 
         # this try block protects against the user not even having a folder in
@@ -54,9 +54,9 @@ class Recorder():
 
         default_path = os.path.join('/home', user)
         if media_devices:
+            media_devices.sort()
             strg = ', '.join(media_devices)
             log.info('Found media in /media: {}'.format(strg))
-            media_devices.sort()
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
