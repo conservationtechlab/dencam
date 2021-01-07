@@ -63,6 +63,8 @@ class Recorder():
                 if free_space >= 0.5:  # half a gig
                     log.info('Using external media: '
                              + '{}'.format(media_device))
+                    log.debug('Free space on device: '
+                              + '{:.2f} GB'.format(free_space))
                     break
                 else:
                     log.info('Device {} is '.format(media_device)

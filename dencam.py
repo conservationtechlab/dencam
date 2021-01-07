@@ -151,6 +151,7 @@ class DenCamApp(Thread):
         # prepare storage info text
         free_space = self.recorder.get_free_space()
         storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
+        log.debug('Storage as seen in main update loop: ' + storage_string)
         self.storage_text.set(storage_string)
 
         strg = 'To: {}'.format(self.recorder.video_path)
