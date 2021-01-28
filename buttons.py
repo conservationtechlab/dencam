@@ -74,28 +74,30 @@ class ButtonHandler(Thread):
                     self.backlight_pwm.ChangeDutyCycle(100)
                 else:
                     self.backlight_pwm.ChangeDutyCycle(0)
-
         else:
             self.latch_screen_button = False
 
-        if ((not GPIO.input(RECORD_BUTTON)
-             and self.recorder.initial_pause_complete)):
+        if not GPIO.input(RECORD_BUTTON):
             if not self.latch_record_button:
-                self.recorder.toggle_recording()
+                if (self.recorder.initial_pause_complete
+                    and self.state.value == 2):
+                    self.recorder.toggle_recording()
                 self.latch_record_button = True
         else:
             self.latch_record_button = False
 
         if not GPIO.input(ZOOM_BUTTON):
             if not self.latch_zoom_button:
-                self.recorder.toggle_zoom()
+                if self.recorder.preview_on:
+                    self.recorder.toggle_zoom()
                 self.latch_zoom_button = True
         else:
             self.latch_zoom_button = False
 
         if not GPIO.input(PREVIEW_BUTTON):
             if not self.latch_preview_button:
-                self.recorder.toggle_preview()
+                if self.state != 0:
+                    self.recorder.toggle_preview()
                 self.latch_preview_button = True
         else:
             self.latch_preview_button = False

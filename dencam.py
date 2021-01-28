@@ -21,7 +21,7 @@ from buttons import ButtonHandler
 from recorder import Recorder
 from gui import RecordingPage, NetworkPage
 
-LOGGING_LEVEL = logging.DEBUG
+LOGGING_LEVEL = logging.INFO
 log = logs.setup_logger(LOGGING_LEVEL)
 log.info('*** MINIDENCAM STARTING UP ***')
 strg = logging.getLevelName(log.getEffectiveLevel())
