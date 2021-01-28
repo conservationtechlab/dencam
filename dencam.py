@@ -19,7 +19,7 @@ import logs
 import networking
 from buttons import ButtonHandler
 from recorder import Recorder
-from gui import RecordingPage, NetworkPage
+from gui import RecordingPage, NetworkPage, BlankPage
 
 LOGGING_LEVEL = logging.INFO
 log = logs.setup_logger(LOGGING_LEVEL)
@@ -49,7 +49,7 @@ class DenCamApp(Thread):
 
     def run(self):
         self._setup()
-        self.window.after(200, self._update)
+        self.window.after(100, self._update)
         self.window.mainloop()
 
     def _setup(self):
@@ -82,7 +82,7 @@ class DenCamApp(Thread):
 
         self.frames = {}
 
-        for Page in (RecordingPage, NetworkPage):
+        for Page in (RecordingPage, NetworkPage, BlankPage):
             page_name = Page.__name__
             frame = Page(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -137,6 +137,8 @@ class DenCamApp(Thread):
             self.show_frame('NetworkPage')
         elif self.state.value == 2:
             self.show_frame('RecordingPage')
+        elif self.state.value == 3:
+            self.show_frame('BlankPage')
 
         self._update_strings()
         self.window.after(100, self._update)
@@ -195,7 +197,7 @@ def main():
     try:
         recorder = Recorder(configs)
 
-        state = State(3)
+        state = State(4)
 
         button_handler = ButtonHandler(recorder,
                                        state,

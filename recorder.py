@@ -121,6 +121,14 @@ class Recorder():
             self.camera.stop_preview()
         self.preview_on = not self.preview_on
 
+    def start_preview(self):
+        self.camera.start_preview()
+        self.preview_on = True
+
+    def stop_preview(self):
+        self.camera.stop_preview()
+        self.preview_on = False
+
     def start_recording(self):
         log.info('Starting new recording.')
         self.recording = True

@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 # Button pin number mappings
 SCREEN_BUTTON = 27
-PREVIEW_BUTTON = 23
+FUNCTION_BUTTON = 23
 RECORD_BUTTON = 22
 ZOOM_BUTTON = 17
 
@@ -39,7 +39,7 @@ class ButtonHandler(Thread):
         # button pins
         GPIO.setup(SCREEN_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(RECORD_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(PREVIEW_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(FUNCTION_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(ZOOM_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # screen backlight control pin and related
@@ -70,6 +70,11 @@ class ButtonHandler(Thread):
 
                 self.state.goto_next()
 
+                if self.state.value == 3:
+                    self.recorder.start_preview()
+                elif self.state.value == 0:
+                    self.recorder.stop_preview()
+
                 if self.state.value > 0:
                     self.backlight_pwm.ChangeDutyCycle(100)
                 else:
@@ -77,27 +82,40 @@ class ButtonHandler(Thread):
         else:
             self.latch_screen_button = False
 
-        if not GPIO.input(RECORD_BUTTON):
+        if not GPIO.input(FUNCTION_BUTTON):
             if not self.latch_record_button:
+                
                 if (self.recorder.initial_pause_complete
                     and self.state.value == 2):
                     self.recorder.toggle_recording()
+                elif self.state.value == 3:
+                    self.recorder.toggle_zoom()
+
                 self.latch_record_button = True
         else:
             self.latch_record_button = False
 
-        if not GPIO.input(ZOOM_BUTTON):
-            if not self.latch_zoom_button:
-                if self.recorder.preview_on:
-                    self.recorder.toggle_zoom()
-                self.latch_zoom_button = True
-        else:
-            self.latch_zoom_button = False
+        # if not GPIO.input(RECORD_BUTTON):
+        #     if not self.latch_record_button:
+        #         if (self.recorder.initial_pause_complete
+        #             and self.state.value == 2):
+        #             self.recorder.toggle_recording()
+        #         self.latch_record_button = True
+        # else:
+        #     self.latch_record_button = False
 
-        if not GPIO.input(PREVIEW_BUTTON):
-            if not self.latch_preview_button:
-                if self.state != 0:
-                    self.recorder.toggle_preview()
-                self.latch_preview_button = True
-        else:
-            self.latch_preview_button = False
+        # if not GPIO.input(ZOOM_BUTTON):
+        #     if not self.latch_zoom_button:
+        #         if self.recorder.preview_on:
+        #             self.recorder.toggle_zoom()
+        #         self.latch_zoom_button = True
+        # else:
+        #     self.latch_zoom_button = False
+
+        # if not GPIO.input(PREVIEW_BUTTON):
+        #     if not self.latch_preview_button:
+        #         if self.state != 0:
+        #             self.recorder.toggle_preview()
+        #         self.latch_preview_button = True
+        # else:
+        #     self.latch_preview_button = False

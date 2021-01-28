@@ -86,3 +86,12 @@ class NetworkPage(tk.Frame):
                                  fg='red',
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
+
+class BlankPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        fonts = prep_fonts(controller)
+
+        self.configure(bg='black')
