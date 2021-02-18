@@ -124,6 +124,8 @@ class DenCamApp(Thread):
         """
         self.elapsed_time = time.time() - self.recorder.record_start_time
 
+        self.recorder.update_timestamp()
+
         if ((self.elapsed_time > PAUSE_BEFORE_RECORD
              and not self.recorder.initial_pause_complete)):
             self.recorder.initial_pause_complete = True
@@ -190,10 +192,11 @@ class State():
 def main():
 
     flags = {'stop_buttons_flag': False}
+
     def cleanup(flags):
         flags['stop_buttons_flag'] = True
         time.sleep(.1)
-    
+
     try:
         recorder = Recorder(configs)
 
@@ -201,7 +204,7 @@ def main():
 
         button_handler = ButtonHandler(recorder,
                                        state,
-                                       lambda : flags['stop_buttons_flag'])
+                                       lambda: flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()
 
@@ -212,13 +215,14 @@ def main():
         while(True):
             pass
             time.sleep(.1)
-            
+
     except KeyboardInterrupt:
         log.debug('Keyboard interrupt')
         cleanup(flags)
     except Exception:
         log.exception('Exception in primary try block')
         cleanup(flags)
-        
+
+
 if __name__ == "__main__":
     main()

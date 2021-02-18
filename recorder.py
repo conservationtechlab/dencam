@@ -3,8 +3,10 @@ import os
 import getpass
 import time
 
+import picamera
 from datetime import datetime
 from picamera import PiCamera
+
 
 log = logging.getLogger(__name__)
 
@@ -32,6 +34,10 @@ class Recorder():
         self.camera = PiCamera(framerate=FRAME_RATE)
         self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
+        self.camera.annotate_text_size = 80
+        self.camera.annotate_foreground = picamera.color.Color('white')
+        self.camera.annotate_background = picamera.color.Color('black')
+
         self.preview_on = False
         self.zoom_on = False
         # recording setup
@@ -161,3 +167,7 @@ class Recorder():
         log.info('Ending current recording')
         self.recording = False
         self.camera.stop_recording()
+
+    def update_timestamp(self):
+        date_string = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.camera.annotate_text = date_string
