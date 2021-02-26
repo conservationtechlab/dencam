@@ -15,11 +15,11 @@ from threading import Thread
 
 import yaml
 
-import logs
-import networking
-from buttons import ButtonHandler
-from recorder import Recorder
-from gui import RecordingPage, NetworkPage, BlankPage
+from dencam import logs 
+from dencam import networking
+from dencam.buttons import ButtonHandler
+from dencam.recorder import Recorder
+from dencam.gui import RecordingPage, NetworkPage, BlankPage
 
 LOGGING_LEVEL = logging.INFO
 log = logs.setup_logger(LOGGING_LEVEL)
