@@ -1,3 +1,4 @@
+import abc
 import logging
 import os
 import getpass
@@ -11,8 +12,11 @@ from picamera import PiCamera
 log = logging.getLogger(__name__)
 
 
-class Recorder():
+class BaseRecorder():
+
     def __init__(self, configs):
+        self.preview_on = False
+
         self.record_start_time = time.time()  # also used in initial countdown
         self.video_path = self._video_path_selector()
 
@@ -38,12 +42,50 @@ class Recorder():
         self.camera.annotate_foreground = picamera.color.Color('white')
         self.camera.annotate_background = picamera.color.Color('black')
 
-        self.preview_on = False
         self.zoom_on = False
         # recording setup
         self.recording = False
 
-        self.vid_count = 0
+    @abc.abstractmethod
+    def stop_recording(self):
+        return
+
+    @abc.abstractmethod
+    def start_recording(self):
+        return
+
+    def toggle_zoom(self):
+        if not self.zoom_on:
+            width, height = self.camera.resolution
+            # zoom_factor = 1/float(ZOOM_FACTOR)
+            zoom_factor = self.DISPLAY_RESOLUTION[0]/width
+            left = 0.5 - zoom_factor/2.
+            top = 0.5 - zoom_factor/2.
+            self.camera.zoom = (left, top, zoom_factor, zoom_factor)
+        else:
+            self.camera.zoom = (0, 0, 1.0, 1.0)
+        self.zoom_on = not self.zoom_on
+
+    def toggle_recording(self):
+        if self.recording:
+            self.stop_recording()
+        else:
+            self.start_recording()
+
+    def toggle_preview(self):
+        if not self.preview_on:
+            self.camera.start_preview()
+        else:
+            self.camera.stop_preview()
+        self.preview_on = not self.preview_on
+
+    def start_preview(self):
+        self.camera.start_preview()
+        self.preview_on = True
+
+    def stop_preview(self):
+        self.camera.stop_preview()
+        self.preview_on = False
 
     def _video_path_selector(self):
         user = getpass.getuser()
@@ -102,38 +144,16 @@ class Recorder():
         except FileNotFoundError:
             return 0
 
-    def toggle_recording(self):
-        if self.recording:
-            self.stop_recording()
-        else:
-            self.start_recording()
+    def update_timestamp(self):
+        date_string = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.camera.annotate_text = date_string
 
-    def toggle_zoom(self):
-        if not self.zoom_on:
-            width, height = self.camera.resolution
-            # zoom_factor = 1/float(ZOOM_FACTOR)
-            zoom_factor = self.DISPLAY_RESOLUTION[0]/width
-            left = 0.5 - zoom_factor/2.
-            top = 0.5 - zoom_factor/2.
-            self.camera.zoom = (left, top, zoom_factor, zoom_factor)
-        else:
-            self.camera.zoom = (0, 0, 1.0, 1.0)
-        self.zoom_on = not self.zoom_on
 
-    def toggle_preview(self):
-        if not self.preview_on:
-            self.camera.start_preview()
-        else:
-            self.camera.stop_preview()
-        self.preview_on = not self.preview_on
+class Recorder(BaseRecorder):
+    def __init__(self, configs):
+        super().__init__(configs)
 
-    def start_preview(self):
-        self.camera.start_preview()
-        self.preview_on = True
-
-    def stop_preview(self):
-        self.camera.stop_preview()
-        self.preview_on = False
+        self.vid_count = 0
 
     def start_recording(self):
         log.info('Starting new recording.')
@@ -167,7 +187,3 @@ class Recorder():
         log.info('Ending current recording')
         self.recording = False
         self.camera.stop_recording()
-
-    def update_timestamp(self):
-        date_string = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.camera.annotate_text = date_string

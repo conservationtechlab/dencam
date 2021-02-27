@@ -15,11 +15,11 @@ from threading import Thread
 
 import yaml
 
-from dencam import logs 
+from dencam import logs
 from dencam import networking
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
-from dencam.gui import RecordingPage, NetworkPage, BlankPage
+from dencam.gui import State, RecordingPage, NetworkPage, BlankPage
 
 LOGGING_LEVEL = logging.INFO
 log = logs.setup_logger(LOGGING_LEVEL)
@@ -176,17 +176,6 @@ class DenCamApp(Thread):
         # prep network text
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
-
-
-class State():
-    def __init__(self, num_states):
-        self.value = 0
-        self.num_states = num_states
-
-    def goto_next(self):
-        self.value += 1
-        if self.value >= self.num_states:
-            self.value = 0
 
 
 def main():

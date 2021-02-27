@@ -2,6 +2,17 @@ import tkinter as tk
 import tkinter.font as tkFont
 
 
+class State():
+    def __init__(self, num_states):
+        self.value = 0
+        self.num_states = num_states
+
+    def goto_next(self):
+        self.value += 1
+        if self.value >= self.num_states:
+            self.value = 0
+
+
 def prep_fonts(controller):
     # set font sizes
     fonts = {}
@@ -87,11 +98,10 @@ class NetworkPage(tk.Frame):
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
 
+
 class BlankPage(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
-        fonts = prep_fonts(controller)
 
         self.configure(bg='black')
