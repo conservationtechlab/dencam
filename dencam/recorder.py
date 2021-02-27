@@ -1,8 +1,8 @@
-import abc
 import logging
 import os
 import getpass
 import time
+from abc import ABC, abstractmethod
 
 import picamera
 from datetime import datetime
@@ -12,7 +12,7 @@ from picamera import PiCamera
 log = logging.getLogger(__name__)
 
 
-class BaseRecorder():
+class BaseRecorder(ABC):
 
     def __init__(self, configs):
         self.preview_on = False
@@ -46,11 +46,11 @@ class BaseRecorder():
         # recording setup
         self.recording = False
 
-    @abc.abstractmethod
+    @abstractmethod
     def stop_recording(self):
         return
 
-    @abc.abstractmethod
+    @abstractmethod
     def start_recording(self):
         return
 
