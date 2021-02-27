@@ -46,7 +46,7 @@ class ButtonHandler(Thread):
         GPIO.setup(18, GPIO.OUT)
         self.backlight_pwm = GPIO.PWM(18, 1000)
         self.backlight_pwm.start(0)
-        self.screen_on = False
+        self._set_screen_brightness()
 
         self.off_countdown = 0
 
@@ -60,7 +60,15 @@ class ButtonHandler(Thread):
 
         log.debug('Button management cleaning up and shutting down.')
         GPIO.cleanup()
-            
+
+    def _set_screen_brightness(self):
+        if self.state.value > 0:
+            self.backlight_pwm.ChangeDutyCycle(100)
+            self.screen_on = True
+        else:
+            self.backlight_pwm.ChangeDutyCycle(0)
+            self.screen_on = False
+        
     def _handle_buttons(self):
         """Handles button presses and the associated responses.
         """
@@ -75,10 +83,7 @@ class ButtonHandler(Thread):
                 elif self.state.value == 0:
                     self.recorder.stop_preview()
 
-                if self.state.value > 0:
-                    self.backlight_pwm.ChangeDutyCycle(100)
-                else:
-                    self.backlight_pwm.ChangeDutyCycle(0)
+                self._set_screen_brightness()
         else:
             self.latch_screen_button = False
 
