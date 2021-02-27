@@ -1,10 +1,15 @@
 #!/usr/bin/env python
 
-"""Control code for polar bear maternal den monitoring device.
+"""Control code for polar bear maternal den observation device.
 
-Target is a Raspberry Pi single board computer with a Picamera-style
-camera and the AdaFruit PiTFTscreen (2.8" resistive touch model with 4
-GPIO-connected buttons) attached.
+The target hardware is a Raspberry Pi 4 Model B single board computer
+with a Picamera-style camera and the AdaFruit PiTFTscreen (2.8"
+resistive touch model with 4 GPIO-connected buttons)
+attached. Typically several storage devices are connected via the USB
+ports on the Pi (e.g. uSD card readers). This hardware is typically
+integrated into a larger assembly that includes a weatherproof
+enclosure, batteries, charger controller, and an external solar
+panels.
 
 """
 import logging
@@ -18,21 +23,21 @@ from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import Controller, State
 
+parser = argparse.ArgumentParser()
+parser.add_argument('config_file',
+                    help='Filename of a YAML Mini DenCam configuration file.')
+args = parser.parse_args()
+
 LOGGING_LEVEL = logging.INFO
 log = logs.setup_logger(LOGGING_LEVEL)
 log.info('*** MINIDENCAM STARTING UP ***')
 strg = logging.getLevelName(log.getEffectiveLevel())
-log.critical('Logging level is {}'.format(strg))
-
-parser = argparse.ArgumentParser()
-parser.add_argument('config_file',
-                    help='Filename of a YAML Mini Den Cam configuration file.')
-args = parser.parse_args()
+# clearly below line only reports for debug and info levels
+log.info('Logging level is {}'.format(strg))  
 
 with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
-
-log.info('Parsed arguments and read configurations')
+log.info('Read in configuration settings')
 
 
 def main():
@@ -61,10 +66,10 @@ def main():
             time.sleep(.1)
 
     except KeyboardInterrupt:
-        log.debug('Keyboard interrupt')
+        log.debug('Keyboard interrupt received.')
         cleanup(flags)
     except Exception:
-        log.exception('Exception in primary try block')
+        log.exception('An Exception in primary try block')
         cleanup(flags)
 
 
