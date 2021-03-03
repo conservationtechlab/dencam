@@ -9,13 +9,12 @@ from dencam import networking
 log = logging.getLogger(__name__)
 
 
-class Controller(Thread):
+class BaseController(Thread):
     def __init__(self, configs, recorder, state):
         super().__init__()
         self.recorder = recorder
         self.state = state
 
-        self.RECORD_LENGTH = configs['RECORD_LENGTH']
         self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
 
     def run(self):
@@ -97,15 +96,6 @@ class Controller(Thread):
 
         self.recorder.update_timestamp()
 
-        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
-             and not self.recorder.initial_pause_complete)):
-            self.recorder.initial_pause_complete = True
-            self.recorder.start_recording()
-        elif (self.elapsed_time > self.RECORD_LENGTH
-              and self.recorder.recording):
-            self.recorder.stop_recording()
-            self.recorder.start_recording()
-
         if self.state.value <= 1:
             self.show_frame('NetworkPage')
         elif self.state.value == 2:
@@ -147,6 +137,25 @@ class Controller(Thread):
         # prep network text
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
+
+
+class Controller(BaseController):
+    def __init__(self, configs, recorder, state):
+        super().__init__(configs, recorder, state)
+
+        self.RECORD_LENGTH = configs['RECORD_LENGTH']
+
+    def _update(self):
+        super()._update()
+        
+        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
+             and not self.recorder.initial_pause_complete)):
+            self.recorder.initial_pause_complete = True
+            self.recorder.start_recording()
+        elif (self.elapsed_time > self.RECORD_LENGTH
+              and self.recorder.recording):
+            self.recorder.stop_recording()
+            self.recorder.start_recording()
 
 
 class State():

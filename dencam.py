@@ -29,7 +29,7 @@ parser.add_argument('config_file',
 args = parser.parse_args()
 
 LOGGING_LEVEL = logging.INFO
-log = logs.setup_logger(LOGGING_LEVEL)
+log = logs.setup_logger(LOGGING_LEVEL, 'dencam.log')
 log.info('*** MINIDENCAM STARTING UP ***')
 strg = logging.getLevelName(log.getEffectiveLevel())
 # clearly below line only reports for debug and info levels
