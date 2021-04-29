@@ -11,7 +11,7 @@ DESC = "Code for MiniDencam: Polar bear maternal den observation system."
 
 setup(
     name="dencam",
-    version="0.0.1",
+    version="0.0.2",
     author=AUTHOR,
     description=DESC,
     long_description=README_TEXT,
