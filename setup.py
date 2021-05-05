@@ -29,6 +29,7 @@ setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
+        'Topic :: Scientific/Engineering',
     ],
     entry_points={"console_scripts": ["dencam=dencam.__main__:main"]},
 )
