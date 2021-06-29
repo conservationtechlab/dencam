@@ -29,11 +29,11 @@ parser.add_argument('config_file',
 args = parser.parse_args()
 
 LOGGING_LEVEL = logging.INFO
-log = logs.setup_logger(LOGGING_LEVEL, 'dencam.log')
+log = logs.setup_logger(LOGGING_LEVEL)
 log.info('*** MINIDENCAM STARTING UP ***')
 strg = logging.getLevelName(log.getEffectiveLevel())
 # clearly below line only reports for debug and info levels
-log.info('Logging level is {}'.format(strg))  
+log.info('Logging level is {}'.format(strg))
 
 with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
