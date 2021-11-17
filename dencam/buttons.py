@@ -1,3 +1,11 @@
+"""PiTFT buttons handling
+
+This module contains classes and functions for interfacing with the
+four buttons that are part of the PiTFT screen PCB.
+
+"""
+
+
 import logging
 import time
 from threading import Thread
@@ -68,9 +76,10 @@ class ButtonHandler(Thread):
         else:
             self.backlight_pwm.ChangeDutyCycle(0)
             self.screen_on = False
-        
+
     def _handle_buttons(self):
         """Handles button presses and the associated responses.
+
         """
         if not GPIO.input(SCREEN_BUTTON):
             if not self.latch_screen_button:
@@ -89,9 +98,9 @@ class ButtonHandler(Thread):
 
         if not GPIO.input(FUNCTION_BUTTON):
             if not self.latch_record_button:
-                
-                if (self.recorder.initial_pause_complete
-                    and self.state.value == 2):
+
+                if(self.recorder.initial_pause_complete
+                   and self.state.value == 2):
                     self.recorder.toggle_recording()
                 elif self.state.value == 3:
                     self.recorder.toggle_zoom()

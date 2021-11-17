@@ -1,3 +1,10 @@
+"""Graphical User Interface for DenCam
+
+This module contains the classes associated with the DenCam GUI
+displayed on the PiTFT screen that is attached to the Raspberry Pi's
+GPIO header.
+
+"""
 import logging
 import time
 import tkinter as tk
@@ -187,6 +194,19 @@ def prep_fonts(controller):
 
 
 class RecordingPage(tk.Frame):
+    """Page that displays information related to DenCam recording.
+
+    This page displays:
+    - number of videos recorded this run
+    - path that is currently being recorded to
+    - free space remaining on device where currently recording
+    - current clock time
+    - whether currently recording (countdown if in countdown state)
+
+    On this page, second button toggles recording but that is
+    implemented elsewhere
+
+    """
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
