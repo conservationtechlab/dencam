@@ -1,13 +1,16 @@
-"""Program that tests functioning of GPIO-connected-buttons on a
-Adafruit PiTFT attached to Raspberry Pi.
+"""Tests functioning of DenCam buttons
+
+Test script for testing the functioning of the interface buttons on
+the DenCam. These are the buttons integrated on the Adafruit PiTFT
+screen PCB which itself is directly attached to the GPIO-header on the
+Raspberry Pi.
+
 """
 
 import RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)
-
-# cool buttons
 
 GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(22, GPIO.IN, pull_up_down=GPIO.PUD_UP)

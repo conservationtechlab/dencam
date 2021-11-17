@@ -1,6 +1,13 @@
-"""Program that tests basic functioning of a pi camera.
+"""Test basic functioning of the picamera.
 
-Records approximately 30 seconds of video to a file named test.h264.
+Test script to verify basic functioning of the picamera which is the
+camera of the DenCam system, i.e. to make sure it is mechanically
+connected properly, that all the picamera tools are installed, that
+the camera itself is functioning etc.
+
+The script records approximately 30 seconds of video to a file named
+test.h264.
+
 """
 
 import time

@@ -1,13 +1,14 @@
-"""Tool to examine focus in view of Mini Den Cam.
+"""Tool to examine focus in view of DenCam.
 
-Number displayed in each grid element of a grid (grid defaults to 4x4)
-can be used to judge focus for the grid element and in aggregate for
-the scene.  The number's value is a function of both the degree of
-focus *and* complexity of what is in view within that grid element so
-it has to be treated as a relative focus tool i.e. as focus is
-adjusted on the lens, the number will peak at best focus (provided
-view is unchanged) but that peak could be a very different number for
-one scene versus another.
+A tool for numerically examining how well the DenCam's camera is
+focused. A number displayed in each grid element of a grid (grid
+defaults to 4x4) can be used to judge focus for the grid element and
+in aggregate for the scene.  The number's value is a function of both
+the degree of focus *and* complexity of what is in view within that
+grid element so it has to be treated as a relative focus tool i.e. as
+focus is adjusted on the lens, the number will peak at best focus
+(provided the view itself is unchanged) but that peak could be a very
+different number for one scene (or grid element) versus another.
 
 """
 

@@ -1,5 +1,7 @@
-"""Program that tests preview (and thus view) of a picamera.
+"""Test preview (and thus view) of a picamera.
 
+Utility for checking that the picamera used in the DenCam system is
+working properly and also inspecting what its view looks like.
 
 """
 import argparse
