@@ -40,6 +40,8 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         'Development Status :: 3 - Alpha',
+        'Intended Audience :: Science/Research',
+        'Operating System :: POSIX :: Linux',
         'Topic :: Scientific/Engineering',
     ],
     entry_points={"console_scripts": ["dencam=dencam.__main__:main"]},
