@@ -3,6 +3,8 @@
 *~
 *.yaml
 *.h264
+*.mp4
+*.avi
 __pycache__
 build/
 dist/
