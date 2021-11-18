@@ -35,6 +35,7 @@ setuptools.setup(
         'rpi.gpio',
         'picamera',
         'netifaces',
+        'screeninfo',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
