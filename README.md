@@ -15,7 +15,6 @@ ports on the Pi (e.g. uSD card readers). This hardware is typically
 integrated into a larger assembly that includes a weatherproof
 enclosure, batteries, charger controller, and external solar panels.
 
-
 # Installing from PyPI
 
     pip install dencam
@@ -30,25 +29,26 @@ enclosure, batteries, charger controller, and external solar panels.
 
      mkdir ~/.virtualenvs
 
-### Add python path and source to ~/.bashrc file
+### Setup virtual environment  ~/.bashrc file
 
-     export WORKON_HOME=$HOME/.virtualenvs
-     export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
-     export VIRTUALENVWRAPPER_VIRTUALENV=/home/pi/.local/bin/virtualenv
-     source ~/.local/bin/virtualenvwrapper.sh
+     echo -e "\n# Virtual environment setup" >> ~/.bashrc
+     echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+     echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
+     echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+     source ~/.bashrc
 
-### Create virtual environment
+### Create virtual environment for dencam project
 
-     mkvirtualenv dencam
+     mkvirtualenv dencam_env
 
 Note that DenCam requires Python 3 so if the default on your system is
 Python 2, make sure the virtual environment will use Python 3:
 
-      mkvirtualenv dencam -p python3
+      mkvirtualenv dencam_env -p python3
 
 ### Activate virtual environment
 
-     workon dencam
+     workon dencam_env
 
 ### Clone the dencam repository
 
