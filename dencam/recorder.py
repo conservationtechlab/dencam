@@ -1,3 +1,10 @@
+"""Recorder module
+
+This module contains code associated with controlling the recording of
+video captured from the picamera.
+
+"""
+
 import logging
 import os
 import getpass
@@ -13,6 +20,14 @@ log = logging.getLogger(__name__)
 
 
 class BaseRecorder(ABC):
+    """Abstract base class for recording handlers
+
+    This includes finding attached media to record to, setting up
+    picamera configurations, and abstract methods for methods that
+    would do what a child recorder needs to when starting and stopping
+    recordings.
+
+    """
 
     def __init__(self, configs):
         self.preview_on = False
@@ -150,12 +165,21 @@ class BaseRecorder(ABC):
 
 
 class Recorder(BaseRecorder):
+    """DenCam's Recorder class
+
+    The concrete recorder class used by DenCam.
+
+    """
+
     def __init__(self, configs):
         super().__init__(configs)
 
         self.vid_count = 0
 
     def start_recording(self):
+        """Prepares for and starts a new recording
+
+        """
         log.info('Starting new recording.')
         self.recording = True
         self.vid_count += 1
@@ -184,6 +208,9 @@ class Recorder(BaseRecorder):
         self.record_start_time = time.time()
 
     def stop_recording(self):
+        """Stops currently ongoing recording
+
+        """
         log.info('Ending current recording')
         self.recording = False
         self.camera.stop_recording()
