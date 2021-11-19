@@ -20,6 +20,10 @@ enclosure, batteries, charger controller, and external solar panels.
 Currently system runs on Raspian Stretch and Buster.  Problems have
 been encountered with Bullseye.
 
+# Screen setup
+
+TODO: add instructions for setting up PiTFT
+
 # Installing from PyPI
 
     pip install dencam
@@ -87,5 +91,18 @@ Usage:
     
 ```
 
+If you connected via SSH, then first:
 
+   export DISPLAY=:0
 
+## Using the DenCam user interface
+
+TODO
+
+## Setting up DenCam to run on boot
+
+TODO
+
+## Setting up RTC
+
+TODO
