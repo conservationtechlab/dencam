@@ -15,6 +15,11 @@ ports on the Pi (e.g. uSD card readers). This hardware is typically
 integrated into a larger assembly that includes a weatherproof
 enclosure, batteries, charger controller, and external solar panels.
 
+# Operating System
+
+Currently system runs on Raspian Stretch and Buster.  Problems have
+been encountered with Bullseye.
+
 # Installing from PyPI
 
     pip install dencam
@@ -23,7 +28,7 @@ enclosure, batteries, charger controller, and external solar panels.
 
 ### Install virtualenvwrapper
 
-     pip3 install virtualenvwrapper
+     sudo pip3 install virtualenv virtualenvwrapper
 
 ### Create a .virtualenvs folder to hold all virtual environments
 
@@ -46,7 +51,7 @@ Python 2, make sure the virtual environment will use Python 3:
 
       mkvirtualenv dencam_env -p python3
 
-### Activate virtual environment
+### Activate virtual environment (not necessary if you just made it)
 
      workon dencam_env
 
