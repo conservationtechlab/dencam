@@ -26,6 +26,8 @@ def get_network_info():
     interfaces = ni.interfaces()
     text = (socket.gethostname() + '\n')
     for interface in interfaces:
+	if interface == 'lo':
+	    continue
         try:
             ip = ni.ifaddresses(interface)[ni.AF_INET][0]['addr']
         except KeyError:
