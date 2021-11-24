@@ -53,7 +53,7 @@ class BaseRecorder(ABC):
         self.camera = PiCamera(framerate=FRAME_RATE)
         self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
-        self.camera.annotate_text_size = (1/20) * CAMERA_RESOLUTION[1]
+        self.camera.annotate_text_size = int((1/20) * CAMERA_RESOLUTION[1])
         self.camera.annotate_foreground = picamera.color.Color('white')
         self.camera.annotate_background = picamera.color.Color('black')
 
