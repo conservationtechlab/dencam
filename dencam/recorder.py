@@ -33,7 +33,9 @@ class BaseRecorder(ABC):
         self.preview_on = False
 
         self.record_start_time = time.time()  # also used in initial countdown
-        self.video_path = self._video_path_selector()
+
+        self.has_sufficient_storage = None
+        self.video_path = self.video_path_selector()
 
         # PiTFT characteristics
         self.DISPLAY_RESOLUTION = configs['DISPLAY_RESOLUTION']
@@ -49,16 +51,17 @@ class BaseRecorder(ABC):
 
         self.initial_pause_complete = False
 
-        # camera setup
+        # Camera setup
         self.camera = PiCamera(framerate=FRAME_RATE)
         self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
-        self.camera.annotate_text_size = (1/20) * CAMERA_RESOLUTION[1]
+        self.camera.annotate_text_size = int((1/20) * CAMERA_RESOLUTION[1])
         self.camera.annotate_foreground = picamera.color.Color('white')
         self.camera.annotate_background = picamera.color.Color('black')
 
         self.zoom_on = False
-        # recording setup
+
+        # Recording setup
         self.recording = False
 
     @abstractmethod
@@ -102,7 +105,8 @@ class BaseRecorder(ABC):
         self.camera.stop_preview()
         self.preview_on = False
 
-    def _video_path_selector(self):
+    def video_path_selector(self):
+        self.has_sufficient_storage = False
         user = getpass.getuser()
         log.debug("User is '{}'".format(user))
         media_dir = os.path.join('/media', user)
@@ -128,19 +132,37 @@ class BaseRecorder(ABC):
                              + '{}'.format(media_device))
                     log.debug('Free space on device: '
                               + '{:.2f} GB'.format(free_space))
-                    break
+                    self.has_sufficient_storage = True
                 else:
                     log.info('Device {} is '.format(media_device)
-                             + 'full or unwritable.'
-                             + ' Advancing to next device.')
+                             + 'full or unwritable. '
+                             + 'Advancing to next device.')
             else:
                 log.warning('No external device worked. '
-                            + 'Using home directory.')
+                            + 'Checking home directory for free space.')
                 media_path = default_path
+                free_space = self.get_free_space(media_path)
+                if free_space >= 0.5:
+                    log.info('Using home directory.')
+                    log.debug('Free space in home directory: '
+                              + '{:.2f} GB'.format(free_space))
+                    self.has_sufficient_storage = True
+                else:
+                    log.info('Home directory is full or unwritable.')
+                    media_path = None
         else:
-            log.warning('Did not find external media. '
-                        + 'Using home directory.')
+            log.warning('Unable to find external media. '
+                        + 'Checking home directory for free space.')
             media_path = default_path
+            free_space = self.get_free_space(media_path)
+            if free_space >= 0.5:
+                log.info('Using home directory.')
+                log.debug('Free space in home directory: '
+                          + '{:.2f} GB'.format(free_space))
+                self.has_sufficient_storage = True
+            else:
+                log.info('Home directory is full or unwritable.')
+                media_path = None
 
         return media_path
 
@@ -186,9 +208,6 @@ class Recorder(BaseRecorder):
 
         now = datetime.now()
         date_string = now.strftime("%Y-%m-%d")
-
-        log.info('Looking for free space on external media.')
-        self.video_path = self._video_path_selector()
 
         # if not os.path.exists(self.video_path):
         #     strg = ("ERROR: Video path broken. " +

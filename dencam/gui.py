@@ -137,7 +137,7 @@ class BaseController(Thread):
             remaining = self.PAUSE_BEFORE_RECORD - self.elapsed_time
             rec_text = '{0:.0f}'.format(remaining)
         else:
-            state = 'Recording' if self.recorder.recording else 'Idle'
+            state = "Recording" if self.recorder.recording else "Idle"
             rec_text = '{}'.format(state)
         self.recording_text.set(rec_text)
 
@@ -154,15 +154,18 @@ class Controller(BaseController):
 
     def _update(self):
         super()._update()
-        
-        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
-             and not self.recorder.initial_pause_complete)):
+
+        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD)
+                and not self.recorder.initial_pause_complete):
             self.recorder.initial_pause_complete = True
-            self.recorder.start_recording()
-        elif (self.elapsed_time > self.RECORD_LENGTH
-              and self.recorder.recording):
+            if self.recorder.has_sufficient_storage:
+                self.recorder.start_recording()
+        elif ((self.elapsed_time > self.RECORD_LENGTH)
+                and self.recorder.recording):
             self.recorder.stop_recording()
-            self.recorder.start_recording()
+            self.video_path = self.recorder.video_path_selector()
+            if self.recorder.has_sufficient_storage:
+                self.recorder.start_recording()
 
 
 class State():
