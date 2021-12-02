@@ -59,7 +59,7 @@ class BaseController(Thread):
         container.configure(bg='black')
 
         self.frames = {}
-        for Page in (RecordingPage, NetworkPage, BlankPage,SolarPage):
+        for Page in (RecordingPage, NetworkPage, BlankPage, SolarPage):
             page_name = Page.__name__
             frame = Page(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -111,9 +111,6 @@ class BaseController(Thread):
             self.show_frame('SolarPage')
         elif self.state.value == 4:
             self.show_frame('BlankPage')
-
-
-
         self._update_strings()
         self.window.after(100, self._update)
 
@@ -148,9 +145,10 @@ class BaseController(Thread):
         # prep network text
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
-        V,C,T,Ah= mppt.get_solar_info()
-        self.solar_text.set(V+'\n'+C+'\n'+T+'\n'
-                            +Ah)
+        V, C, T, Ah = mppt.get_solar_info()
+        self.solar_text.set(V + '\n' + C + '\n' +
+                            T + '\n' + Ah)
+
 
 class Controller(BaseController):
     def __init__(self, configs, recorder, state):
@@ -160,7 +158,6 @@ class Controller(BaseController):
 
     def _update(self):
         super()._update()
-        
         if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
              and not self.recorder.initial_pause_complete)):
             self.recorder.initial_pause_complete = True
@@ -169,7 +166,7 @@ class Controller(BaseController):
               and self.recorder.recording):
             self.recorder.stop_recording()
             self.recorder.start_recording()
-    
+
 
 class State():
     def __init__(self, num_states):
@@ -192,7 +189,7 @@ def prep_fonts(controller):
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
     fonts['smallerer'] = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/16))    
+                                     size=-int(scrn_height/16))
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',
@@ -286,7 +283,8 @@ class BlankPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
-        
+
+
 class SolarPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
