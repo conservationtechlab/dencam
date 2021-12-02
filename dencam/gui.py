@@ -10,9 +10,8 @@ import time
 import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
-
 from dencam import networking
-
+from dencam import mppt
 log = logging.getLogger(__name__)
 
 
@@ -49,6 +48,8 @@ class BaseController(Thread):
         self.error_text.set(' ')
         self.ip_text = tk.StringVar()
         self.ip_text.set('|')
+        self.solar_text = tk.StringVar()
+        self.solar_text.set('|')
 
         container = tk.Frame(self.window, bg='black')
         container.pack(side='top', fill='both', expand=True)
@@ -58,15 +59,14 @@ class BaseController(Thread):
         container.configure(bg='black')
 
         self.frames = {}
-
-        for Page in (RecordingPage, NetworkPage, BlankPage):
+        for Page in (RecordingPage, NetworkPage, BlankPage,SolarPage):
             page_name = Page.__name__
             frame = Page(parent=container, controller=self)
             self.frames[page_name] = frame
 
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.show_frame('RecordingPage')
+        self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
@@ -103,12 +103,16 @@ class BaseController(Thread):
 
         self.recorder.update_timestamp()
 
-        if self.state.value <= 1:
+        if self.state.value == 1:
             self.show_frame('NetworkPage')
         elif self.state.value == 2:
             self.show_frame('RecordingPage')
         elif self.state.value == 3:
+            self.show_frame('SolarPage')
+        elif self.state.value == 4:
             self.show_frame('BlankPage')
+
+
 
         self._update_strings()
         self.window.after(100, self._update)
@@ -144,7 +148,9 @@ class BaseController(Thread):
         # prep network text
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
-
+        V,C,T,Ah= mppt.get_solar_info()
+        self.solar_text.set(V+'\n'+C+'\n'+T+'\n'
+                            +Ah)
 
 class Controller(BaseController):
     def __init__(self, configs, recorder, state):
@@ -163,7 +169,7 @@ class Controller(BaseController):
               and self.recorder.recording):
             self.recorder.stop_recording()
             self.recorder.start_recording()
-
+    
 
 class State():
     def __init__(self, num_states):
@@ -185,6 +191,8 @@ def prep_fonts(controller):
                                  size=-int(scrn_height/9))
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
+    fonts['smallerer'] = tkFont.Font(family='Courier New',
+                                 size=-int(scrn_height/16))    
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',
@@ -259,7 +267,6 @@ class RecordingPage(tk.Frame):
 
 
 class NetworkPage(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -276,8 +283,18 @@ class NetworkPage(tk.Frame):
 
 
 class BlankPage(tk.Frame):
-
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
         self.configure(bg='black')
+        
+class SolarPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        fonts = prep_fonts(controller)
+        self.configure(bg='black')
+        self.solar_label = tk.Label(self,
+                                    textvariable=controller.solar_text,
+                                    font=fonts['smallerer'],
+                                    fg='yellow',
+                                    bg='black')
+        self.solar_label.pack(fill=tk.X)

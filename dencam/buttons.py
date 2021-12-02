@@ -86,8 +86,12 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
 
                 self.state.goto_next()
-
-                if self.state.value == 3:
+                """
+                this portion takescareof implementing
+                the cam preview, but is hardcoded
+                to only allow ,initially, 3 windows
+                """
+                if self.state.value == 4:
                     self.recorder.start_preview()
                 elif self.state.value == 0:
                     self.recorder.stop_preview()

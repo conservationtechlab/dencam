@@ -50,7 +50,7 @@ def main():
 
     try:
         recorder = Recorder(configs)
-        state = State(4)
+        state = State(5)
         button_handler = ButtonHandler(recorder,
                                        state,
                                        lambda: flags['stop_buttons_flag'])
