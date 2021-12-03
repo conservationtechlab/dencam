@@ -146,8 +146,8 @@ class BaseController(Thread):
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
         V, C, T, Ah = mppt.get_solar_info()
-        self.solar_text.set(V + '\n' + C + '\n' +
-                            T + '\n' + Ah)
+        solar_info = V + C + T + Ah
+        self.solar_text.set(solar_info)
 
 
 class Controller(BaseController):
