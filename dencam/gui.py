@@ -137,7 +137,7 @@ class BaseController(Thread):
             remaining = self.PAUSE_BEFORE_RECORD - self.elapsed_time
             rec_text = '{0:.0f}'.format(remaining)
         else:
-            state = "Recording" if self.recorder.recording else "Idle"
+            state = 'Recording' if self.recorder.recording else 'Idle'
             rec_text = '{}'.format(state)
         self.recording_text.set(rec_text)
 
