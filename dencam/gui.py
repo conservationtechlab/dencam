@@ -155,17 +155,14 @@ class Controller(BaseController):
     def _update(self):
         super()._update()
 
-        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD)
-                and not self.recorder.initial_pause_complete):
+        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
+             and not self.recorder.initial_pause_complete)):
             self.recorder.initial_pause_complete = True
-            if self.recorder.has_sufficient_storage:
-                self.recorder.start_recording()
-        elif ((self.elapsed_time > self.RECORD_LENGTH)
-                and self.recorder.recording):
+            self.recorder.start_recording()
+        elif (self.elapsed_time > self.RECORD_LENGTH
+              and self.recorder.recording):
             self.recorder.stop_recording()
-            self.video_path = self.recorder.video_path_selector()
-            if self.recorder.has_sufficient_storage:
-                self.recorder.start_recording()
+            self.recorder.start_recording()
 
 
 class State():

@@ -34,9 +34,6 @@ class BaseRecorder(ABC):
 
         self.record_start_time = time.time()  # also used in initial countdown
 
-        self.has_sufficient_storage = None
-        self.video_path = self.video_path_selector()
-
         # PiTFT characteristics
         self.DISPLAY_RESOLUTION = configs['DISPLAY_RESOLUTION']
 
@@ -51,7 +48,7 @@ class BaseRecorder(ABC):
 
         self.initial_pause_complete = False
 
-        # Camera setup
+        # camera setup
         self.camera = PiCamera(framerate=FRAME_RATE)
         self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
@@ -61,8 +58,11 @@ class BaseRecorder(ABC):
 
         self.zoom_on = False
 
-        # Recording setup
+        # recording setup
         self.recording = False
+        self.STORAGE_LIMIT = 17.6
+        self.last_known_video_path = None
+        self.video_path = self._video_path_selector()
 
     @abstractmethod
     def stop_recording(self):
@@ -105,8 +105,7 @@ class BaseRecorder(ABC):
         self.camera.stop_preview()
         self.preview_on = False
 
-    def video_path_selector(self):
-        self.has_sufficient_storage = False
+    def _video_path_selector(self):
         user = getpass.getuser()
         log.debug("User is '{}'".format(user))
         media_dir = os.path.join('/media', user)
@@ -127,12 +126,12 @@ class BaseRecorder(ABC):
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
-                if free_space >= 0.5:  # half a gig
+                if free_space >= self.STORAGE_LIMIT:  # half a gig
                     log.info('Using external media: '
                              + '{}'.format(media_device))
                     log.debug('Free space on device: '
                               + '{:.2f} GB'.format(free_space))
-                    self.has_sufficient_storage = True
+                    break
                 else:
                     log.info('Device {} is '.format(media_device)
                              + 'full or unwritable. '
@@ -142,39 +141,44 @@ class BaseRecorder(ABC):
                             + 'Checking home directory for free space.')
                 media_path = default_path
                 free_space = self.get_free_space(media_path)
-                if free_space >= 0.5:
+                if free_space >= self.STORAGE_LIMIT:
                     log.info('Using home directory.')
                     log.debug('Free space in home directory: '
                               + '{:.2f} GB'.format(free_space))
-                    self.has_sufficient_storage = True
                 else:
                     log.info('Home directory is full or unwritable.')
+                    self.last_known_video_path = media_path
                     media_path = None
         else:
             log.warning('Unable to find external media. '
                         + 'Checking home directory for free space.')
             media_path = default_path
             free_space = self.get_free_space(media_path)
-            if free_space >= 0.5:
+            if free_space >= self.STORAGE_LIMIT:
                 log.info('Using home directory.')
                 log.debug('Free space in home directory: '
                           + '{:.2f} GB'.format(free_space))
-                self.has_sufficient_storage = True
             else:
                 log.info('Home directory is full or unwritable.')
+                self.last_known_video_path = media_path
                 media_path = None
 
         return media_path
 
-    def get_free_space(self, card_path=None):
+    def get_free_space(self, media_path=None):
         """Get the remaining space on SD card in gigabytes
 
         """
-        if card_path is None:
-            card_path = self.video_path
+        if media_path is None and self.video_path is not None:
+            print("I RAN 1")
+            media_path = self.video_path
+        elif media_path is None and self.video_path is None:
+            print("I RAN 2")
+            self.video_path = self.last_known_video_path
+            media_path = self.video_path
 
         try:
-            statvfs = os.statvfs(card_path)
+            statvfs = os.statvfs(media_path)
             bytes_available = statvfs.f_frsize * statvfs.f_bavail
             gigabytes_available = bytes_available/1000000000
             return gigabytes_available
@@ -202,29 +206,33 @@ class Recorder(BaseRecorder):
         """Prepares for and starts a new recording
 
         """
-        log.info('Starting new recording.')
-        self.recording = True
-        self.vid_count += 1
+        print("RUNNING START RECORDING")
+        self.video_path = self._video_path_selector()
 
-        now = datetime.now()
-        date_string = now.strftime("%Y-%m-%d")
+        if self.video_path:
+            log.info('Starting new recording.')
+            self.recording = True
+            self.vid_count += 1
 
-        # if not os.path.exists(self.video_path):
-        #     strg = ("ERROR: Video path broken. " +
-        #             "Recording to {}".format(DEFAULT_PATH))
-        #     self.error_label['text'] = strg
-        #     self.video_path = DEFAULT_PATH
-        #     log.error("Video path doesn't exist. "
-        #           + "Writing files to /home/pi")
+            now = datetime.now()
+            date_string = now.strftime("%Y-%m-%d")
 
-        todays_dir = os.path.join(self.video_path, date_string)
+            # if not os.path.exists(self.video_path):
+            #     strg = ("ERROR: Video path broken. " +
+            #             "Recording to {}".format(DEFAULT_PATH))
+            #     self.error_label['text'] = strg
+            #     self.video_path = DEFAULT_PATH
+            #     log.error("Video path doesn't exist. "
+            #           + "Writing files to /home/pi")
 
-        if not os.path.exists(todays_dir):
-            os.makedirs(todays_dir)
-        date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
-        filename = os.path.join(todays_dir, date_time_string + '.h264')
-        self.camera.start_recording(filename, quality=self.VIDEO_QUALITY)
-        self.record_start_time = time.time()
+            todays_dir = os.path.join(self.video_path, date_string)
+
+            if not os.path.exists(todays_dir):
+                os.makedirs(todays_dir)
+            date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
+            filename = os.path.join(todays_dir, date_time_string + '.h264')
+            self.camera.start_recording(filename, quality=self.VIDEO_QUALITY)
+            self.record_start_time = time.time()
 
     def stop_recording(self):
         """Stops currently ongoing recording
