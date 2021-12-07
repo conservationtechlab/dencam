@@ -51,7 +51,7 @@ class BaseRecorder(ABC):
 
         self.initial_pause_complete = False
 
-        # Camera setup
+        # camera setup
         self.camera = PiCamera(framerate=FRAME_RATE)
         self.camera.rotation = CAMERA_ROTATION
         self.camera.resolution = CAMERA_RESOLUTION
@@ -61,7 +61,7 @@ class BaseRecorder(ABC):
 
         self.zoom_on = False
 
-        # Recording setup
+        # recording setup
         self.recording = False
 
     @abstractmethod
