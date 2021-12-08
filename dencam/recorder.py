@@ -60,7 +60,7 @@ class BaseRecorder(ABC):
 
         # recording setup
         self.recording = False
-        self.STORAGE_LIMIT = 17.6
+        self.STORAGE_LIMIT = 0.5
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
@@ -170,10 +170,8 @@ class BaseRecorder(ABC):
 
         """
         if media_path is None and self.video_path is not None:
-            print("I RAN 1")
             media_path = self.video_path
         elif media_path is None and self.video_path is None:
-            print("I RAN 2")
             self.video_path = self.last_known_video_path
             media_path = self.video_path
 
@@ -206,7 +204,7 @@ class Recorder(BaseRecorder):
         """Prepares for and starts a new recording
 
         """
-        print("RUNNING START RECORDING")
+        log.info('Looking for free space on external media.')
         self.video_path = self._video_path_selector()
 
         if self.video_path:
