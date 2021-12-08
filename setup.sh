@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # Disable screensaver and screen blanking
-sudo bash -c 'cat >> /etc/xdg/lxsession/LXDE-pi/autostart << EOL
+sudo tee -a /etc/xdg/lxsession/LXDE-pi/autostart > /dev/null << EOF
 @xset s off
 @xset -dpms
 @xset s noblank
-EOL'
+EOF
 
 # Display the values of all current X Window
 # System preferences
