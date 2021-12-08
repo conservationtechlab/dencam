@@ -154,7 +154,7 @@ class Controller(BaseController):
 
     def _update(self):
         super()._update()
-
+        
         if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
              and not self.recorder.initial_pause_complete)):
             self.recorder.initial_pause_complete = True
