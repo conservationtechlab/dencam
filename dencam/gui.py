@@ -66,7 +66,7 @@ class BaseController(Thread):
 
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.show_frame('NetworkPage')
+        self.show_frame('RecordingPage')
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
@@ -145,8 +145,7 @@ class BaseController(Thread):
         # prep network text
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
-        V, C, T, Ah = mppt.get_solar_info()
-        solar_info = V + C + T + Ah
+        solar_info= mppt.get_solardisplay_info()
         self.solar_text.set(solar_info)
 
 

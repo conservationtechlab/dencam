@@ -1,53 +1,39 @@
 import minimalmodbus
 import math
 import os
+import serial
+from serial import SerialException
 import getpass
-import csv
 from datetime import datetime
 
 
-def get_solar_info():
-    SunSaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
+def get_solardisplay_info():
+    try:   # checks USB connection
+        SunSaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
+    except SerialException:
+        return "SUNSAVER NOT CONNECTED TO USB"
     SunSaver.serial.baudrate = 9600
     SunSaver.serial.stopbits = 2
+    try:   # checks for SunSaver connection
+        V_battery = math.trunc(SunSaver.read_register(8) * 100 * 2**-(15))
+    except minimalmodbus.NoResponseError:
+        return "CANNOT READ FROM SUNSAVER"
 
-    V_battery = str(math.trunc(SunSaver.read_register(8) * 100 * 2**-(15)))
-    V_array = str(SunSaver.read_register(9) * 100 * 2**-(15))
-    V_load = str(math.trunc(SunSaver.read_register(10) * 100 * 2**-(15)))
+    V_array = SunSaver.read_register(9) * 100 * 2**-(15)
 
-    C_charge = str(math.trunc(SunSaver.read_register(11) * 79.16 * 2**-(15)))
-    C_load = str(math.trunc(SunSaver.read_register(12) * 79.16 * 2**-(15)))
+    C_charge = math.trunc(SunSaver.read_register(11) * 79.16 * 2**-(15))
+    C_load = math.trunc(SunSaver.read_register(12) * 79.16 * 2**-(15))
 
-    T_heatsink = str(SunSaver.read_register(13))
+    T_amb = SunSaver.read_register(15)
 
-    Ah_charge = str(SunSaver.read_register(45) * 0.1)
-    Ah_load = str(SunSaver.read_register(46) * 0.1)
-    list = [V_battery, V_array, V_load, C_charge,
-            C_load, T_heatsink, Ah_charge, Ah_load]
-    V = 'V_Batt:' + V_battery + ' V_array:'
-    V += V_array + ' V_load: ' + V_load
-    C = '\nC_Charge:' + str(C_charge)
-    C += ' C_load:' + str(C_load)
-    T = '\nT_heatsink: ' + str(T_heatsink) + 'C'
-    Ah = '\nAh_Charge:' + str(Ah_charge)
-    Ah += ' Ah_Load:' + str(Ah_load)
-    cvs_w(list)
-    return V, C, T, Ah
+    Ah_charge = SunSaver.read_register(45) * 0.1
+    Ah_load = SunSaver.read_register(45) * 0.1
 
-
-def cvs_w(list):
-    field_names = ['Battery voltage', 'Voltage array',
-                   'Load voltage', 'Battery charge',
-                   'Load charge', 'HeatSink temp(C)',
-                   'Ah charge', 'Ah load']
-
-    date = datetime.now().strftime("%d/%m/%Y")
-    time = datetime.now().strftime("%H:%M:%S")
-    user = getpass.getuser()
-    default_path = os.path.join('/home', user)
-    if not os.path.exists(default_path):
-        os.mkdirs(default_path)
-        with open(default_path + '/solar_log.cvs',
-                  'w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow('hellow')
+    V = "Battery Volt:" + str(V_battery)
+    V += " Array Volt:" + str(V_array)
+    A = 'Charge current:' + str(C_charge)
+    A += ' Load Current:' + str(C_load)
+    T = " Ambient Temp:" + str(T_amb) + "c"
+    Ah = "Ah charge:" + str(Ah_charge)
+    Ah += " Ah load:" + str(Ah_load)
+    return V + '\n' + A + '\n' + T + '\n' + Ah
