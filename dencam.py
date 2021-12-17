@@ -40,6 +40,8 @@ with open(args.config_file) as f:
 log.info('Read in configuration settings')
 
 NUM_STATES = 5
+
+
 def main():
 
     flags = {'stop_buttons_flag': False}

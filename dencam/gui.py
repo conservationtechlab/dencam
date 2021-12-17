@@ -145,7 +145,7 @@ class BaseController(Thread):
         # prep network text
         network_info = networking.get_network_info()
         self.ip_text.set(network_info)
-        solar_info= mppt.get_solardisplay_info()
+        solar_info = mppt.get_solardisplay_info()
         self.solar_text.set(solar_info)
 
 
