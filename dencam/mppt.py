@@ -1,10 +1,6 @@
 import minimalmodbus
 import math
-import os
-import serial
 from serial import SerialException
-import getpass
-from datetime import datetime
 
 
 def get_solardisplay_info():

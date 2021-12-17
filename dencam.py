@@ -39,7 +39,7 @@ with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 log.info('Read in configuration settings')
 
-
+NUM_STATES = 5
 def main():
 
     flags = {'stop_buttons_flag': False}
@@ -50,7 +50,7 @@ def main():
 
     try:
         recorder = Recorder(configs)
-        state = State(5)
+        state = State(NUM_STATES)
         button_handler = ButtonHandler(recorder,
                                        state,
                                        lambda: flags['stop_buttons_flag'])
