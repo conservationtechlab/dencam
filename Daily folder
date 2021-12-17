@@ -44,3 +44,129 @@
 2021-12-16 11:45:02 |     INFO |    dencam.recorder | Read recording configurations
 2021-12-16 11:45:02 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
 2021-12-16 11:45:02 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:11:21 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:11:21 |     INFO |               root | Logging level is INFO
+2021-12-16 14:11:21 |     INFO |               root | Read in configuration settings
+2021-12-16 14:11:38 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:11:38 |     INFO |               root | Logging level is INFO
+2021-12-16 14:11:38 |     INFO |               root | Read in configuration settings
+2021-12-16 14:11:48 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:11:48 |     INFO |               root | Logging level is INFO
+2021-12-16 14:11:48 |     INFO |               root | Read in configuration settings
+2021-12-16 14:11:48 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:11:48 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:11:48 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:12:31 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:12:31 |     INFO |               root | Logging level is INFO
+2021-12-16 14:12:31 |     INFO |               root | Read in configuration settings
+2021-12-16 14:12:31 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:12:32 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:12:32 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:18:51 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:18:51 |     INFO |               root | Logging level is INFO
+2021-12-16 14:18:51 |     INFO |               root | Read in configuration settings
+2021-12-16 14:18:51 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:18:52 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:18:52 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:20:49 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:20:49 |     INFO |               root | Logging level is INFO
+2021-12-16 14:20:49 |     INFO |               root | Read in configuration settings
+2021-12-16 14:20:49 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:20:49 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:20:49 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:21:16 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:21:16 |     INFO |               root | Logging level is INFO
+2021-12-16 14:21:16 |     INFO |               root | Read in configuration settings
+2021-12-16 14:21:16 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:21:16 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:21:16 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:22:46 |     INFO |    dencam.recorder | Looking for free space on external media.
+2021-12-16 14:22:46 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:22:46 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:22:46 |     INFO |    dencam.recorder | Starting new recording.
+2021-12-16 14:23:05 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:23:05 |     INFO |               root | Logging level is INFO
+2021-12-16 14:23:06 |     INFO |               root | Read in configuration settings
+2021-12-16 14:23:06 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:23:06 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:23:06 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:24:36 |     INFO |    dencam.recorder | Looking for free space on external media.
+2021-12-16 14:24:36 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:24:36 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:24:36 |     INFO |    dencam.recorder | Starting new recording.
+2021-12-16 14:24:57 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:24:57 |     INFO |               root | Logging level is INFO
+2021-12-16 14:24:57 |     INFO |               root | Read in configuration settings
+2021-12-16 14:28:19 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:28:19 |     INFO |               root | Logging level is INFO
+2021-12-16 14:28:19 |     INFO |               root | Read in configuration settings
+2021-12-16 14:28:19 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:28:20 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:28:20 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:29:13 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:29:13 |     INFO |               root | Logging level is INFO
+2021-12-16 14:29:13 |     INFO |               root | Read in configuration settings
+2021-12-16 14:29:13 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:29:13 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:29:13 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:30:07 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:30:07 |     INFO |               root | Logging level is INFO
+2021-12-16 14:30:07 |     INFO |               root | Read in configuration settings
+2021-12-16 14:30:07 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:30:07 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:30:07 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:34:37 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:34:37 |     INFO |               root | Logging level is INFO
+2021-12-16 14:34:37 |     INFO |               root | Read in configuration settings
+2021-12-16 14:34:37 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:34:37 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:34:37 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:35:33 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:35:33 |     INFO |               root | Logging level is INFO
+2021-12-16 14:35:33 |     INFO |               root | Read in configuration settings
+2021-12-16 14:35:33 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:35:34 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:35:34 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:35:43 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:35:43 |     INFO |               root | Logging level is INFO
+2021-12-16 14:35:43 |     INFO |               root | Read in configuration settings
+2021-12-16 14:35:43 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:35:43 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:35:43 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:43:42 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 14:43:42 |     INFO |               root | Logging level is INFO
+2021-12-16 14:43:42 |     INFO |               root | Read in configuration settings
+2021-12-16 14:43:42 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 14:43:43 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:43:43 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:45:12 |     INFO |    dencam.recorder | Looking for free space on external media.
+2021-12-16 14:45:12 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:45:12 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:45:12 |     INFO |    dencam.recorder | Starting new recording.
+2021-12-16 14:50:12 |     INFO |    dencam.recorder | Ending current recording
+2021-12-16 14:50:13 |     INFO |    dencam.recorder | Looking for free space on external media.
+2021-12-16 14:50:13 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 14:50:13 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 14:50:13 |     INFO |    dencam.recorder | Starting new recording.
+2021-12-16 15:30:48 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 15:30:48 |     INFO |               root | Logging level is INFO
+2021-12-16 15:30:48 |     INFO |               root | Read in configuration settings
+2021-12-16 15:30:48 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 15:30:49 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 15:30:49 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 15:32:19 |     INFO |    dencam.recorder | Looking for free space on external media.
+2021-12-16 15:32:19 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 15:32:19 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 15:32:19 |     INFO |    dencam.recorder | Starting new recording.
+2021-12-16 15:32:43 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 15:32:43 |     INFO |               root | Logging level is INFO
+2021-12-16 15:32:43 |     INFO |               root | Read in configuration settings
+2021-12-16 15:32:43 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 15:32:44 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 15:32:44 |     INFO |    dencam.recorder | Using home directory.
+2021-12-16 16:31:04 |     INFO |               root | *** MINIDENCAM STARTING UP ***
+2021-12-16 16:31:04 |     INFO |               root | Logging level is INFO
+2021-12-16 16:31:04 |     INFO |               root | Read in configuration settings
+2021-12-16 16:31:04 |     INFO |    dencam.recorder | Read recording configurations
+2021-12-16 16:31:04 |  WARNING |    dencam.recorder | Unable to find external media. Checking home directory for free space.
+2021-12-16 16:31:04 |     INFO |    dencam.recorder | Using home directory.
