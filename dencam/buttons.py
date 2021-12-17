@@ -86,6 +86,10 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
 
                 self.state.goto_next()
+<<<<<<< HEAD
+=======
+
+>>>>>>> Write CSV file
                 if self.state.value == 4:
                     self.recorder.start_preview()
                 elif self.state.value == 0:
@@ -103,6 +107,8 @@ class ButtonHandler(Thread):
                     self.recorder.toggle_recording()
                 elif self.state.value == 4:
                     self.recorder.toggle_zoom()
+                # elif some state with unused functbutt
+                    #self.whatevers.toggle_airplane_mode() b
 
                 self.latch_record_button = True
         else:

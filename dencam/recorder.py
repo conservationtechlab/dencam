@@ -110,9 +110,9 @@ class BaseRecorder(ABC):
         log.debug("User is '{}'".format(user))
         media_dir = os.path.join('/media', user)
 
-        # this try block protects against the user not even having a folder in
-        # /media which can happen if no media has ever been attached under
-        # that user
+    # this try block protects against the user not even having a folder in
+    # /media which can happen if no media has ever been attached under
+    # that user
         try:
             media_devices = os.listdir(media_dir)
         except FileNotFoundError:
@@ -128,23 +128,23 @@ class BaseRecorder(ABC):
                 free_space = self.get_free_space(media_path)
                 if free_space >= self.STORAGE_LIMIT:  # half a gig
                     log.info('Using external media: '
-                             + '{}'.format(media_device))
+                              + '{}'.format(media_device))
                     log.debug('Free space on device: '
                               + '{:.2f} GB'.format(free_space))
                     break
                 else:
                     log.info('Device {} is '.format(media_device)
                              + 'full or unwritable. '
-                             + 'Advancing to next device.')
+                               + 'Advancing to next device.')
             else:
                 log.warning('No external device worked. '
                             + 'Checking home directory for free space.')
                 media_path = default_path
                 free_space = self.get_free_space(media_path)
                 if free_space >= self.STORAGE_LIMIT:
-                    log.info('Using home directory.')
-                    log.debug('Free space in home directory: '
-                              + '{:.2f} GB'.format(free_space))
+                        log.info('Using home directory.')
+                        log.debug('Free space in home directory: '
+                                  + '{:.2f} GB'.format(free_space))
                 else:
                     log.info('Home directory is full or unwritable.')
                     self.last_known_video_path = media_path
@@ -157,12 +157,11 @@ class BaseRecorder(ABC):
             if free_space >= self.STORAGE_LIMIT:
                 log.info('Using home directory.')
                 log.debug('Free space in home directory: '
-                          + '{:.2f} GB'.format(free_space))
+                             + '{:.2f} GB'.format(free_space))
             else:
                 log.info('Home directory is full or unwritable.')
                 self.last_known_video_path = media_path
                 media_path = None
-
         return media_path
 
     def get_free_space(self, media_path=None):
@@ -239,3 +238,4 @@ class Recorder(BaseRecorder):
         log.info('Ending current recording')
         self.recording = False
         self.camera.stop_recording()
+

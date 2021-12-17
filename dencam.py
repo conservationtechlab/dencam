@@ -22,14 +22,14 @@ from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import Controller, State
-
+from dencam.MT_CSV_Writer import CSV_Writer
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
                     help='Filename of a YAML Mini DenCam configuration file.')
 args = parser.parse_args()
 
 LOGGING_LEVEL = logging.INFO
-log = logs.setup_logger(LOGGING_LEVEL)
+log = logs.setup_logger(LOGGING_LEVEL, "Daily folder")
 log.info('*** MINIDENCAM STARTING UP ***')
 strg = logging.getLevelName(log.getEffectiveLevel())
 # clearly below line only reports for debug and info levels
@@ -40,17 +40,24 @@ with open(args.config_file) as f:
 log.info('Read in configuration settings')
 
 NUM_STATES = 5
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> Write CSV file
 def main():
 
     flags = {'stop_buttons_flag': False}
-
+    MTTP_LOG = CSV_Writer("LOG_2021_H.csv")
+    # MTTP_LOG.start()
+    
+    
     def cleanup(flags):
         flags['stop_buttons_flag'] = True
         time.sleep(.1)
 
     try:
+        MTTP_LOG.start()
         recorder = Recorder(configs)
         state = State(NUM_STATES)
         button_handler = ButtonHandler(recorder,
@@ -62,18 +69,18 @@ def main():
         controller = Controller(configs, recorder, state)
         controller.setDaemon(True)
         controller.start()
-
+        MTTP_LOG.join()
         while(True):
             pass
             time.sleep(.1)
-
+    
     except KeyboardInterrupt:
         log.debug('Keyboard interrupt received.')
         cleanup(flags)
     except Exception:
         log.exception('An Exception in primary try block')
         cleanup(flags)
-
+    
 
 if __name__ == "__main__":
     main()
