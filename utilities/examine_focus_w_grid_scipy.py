@@ -1,16 +1,29 @@
-import io
+"""Tool to examine focus in view of DenCam.
+
+A tool for numerically examining how well the DenCam's camera is
+focused. A number displayed in each grid element of a grid (grid
+defaults to 4x4) can be used to judge focus for the grid element and
+in aggregate for the scene.  The number's value is a function of both
+the degree of focus *and* complexity of what is in view within that
+grid element so it has to be treated as a relative focus tool i.e. as
+focus is adjusted on the lens, the number will peak at best focus
+(provided the view itself is unchanged) but that peak could be a very
+different number for one scene (or grid element) versus another.
+
+"""
+
 import argparse
+import time
+
+import numpy as np
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+from scipy import ndimage
+from screeninfo import get_monitors
 
 import tkinter as tk
 import tkinter.font as tkFont
 from PIL import Image, ImageTk
-
-import numpy as np
-from scipy import ndimage
-
-import picamera
-from screeninfo import screeninfo
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r',
@@ -24,72 +37,57 @@ parser.add_argument('-c',
 args = parser.parse_args()
 
 
-class ImageObject:
-    def __init__(self):
-        pass
-
-    def set_image(self, image):
-        self.image = image
-
-    def get_image(self):
-        return self.image
-
-
-monitor = screeninfo.get_monitors()
-display_width = monitor[0].width
-display_height = monitor[0].height
-
-window = tk.Tk()
-
-# Set window size
-window.geometry('{}x{}'.format(display_width, display_height))
-
-# Make window fullscreen
-window.attributes('-fullscreen', True)
-
-window.title('DenCam Focus Utility')
-
-def close_window(event):
-    window.destroy()
-
-# Close window when Escape key pressed
-window.bind('<Escape>', lambda event: close_window(event))
-
-canvas = tk.Canvas(window, width=display_width, height=display_height)
-canvas.pack(side='top', fill='both', expand=True)
-
-stream = io.BytesIO()
-camera = picamera.PiCamera()
-camera.rotation = 180
-image_object = ImageObject()
-
 def variance_of_laplacian(image):
     return ndimage.laplace(image).var()
 
-def update():
-    image = canvas.create_image(0, 0, image=image_object.get_image(), anchor='nw')
-    canvas.tag_lower(image)
-    canvas.update()
-    canvas.delete('all')
 
-for _ in camera.capture_continuous(stream, format='rgb'):
-    stream.truncate()
-    stream.seek(0)
-    data = np.frombuffer(stream.getvalue(), dtype=np.uint8)
-    frame = Image.frombuffer('RGB', (display_width, display_height), data)
-    color_image = np.array(frame)
+# Get display information
+monitor = get_monitors()
+display_width = monitor[0].width
+display_height = monitor[0].height
 
-    rgb_weights = [0.299, 0.587, 0.114] # RGB[A] to Gray formula from OpenCV
-    gray = np.dot(color_image[...,:3], rgb_weights)
+# Setup grid calculation
+num_cols = int(args.cols)
+num_rows = int(args.rows)
+sector_width = int(display_width / num_cols)
+sector_height = int(display_height / num_rows)
 
-    height, width = gray.shape
-    num_cols = int(args.cols)
-    num_rows = int(args.rows)
-    sector_width = int(width/num_cols)
-    sector_height = int(height/num_rows)
+# Setup tkinter
+window = tk.Tk()
+window.geometry(f'{display_width}x{display_height}') # Set window size
+window.attributes('-fullscreen', True) # Make window fullscreen
+font = tkFont.Font(family='Helvetica', size=15, weight='normal')
 
-    img = ImageTk.PhotoImage(image=Image.fromarray(color_image))
-    image_object.set_image(img)
+# Setup canvas
+canvas = tk.Canvas(window, width=display_width, height=display_height)
+canvas.pack(side='top', fill='both', expand=True)
+image = canvas.create_image(0, 0, anchor='nw')
+canvas.tag_lower(image)
+text_array = [[None for x in range(num_rows)] for y in range(num_cols)]
+rectangle_array = [[None for x in range(num_rows)] for y in range(num_cols)]
+
+# OpenCV's RGB to Gray formula
+rgb_weights = [0.299, 0.587, 0.114]
+
+# Initialize camera and grab a reference to the raw camera capture
+camera = PiCamera()
+camera.rotation = 180
+camera.resolution = (640, 480)
+camera.framerate = 30
+rawCapture = PiRGBArray(camera, size=(640, 480))
+
+# Allow the camera to warmup
+time.sleep(0.1)
+
+# Capture frames from the camera
+for frame in camera.capture_continuous(rawCapture, format='rgb', use_video_port=True):
+    # Grab the raw NumPy array representing the image
+    color_image = frame.array
+
+    tkinter_image = ImageTk.PhotoImage(image=Image.fromarray(color_image))
+    canvas.itemconfig(image, image=tkinter_image)
+
+    gray_image = np.dot(color_image[...,:3], rgb_weights)
 
     for i in range(num_cols):
         for j in range(num_rows):
@@ -98,15 +96,20 @@ for _ in camera.capture_continuous(stream, format='rgb'):
             top = int(sector_height * j)
             bottom = top + sector_height
 
-            sector = gray[top:bottom, left:right]
+            sector = gray_image[top:bottom, left:right]
             laplacian_value = variance_of_laplacian(sector)
-            
-            font = tkFont.Font(family='Helvetica', size=15, weight='normal')
-            canvas.create_text(left + 80, top + 60, text='{:.0f}'.format(laplacian_value), fill='red', font=font)
 
-            canvas.create_rectangle(left + 2, top + 2, right - 2, bottom - 2, outline='red', width=1)
+            if rectangle_array[i][j] is None:
+                canvas.create_rectangle(left + 2, top + 2, right - 2, bottom - 2, outline='red', width=1)
 
-    update()
+            if text_array[i][j] is None:
+                text_array[i][j] = canvas.create_text(left + 80, top + 60, text='{:.0f}'.format(laplacian_value), fill='red', font=font)
+            else:
+                canvas.itemconfig(text_array[i][j], text='{:.0f}'.format(laplacian_value))
+
+    # Clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
+    canvas.update()
 
 # Run the tkinter event loop
 window.mainloop()
