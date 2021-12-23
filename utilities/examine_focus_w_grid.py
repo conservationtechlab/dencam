@@ -12,13 +12,17 @@ different number for one scene (or grid element) versus another.
 
 """
 
-import io
 import argparse
+import time
 
 import cv2
-import picamera
-import numpy as np
-from screeninfo import screeninfo
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+from screeninfo import get_monitors
+
+import tkinter as tk
+import tkinter.font as tkFont
+from PIL import Image, ImageTk
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-r',
@@ -36,32 +40,50 @@ def variance_of_laplacian(image):
     return cv2.Laplacian(image, cv2.CV_64F).var()
 
 
-monitor = screeninfo.get_monitors()
+# Get display information
+monitor = get_monitors()
 display_width = monitor[0].width
 display_height = monitor[0].height
 
-stream = io.BytesIO()
-camera = picamera.PiCamera()
+# Setup grid calculation
+num_cols = int(args.cols)
+num_rows = int(args.rows)
+sector_width = int(display_width / num_cols)
+sector_height = int(display_height / num_rows)
+
+# Setup tkinter
+window = tk.Tk()
+window.geometry(f'{display_width}x{display_height}') # Set window size
+window.attributes('-fullscreen', True) # Make window fullscreen
+font = tkFont.Font(family='Helvetica', size=15, weight='normal')
+
+# Setup canvas
+canvas = tk.Canvas(window, width=display_width, height=display_height)
+canvas.pack(side='top', fill='both', expand=True)
+image = canvas.create_image(0, 0, anchor='nw')
+canvas.tag_lower(image)
+text_array = [[None for x in range(num_rows)] for y in range(num_cols)]
+rectangle_array = [[None for x in range(num_rows)] for y in range(num_cols)]
+
+# Initialize camera and grab a reference to the raw camera capture
+camera = PiCamera()
 camera.rotation = 180
+camera.resolution = (640, 480)
+camera.framerate = 30
+rawCapture = PiRGBArray(camera, size=(640, 480))
 
-cv2.namedWindow('out', cv2.WINDOW_NORMAL)
-cv2.resizeWindow('out', int(display_width * .9), int(display_height * .9))
+# Allow the camera to warmup
+time.sleep(0.1)
 
+# Capture frames from the camera
+for frame in camera.capture_continuous(rawCapture, format='rgb', use_video_port=True):
+    # Grab the raw NumPy array representing the image
+    color_image = frame.array
 
-for _ in camera.capture_continuous(stream, format='jpeg'):
-    stream.truncate()
-    stream.seek(0)
-    data = np.frombuffer(stream.getvalue(),
-                         dtype=np.uint8)
-    frame = cv2.imdecode(data, 1)
+    tkinter_image = ImageTk.PhotoImage(image=Image.fromarray(color_image))
+    canvas.itemconfig(image, image=tkinter_image)
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    height, width = gray.shape
-    num_cols = int(args.cols)
-    num_rows = int(args.rows)
-    sector_width = int(width/num_cols)
-    sector_height = int(height/num_rows)
+    gray_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2GRAY)
 
     for i in range(num_cols):
         for j in range(num_rows):
@@ -70,22 +92,20 @@ for _ in camera.capture_continuous(stream, format='jpeg'):
             top = int(sector_height * j)
             bottom = top + sector_height
 
-            sector = gray[top:bottom, left:right]
+            sector = gray_image[top:bottom, left:right]
+            laplacian_value = variance_of_laplacian(sector)
 
-            cv2.rectangle(frame,
-                          (left + 2, top + 2),
-                          (right - 2, bottom - 2),
-                          (255, 0, 0))
+            if rectangle_array[i][j] is None:
+                canvas.create_rectangle(left + 2, top + 2, right - 2, bottom - 2, outline='red', width=1)
 
-            fm = variance_of_laplacian(sector)
-            cv2.putText(frame,
-                        '{:.0f}'.format(fm),
-                        (left + 10, top + 30),
-                        cv2.FONT_HERSHEY_SIMPLEX,
-                        1.0,
-                        (0, 0, 255),
-                        2)
-    cv2.imshow('out', frame)
-    key = cv2.waitKey(30)
-    if key == ord('q'):
-        break
+            if text_array[i][j] is None:
+                text_array[i][j] = canvas.create_text(left + 80, top + 60, text='{:.0f}'.format(laplacian_value), fill='red', font=font)
+            else:
+                canvas.itemconfig(text_array[i][j], text='{:.0f}'.format(laplacian_value))
+
+    # Clear the stream in preparation for the next frame
+    rawCapture.truncate(0)
+    canvas.update()
+
+# Run the tkinter event loop
+window.mainloop()
