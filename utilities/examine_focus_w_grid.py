@@ -93,15 +93,15 @@ for frame in camera.capture_continuous(rawCapture, format='rgb', use_video_port=
             bottom = top + sector_height
 
             sector = gray_image[top:bottom, left:right]
-            laplacian_value = variance_of_laplacian(sector)
+            laplacian = variance_of_laplacian(sector)
 
             if rectangle_array[i][j] is None:
                 canvas.create_rectangle(left + 2, top + 2, right - 2, bottom - 2, outline='red', width=1)
 
             if text_array[i][j] is None:
-                text_array[i][j] = canvas.create_text(left + 80, top + 60, text='{:.0f}'.format(laplacian_value), fill='red', font=font)
+                text_array[i][j] = canvas.create_text(left + 80, top + 60, text=f'{laplacian:.0f}', fill='red', font=font)
             else:
-                canvas.itemconfig(text_array[i][j], text='{:.0f}'.format(laplacian_value))
+                canvas.itemconfig(text_array[i][j], text=f'{laplacian:.0f}')
 
     # Clear the stream in preparation for the next frame
     rawCapture.truncate(0)
