@@ -66,6 +66,12 @@ canvas.tag_lower(image)
 text_array = [[None for x in range(num_rows)] for y in range(num_cols)]
 rectangle_array = [[None for x in range(num_rows)] for y in range(num_cols)]
 
+# Setup moving average for laplacian
+moving_average = None
+moving_average_count = 0
+moving_average_frequency = 5 # Number of frames to perform moving average on
+laplacian_array = np.full((num_rows, num_cols, moving_average_frequency), None)
+
 # OpenCV's RGB to Gray formula
 rgb_weights = [0.299, 0.587, 0.114]
 
@@ -101,6 +107,13 @@ for frame in camera.capture_continuous(rawCapture,
             sector = gray_image[top:bottom, left:right]
             laplacian = variance_of_laplacian(sector)
 
+            moving_average_count = moving_average_count % moving_average_frequency
+            laplacian_array[i][j][moving_average_count] = round(laplacian / 10) * 10
+            if None in np.array(laplacian_array[i][j]):
+                moving_average = laplacian_array[i][j][moving_average_count]
+            else:
+                moving_average = round(np.mean(laplacian_array[i][j]) / 10) * 10
+
             if rectangle_array[i][j] is None:
                 canvas.create_rectangle(left + 2,
                                         top + 2,
@@ -112,11 +125,13 @@ for frame in camera.capture_continuous(rawCapture,
             if text_array[i][j] is None:
                 text_array[i][j] = canvas.create_text(left + 80,
                                                       top + 60,
-                                                      text=f'{laplacian:.0f}',
+                                                      text=f'{moving_average}',
                                                       fill='red',
                                                       font=font)
             else:
-                canvas.itemconfig(text_array[i][j], text=f'{laplacian:.0f}')
+                canvas.itemconfig(text_array[i][j], text=f'{moving_average}')
+
+    moving_average_count += 1
 
     # Clear the stream in preparation for the next frame
     rawCapture.truncate(0)
