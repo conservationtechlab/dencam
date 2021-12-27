@@ -53,8 +53,8 @@ sector_height = int(display_height / num_rows)
 
 # Setup tkinter
 window = tk.Tk()
-window.geometry(f'{display_width}x{display_height}') # Set window size
-window.attributes('-fullscreen', True) # Make window fullscreen
+window.geometry(f'{display_width}x{display_height}')  # Set window size
+window.attributes('-fullscreen', True)  # Make window fullscreen
 font = tkFont.Font(family='Helvetica', size=15, weight='normal')
 
 # Setup canvas
@@ -76,7 +76,9 @@ rawCapture = PiRGBArray(camera, size=(640, 480))
 time.sleep(0.1)
 
 # Capture frames from the camera
-for frame in camera.capture_continuous(rawCapture, format='rgb', use_video_port=True):
+for frame in camera.capture_continuous(rawCapture,
+                                       format='rgb',
+                                       use_video_port=True):
     # Grab the raw NumPy array representing the image
     color_image = frame.array
 
@@ -96,10 +98,19 @@ for frame in camera.capture_continuous(rawCapture, format='rgb', use_video_port=
             laplacian = variance_of_laplacian(sector)
 
             if rectangle_array[i][j] is None:
-                canvas.create_rectangle(left + 2, top + 2, right - 2, bottom - 2, outline='red', width=1)
+                canvas.create_rectangle(left + 2,
+                                        top + 2,
+                                        right - 2,
+                                        bottom - 2,
+                                        outline='red',
+                                        width=1)
 
             if text_array[i][j] is None:
-                text_array[i][j] = canvas.create_text(left + 80, top + 60, text=f'{laplacian:.0f}', fill='red', font=font)
+                text_array[i][j] = canvas.create_text(left + 80,
+                                                      top + 60,
+                                                      text=f'{laplacian:.0f}',
+                                                      fill='red',
+                                                      font=font)
             else:
                 canvas.itemconfig(text_array[i][j], text=f'{laplacian:.0f}')
 
