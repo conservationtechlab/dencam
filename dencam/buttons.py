@@ -86,8 +86,7 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
 
                 self.state.goto_next()
-
-                if self.state.value == 3:
+                if self.state.value == 4:
                     self.recorder.start_preview()
                 elif self.state.value == 0:
                     self.recorder.stop_preview()
@@ -100,9 +99,9 @@ class ButtonHandler(Thread):
             if not self.latch_record_button:
 
                 if(self.recorder.initial_pause_complete
-                   and self.state.value == 2):
+                   and self.state.value == 3):
                     self.recorder.toggle_recording()
-                elif self.state.value == 3:
+                elif self.state.value == 4:
                     self.recorder.toggle_zoom()
 
                 self.latch_record_button = True
