@@ -15,10 +15,10 @@ different number for one scene (or grid element) versus another.
 import argparse
 import time
 
-import cv2
 import numpy as np
 from picamera import PiCamera
 from picamera.array import PiRGBArray
+from scipy import ndimage
 from screeninfo import get_monitors
 
 import tkinter as tk
@@ -38,7 +38,7 @@ args = parser.parse_args()
 
 
 def variance_of_laplacian(image):
-    return cv2.Laplacian(image, cv2.CV_64F).var()
+    return ndimage.laplace(image).var()
 
 
 # Get display information
@@ -72,6 +72,9 @@ mv_avg_count = 0
 mv_avg_freq = 5  # Number of frames to perform moving average on
 laplace_array = np.full((num_rows, num_cols, mv_avg_freq), None)
 
+# OpenCV's RGB to Gray formula
+rgb_weights = [0.299, 0.587, 0.114]
+
 # Initialize camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.rotation = 180
@@ -92,7 +95,7 @@ for frame in camera.capture_continuous(rawCapture,
     tkinter_image = ImageTk.PhotoImage(image=Image.fromarray(color_image))
     canvas.itemconfig(image, image=tkinter_image)
 
-    gray_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2GRAY)
+    gray_image = np.dot(color_image[..., :3], rgb_weights)
 
     for i in range(num_cols):
         for j in range(num_rows):
