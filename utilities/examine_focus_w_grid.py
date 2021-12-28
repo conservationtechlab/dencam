@@ -66,11 +66,11 @@ canvas.tag_lower(image)
 text_array = [[None for x in range(num_rows)] for y in range(num_cols)]
 rectangle_array = [[None for x in range(num_rows)] for y in range(num_cols)]
 
-# Setup moving average for laplacian
-moving_average = None
-moving_average_count = 0
-moving_average_frequency = 5 # Number of frames to perform moving average on
-laplacian_array = np.full((num_rows, num_cols, moving_average_frequency), None)
+# Setup moving average for laplace
+mv_avg = None
+mv_avg_count = 0
+mv_avg_freq = 5  # Number of frames to perform moving average on
+laplace_array = np.full((num_rows, num_cols, mv_avg_freq), None)
 
 # Initialize camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -102,14 +102,16 @@ for frame in camera.capture_continuous(rawCapture,
             bottom = top + sector_height
 
             sector = gray_image[top:bottom, left:right]
-            laplacian = variance_of_laplacian(sector)
+            laplace = variance_of_laplacian(sector)
 
-            moving_average_count = moving_average_count % moving_average_frequency
-            laplacian_array[i][j][moving_average_count] = round(laplacian / 10) * 10
-            if None in np.array(laplacian_array[i][j]):
-                moving_average = laplacian_array[i][j][moving_average_count]
+            mv_avg_count %= mv_avg_freq
+            depth = laplace_array[i][j]
+            depth[mv_avg_count] = laplace
+            if None in np.array(depth):
+                mv_avg = round(depth[mv_avg_count] / 10) * 10
             else:
-                moving_average = round(np.mean(laplacian_array[i][j]) / 10) * 10
+                mv_avg = np.mean(depth)
+                mv_avg = round(mv_avg / 10) * 10
 
             if rectangle_array[i][j] is None:
                 canvas.create_rectangle(left + 2,
@@ -122,13 +124,13 @@ for frame in camera.capture_continuous(rawCapture,
             if text_array[i][j] is None:
                 text_array[i][j] = canvas.create_text(left + 80,
                                                       top + 60,
-                                                      text=f'{moving_average}',
+                                                      text=f'{mv_avg}',
                                                       fill='red',
                                                       font=font)
             else:
-                canvas.itemconfig(text_array[i][j], text=f'{moving_average}')
+                canvas.itemconfig(text_array[i][j], text=f'{mv_avg}')
 
-    moving_average_count += 1
+    mv_avg_count += 1
 
     # Clear the stream in preparation for the next frame
     rawCapture.truncate(0)
