@@ -117,6 +117,7 @@ pages:
 * Recording Status Page
 * Camera Preview Page
 * Blank page with screen illumination disabled
+* Solar Display Page
 
 On the Recording Status Page, the second button will toggle recording
 on and off (recording will begin automatically after the countdown set
