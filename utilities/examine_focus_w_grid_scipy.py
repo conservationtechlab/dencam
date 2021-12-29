@@ -76,10 +76,9 @@ laplace_array = np.full((num_rows, num_cols, mv_avg_freq), None)
 rgb_weights = [0.299, 0.587, 0.114]
 
 # Initialize camera and grab a reference to the raw camera capture
-camera = PiCamera()
+camera = PiCamera(resolution=(640, 480),
+                  framerate=30)
 camera.rotation = 180
-camera.resolution = (640, 480)
-camera.framerate = 30
 rawCapture = PiRGBArray(camera, size=(640, 480))
 
 # Allow the camera to warmup
