@@ -28,41 +28,43 @@ Currently DenCam runs on Raspian Stretch and Buster.  Problems have
 been encountered with Bullseye (specifically with interfacing with the
 picamera).
 
-# Screen setup
+# Setup
+
+## Setup PiTFT screen
 
 This repository contains the [Adafruit PiTFT Installer Script](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts)
 for the PiTFT 2.8" Resistive touchscreen, which was written by 
 Adafruit Industries. Make sure that the Pi has network access since it
 needs to download the software!
 
-## Install script dependencies
+### Install script dependencies
 
     sudo pip3 install --upgrade adafruit-python-shell click
 
-## Install FBCP (mirror HDMI output to the display)
+### Install FBCP (mirror HDMI output to the display)
 
     sudo python3 adafruit-pitft.py --display=28r --rotation=90 --install-type=fbcp
 
 When it asks you to reboot, enter Y for yes because the setting won't
 take full effect until you do so.
 
-# Installing from PyPI
+## Install from PyPI
 
     pip install dencam
 
-# Installing from GitHub repository
+## Install from GitHub repository
 
 ### Install virtualenvwrapper
 
-     sudo pip3 install virtualenv virtualenvwrapper
+    sudo pip3 install virtualenv virtualenvwrapper
 
 ### Setup virtual environment  ~/.bashrc file
 
-     echo -e "\n# Virtual environment setup" >> ~/.bashrc
-     echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
-     echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
-     echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
-     source ~/.bashrc
+    echo -e "\n# Virtual environment setup" >> ~/.bashrc
+    echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+    echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
+    echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+    source ~/.bashrc
 
 ### Create virtual environment for dencam project
 
@@ -71,7 +73,7 @@ take full effect until you do so.
 Note that DenCam requires Python 3 so if the default on your system is
 Python 2, make sure the virtual environment will use Python 3:
 
-       mkvirtualenv dencam_env -p python3
+    mkvirtualenv dencam_env -p python3
 
 ### Activate virtual environment (not necessary if you just made it)
 
