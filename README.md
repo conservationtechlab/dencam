@@ -102,22 +102,68 @@ If you are connected to the Raspberry Pi via SSH, then first do:
 ```
 ## Explanation of parameters in the configuration file
 
-TODO
+The configuration file stores variables used throughout the dencam 
+code.
+
+### RECORD_LENGTH
+
+Takes a positive integer value of the length each recording will be
+(in seconds). Passing a value of 300 will make each recording 5 min
+
+### DISPLAY_RESOLUTION
+
+Takes two integer values, used to set the resolution of the display 
+pages of the Dencam.
+
+### PAUSE_BEFORE_RECORD
+
+Takes in a positive integer value which will be the seconds to wait
+after the dencam has initially started until the first recording begins
+
+### POWER_OFF_DELAY
+
+Controls the amount of time the off button needs to be held down for, until 
+the Pi shuts down.
+
+### CAMERA_RESOLUTION
+
+Takes in two positive integers that will be used to dictate the resolution
+of the camera
+
+### VIDEO_QUALITY
+
+Takes in a positive integer in the range from 1-40, 1 being the highest, 
+40 being the lowest
+
+### FRAME_RATE
+
+Controls the frame rate of the recordings, taking in a postive integer 
+from the range 1-60. The higher the number the smoother the recording, 
+but the quality of the recording reduces.We found through testing that 30 
+is a decent halfway point, where the recording is smooth enough and the 
+change in quality is not as noticable.
+
+### CAMERA_ROTATION
+
+Controls the rotation of the Camera display by taking in a positve integere representing the
+oreintation in degrees. To have the camera display in landscape, pass values 0 or 180.
+
 
 ## Using the DenCam user interface
 
 The DenCam user interface is through the PiTFT screen.  It does not
 use the touchscreen functionality of the screen: the screen itself is
 only used for display and the top two physical buttons beside the
-screen are used for control.  DenCam will start with the screen blank.
+screen are used for control.  DenCam will start on the Recording Page.
 The top button will advance the display through a series of status
 pages:
 
 * Networking Information Page
 * Recording Status Page
+* Solar Display Page
 * Camera Preview Page
 * Blank page with screen illumination disabled
-* Solar Display Page
+
 
 On the Recording Status Page, the second button will toggle recording
 on and off (recording will begin automatically after the countdown set
@@ -126,6 +172,43 @@ in the configuration file without needing to use this control).
 On the Camera Preview Page, the same second button will toggle between
 the full resolution camera view and a one-to-one pixel view intended
 to aid in focusing the camera (the camera is focused manually).
+
+# Dencam Pages
+
+The Dencam user interface has 5 pages, which are traversed using the 
+top button. Each page is displaying information designated to itself.
+(i.e. Solar Display Page displays information recieved from Sun Saver)
+
+## Networking Information Page
+
+This page displays Raspberry Pi username, wLan0 IP address, and the name of 
+the wifi signal it is connected to.
+
+## Recording Status Page
+
+Displays the current number of video recordings saved and
+stores, the file directory they are currently being stored to, the 
+amount of available storage, time stamp, and a countdown for the 
+recording to start.
+
+## Solar Display Page
+
+This page displays data recieved from the SunSaver decive in realtime.
+Currently it displays Battery Voltage(V), Array Voltage(V),
+Charge current(A), Load current(A), Ah charge(Daily)(Ah), and
+Ah load(Daily)(Ah).
+
+## Camera Preview Page
+
+Displays timestamp and current feed of the Camera, note this feed is 
+not necessarily being recorded.
+
+## Blank page with screen illumination disabled
+
+Is a blank page that displays no information, mainly used as a 
+background for the Camera Preview Page.
+
+
 
 ## Setting up DenCam to run on boot
 
