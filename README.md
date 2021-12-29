@@ -30,8 +30,21 @@ picamera).
 
 # Screen setup
 
-TODO: add instructions for setting up PiTFT screen using script from
-adafruit.  Possibly we should include the script in the repo.
+This repository contains the [Adafruit PiTFT Installer Script](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts)
+for the PiTFT 2.8" Resistive touchscreen, which was written by 
+Adafruit Industries. Make sure that the Pi has network access since it
+needs to download the software!
+
+## Install script dependencies
+
+    sudo pip3 install --upgrade adafruit-python-shell click
+
+## Install FBCP (mirror HDMI output to the display)
+
+    sudo python3 adafruit-pitft.py --display=28r --rotation=90 --install-type=fbcp
+
+When it asks you to reboot, enter Y for yes because the setting won't
+take full effect until you do so.
 
 # Installing from PyPI
 
