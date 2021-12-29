@@ -102,19 +102,21 @@ configuration file as a command line argument. There is an example
 config file `./cfgs/example_config.yaml`
 
 You can copy this example file and modify it to your specific purposes
-and thus then run DenCam on a properly set up system (see Setup
+and thus then run DenCam on a properly set up system (see [Setup](#setup)
 section above for how to set up system) via:
 
 ```
 Usage:
     ./dencam.py cfgs/YOUR_CONFIG_FILE.yaml
-    
 ```
 
-If you are connected to the Raspberry Pi via SSH, then first do:
-```
-   export DISPLAY=:0
-```
+If you intend on connecting to the Raspberry Pi via SSH and running the
+DenCam program remotely, then do the following:
+
+    echo -e "\n# SSH setup" >> ~/.bashrc
+    echo "export DISPLAY=:0" >> ~/.bashrc
+    source ~/.bashrc
+
 ## Explanation of parameters in the configuration file
 
 TODO
