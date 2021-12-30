@@ -1,6 +1,7 @@
 import minimalmodbus
 import math
 import csv
+from recorder import BaseRecorder
 import os
 import sys
 from serial import SerialException
@@ -8,7 +9,7 @@ from datetime import datetime
 
 
 
-# filename = "Log_2021_HalfDay.csv"
+filename = "Log_2021_Hr.csv"
 
 
 def get_Solarlog_info():
@@ -56,8 +57,13 @@ def get_Solarlog_info():
     return log
 
 
-line = get_Solarlog_info()
+def get_File_Path():
+	
 
-with open( '/home/pi/dencam/SOLARLOG_HD.csv', 'a') as csvfile:
+
+
+line = get_Solarlog_info()
+with open( BaseRecorder.video_path + 'SOLARLOG_Hr.csv', 'a') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter='\t')
     csvwriter.writerow(line)
+

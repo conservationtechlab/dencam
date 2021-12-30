@@ -57,7 +57,7 @@ def main():
         time.sleep(.1)
 
     try:
-        MTTP_LOG.start()
+        # MTTP_LOG.start() to remove when  crontask implemented
         recorder = Recorder(configs)
         state = State(NUM_STATES)
         button_handler = ButtonHandler(recorder,
@@ -69,7 +69,7 @@ def main():
         controller = Controller(configs, recorder, state)
         controller.setDaemon(True)
         controller.start()
-        MTTP_LOG.join()
+        # MTTP_LOG.join() to remove....
         while(True):
             pass
             time.sleep(.1)
