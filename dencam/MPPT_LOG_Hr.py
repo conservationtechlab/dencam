@@ -1,15 +1,10 @@
 import minimalmodbus
 import math
 import csv
-from recorder import BaseRecorder
 import os
-import sys
+import getpass
 from serial import SerialException
 from datetime import datetime
-
-
-
-filename = "Log_2021_Hr.csv"
 
 
 def get_Solarlog_info():
@@ -56,14 +51,55 @@ def get_Solarlog_info():
            c_state, Ah_c, Ah_l, alarm]
     return log
 
+def get_free_space(media_path):
+    try:
+        statvfs = os.statvfs(media_path)
+        bytes_available = statvfs.f_frsize * statvfs.f_bavail
+        gigabytes_available = bytes_available/1000000000
+        return gigabytes_available
+    except FileNotFoundError:
+        return 0
 
+
+# needs to be handled as videos are
 def get_File_Path():
-	
+    STORAGE_LIMIT = 0.5
+    user = getpass.getuser()
+    media_dir = os.path.join('/media',user)
+    try:
+        media_devices = os.listdir(media_dir)
+    except FileNotFoundError:
+        media_devices = []
+    default_path = os.path.join('/home',user)
+    if media_devices:
+        media_devices.sort()
+        # strg = ', '.join(media_devices)
+        for media_device in media_devices:
+            media_path = os.path.join(media_dir,media_device)
+            free_space = get_free_space(media_path)
+            if free_space >= STORAGE_LIMIT:
+                break
+        else:
+            media_path = default_path
+            free_space = get_free_space(media_path)
+            if free_space < STORAGE_LIMIT:
+                return None
+    else:
+        media_path = default_path
+        free_space = get_free_space(media_path)
+        if(free_space < STORAGE_LIMIT):
+            return None
+    return media_path
 
 
-
+path = get_File_Path()
+if path:
+    date_string = datetime.now().strftime("%Y-%m-%d")
+    todays_dir = os.path.join(path,date_string)
+    if not os.path.exists(todays_dir):
+        os.makedirs(todays_dir)
 line = get_Solarlog_info()
-with open( BaseRecorder.video_path + 'SOLARLOG_Hr.csv', 'a') as csvfile:
+file_path = todays_dir + '/SOLAR_LOG_Hr.csv'
+with open(file_path, 'a') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter='\t')
     csvwriter.writerow(line)
-

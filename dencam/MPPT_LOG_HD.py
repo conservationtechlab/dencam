@@ -2,7 +2,7 @@ import minimalmodbus
 import math
 import csv
 import os
-import sys
+import getpass
 from serial import SerialException
 from datetime import datetime
 
@@ -55,9 +55,14 @@ def get_Solarlog_info():
            c_state, Ah_c, Ah_l, alarm]
     return log
 
-
+# def MPPT_LOGGER():
 line = get_Solarlog_info()
-
-with open( '/home/pi/dencam/SOLARLOG_HD.csv', 'a') as csvfile:
+user = getpass.getuser()
+user_dir = os.path.join('/home',user)
+media_dir = os.path.join(user_dir,'/dencam')
+path = '/home/' + user +'/dencam/'
+with open(path + 'SOLARLOG_HD.csv', 'a') as csvfile:
     csvwriter = csv.writer(csvfile, delimiter='\t')
     csvwriter.writerow(line)
+
+#MPPT_LOGGER()
