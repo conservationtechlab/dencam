@@ -133,3 +133,22 @@ TODO
 ## Setting up RTC
 
 TODO
+
+## Setting up CronTasks
+
+Dencam utilizes Cronjobs for a few purposes, cronjobs must be added through 
+the OS. To open the Crontab window through terminal:
+
+    crontab -e
+
+This will allow you to add/edit any necessary tasks
+The MPPT needs the following to function
+
+     * */12 * * * python home/pi/dencam/dencam/MPPT_LOG_HD.py  
+     0 * * * * python home/pi/dencam/dencam/MPPT_LOG_Hr.py
+     
+The first will run the python script to log data ever 12 hours, the second will 
+run every hour. Each writing to their respective file.
+     
+
+ 
