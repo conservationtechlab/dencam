@@ -44,15 +44,18 @@ def get_Solarlog_info():
     Ah_l = SunSaver.read_register(45) * 0.1
     # alarm
     alarm = SunSaver.read_register(49)
-   # alarm_list = ["RTS open", "RTS shorted" , "RTS disconnected",
-    #             "Ths open", "Ths shorted", "SSMPTT hot", "Current limit",
-     #            "Current offset", "Undefind", "Undefined", "Uncalibrated",
-      #           "RTS miswire", "Undefined", "Undefined", "miswire",
-       #          "PET open", "P12", "High Va current limit", "Alarm 19",
-        #         "Alarm 20", "Alarm 21" , "Alarm 22", "Alarm 23", "Alarm 24"]
-    log = [date, time, V_batt, V_array, V_load,
-           C_charge, C_load, T_hs, T_amb, T_rts,
-           c_state, Ah_c, Ah_l, alarm]
+    alarm_list = ["RTS open", "RTS shorted" , "RTS disconnected",
+                 "Ths open", "Ths shorted", "SSMPTT hot", "Current limit",
+                 "Current offset", "Undefind", "Undefined", "Uncalibrated",
+                 "RTS miswire", "Undefined", "Undefined", "miswire",
+                 "PET open", "P12", "High Va current limit", "Alarm 19",
+                 "Alarm 20", "Alarm 21" , "Alarm 22", "Alarm 23", "Alarm 24"]
+    log = ["Date: " + str(date), "Time: " + str(time),
+	"Battery voltage: " + V_batt,"Voltage array: " +  V_array,
+	"Load Voltage: " + V_load,"Charge curent: " + C_charge,
+	"Charge load: " + C_load, "HeatSink: " + T_hs, "Ambient" + T_amb,
+	"Remote sensor: "+ T_rts,"Charge" + c_state,"AH charge:" + Ah_c,
+	"Ah load: " + Ah_l, "Alarm: " + alarm_list[alarm]]
     return log
 
 # def MPPT_LOGGER():
