@@ -40,19 +40,20 @@ def get_Solarlog_info():
     Ah_l = SunSaver.read_register(46) * 0.1
     # alarm
     alarm = SunSaver.read_register(49)
-    alarm_list = ["RTS open", "RTS shorted" , "RTS disconnected",
-                 "Ths open", "Ths shorted", "SSMPTT hot", "Current limit",
-                 "Current offset", "Undefind", "Undefined", "Uncalibrated",
-                 "RTS miswire", "Undefined", "Undefined", "miswire",
-                 "PET open", "P12", "High Va current limit", "Alarm 19",
-                 "Alarm 20", "Alarm 21" , "Alarm 22", "Alarm 23", "Alarm 24"]
-     log = ["Date:" + date,"Time: " + time,"Battery voltage:" + V_batt,
-             "Voltage array: " + V_array,"Voltage load: " + V_load,
-             "Charge current: " + C_charge,"Load charge:" + C_load,
-             "Heatsink: " + T_hs,"Ambient: " + T_amb,"Remote: " + T_rts,
-              "Charge state: " + c_state,"Ah charge:" + Ah_c,
-              "Ah load: " + Ah_l",Alarm: " +  alarm_list[alarm]]
+    alarm_list = ["RTS open", "RTS shorted", "RTS disconnected",
+                  "Ths open", "Ths shorted", "SSMPTT hot", "Current limit",
+                  "Current offset", "Undefind", "Undefined", "Uncalibrated",
+                  "RTS miswire", "Undefined", "Undefined", "miswire",
+                  "PET open", "P12", "High Va current limit", "Alarm 19",
+                  "Alarm 20", "Alarm 21", "Alarm 22", "Alarm 23", "Alarm 24"]
+    log = ["Date: " + date, "Time: " + time, "Battery voltage:" + V_batt,
+           "Voltage array: " + V_array, "Voltage load: " + V_load,
+           "Charge current: " + C_charge, "Load charge:" + C_load,
+           "Heatsink: " + T_hs, "Ambient: " + T_amb, "Remote: " + T_rts,
+           "Charge state: " + c_state, "Ah charge:" + Ah_c,
+           "Ah load: " + Ah_l, "Alarm: " + alarm_list[alarm]]
     return log
+
 
 def get_free_space(media_path):
     try:
@@ -68,17 +69,17 @@ def get_free_space(media_path):
 def get_File_Path():
     STORAGE_LIMIT = 0.5
     user = getpass.getuser()
-    media_dir = os.path.join('/media',user)
+    media_dir = os.path.join('/media', user)
     try:
         media_devices = os.listdir(media_dir)
     except FileNotFoundError:
         media_devices = []
-    default_path = os.path.join('/home',user)
+    default_path = os.path.join('/home', user)
     if media_devices:
         media_devices.sort()
         # strg = ', '.join(media_devices)
         for media_device in media_devices:
-            media_path = os.path.join(media_dir,media_device)
+            media_path = os.path.join(media_dir, media_device)
             free_space = get_free_space(media_path)
             if free_space >= STORAGE_LIMIT:
                 break
@@ -98,7 +99,7 @@ def get_File_Path():
 path = get_File_Path()
 if path:
     date_string = datetime.now().strftime("%Y-%m-%d")
-    todays_dir = os.path.join(path,date_string)
+    todays_dir = os.path.join(path, date_string)
     if not os.path.exists(todays_dir):
         os.makedirs(todays_dir)
 line = get_Solarlog_info()

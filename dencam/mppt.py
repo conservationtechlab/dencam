@@ -2,10 +2,7 @@ import minimalmodbus
 import math
 from serial import SerialException
 
-<<<<<<< HEAD
 
-=======
->>>>>>> Write CSV file
 def get_solardisplay_info():
     try:   # checks USB connection
         SunSaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
