@@ -16,6 +16,7 @@ xset -q
 # Download adafruit installer script dependencies.
 sudo pip3 install --upgrade adafruit-python-shell click
 
-# Run adafruit installer script. When it asks you to reboot, enter 'Y'
-# for yes. Rebooting ensures that the settings will take full effect. 
+# Run adafruit installer script.
+# IMPORTANT: When it asks you to reboot, enter 'Y' for yes. Rebooting 
+# ensures that the settings will take full effect.
 sudo python3 adafruit-pitft.py --display=28r --rotation=90 --install-type=fbcp
