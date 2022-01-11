@@ -60,7 +60,10 @@ container = tk.Frame(window)
 container.pack(expand=True, fill='both')
 
 # Setup canvas
-canvas = tk.Canvas(container, width=display_width, height=display_height, highlightthickness=0)
+canvas = tk.Canvas(container,
+                   width=display_width,
+                   height=display_height,
+                   highlightthickness=0)
 canvas.pack(expand=True, fill='both')
 image_on_canvas = canvas.create_image(0, 0, anchor='nw')
 canvas.tag_lower(image_on_canvas)
@@ -76,6 +79,7 @@ laplace_array = np.full((num_rows, num_cols, mv_avg_freq), None)
 # Open a camera for video capturing
 cap = cv2.VideoCapture(0)
 
+
 def show_frame():
     global tkinter_image, mv_avg_count
 
@@ -84,7 +88,7 @@ def show_frame():
     frame = cv2.flip(frame, 0)
     color_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
     gray_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2GRAY)
-    
+
     image_data = Image.fromarray(color_image)
     tkinter_image = ImageTk.PhotoImage(image=image_data)
     canvas.itemconfig(image_on_canvas, image=tkinter_image)
@@ -128,6 +132,7 @@ def show_frame():
     mv_avg_count += 1
 
     window.after(1, show_frame)
+
 
 show_frame()
 
