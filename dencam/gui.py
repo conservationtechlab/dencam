@@ -147,10 +147,6 @@ class BaseController(Thread):
         self.ip_text.set(network_info)
         solar_info = mppt.get_solardisplay_info()
         self.solar_text.set(solar_info)
-<<<<<<< HEAD
-=======
-        # mppt.Solar_sched() chronjob or thread
->>>>>>> Write CSV file
 
 
 class Controller(BaseController):
@@ -191,13 +187,8 @@ def prep_fonts(controller):
                                  size=-int(scrn_height/9))
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
-<<<<<<< HEAD
-    fonts['smallerer'] = tkFont.Font(family='Courier New',
-                                     size=-int(scrn_height/16))
-=======
     fonts['smallest'] = tkFont.Font(family='Courier New',
                                     size=-int(scrn_height/16))
->>>>>>> Write CSV file
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',
@@ -300,11 +291,7 @@ class SolarPage(tk.Frame):
         self.configure(bg='black')
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
-<<<<<<< HEAD
-                                    font=fonts['smallerer'],
-=======
                                     font=fonts['smallest'],
->>>>>>> Write CSV file
                                     fg='yellow',
                                     bg='black')
         self.solar_label.pack(fill=tk.X)
