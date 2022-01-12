@@ -86,10 +86,6 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
 
                 self.state.goto_next()
-<<<<<<< HEAD
-=======
-
->>>>>>> Write CSV file
                 if self.state.value == 4:
                     self.recorder.start_preview()
                 elif self.state.value == 0:
