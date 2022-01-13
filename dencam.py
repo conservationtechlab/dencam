@@ -37,20 +37,21 @@ log.info('Logging level is {}'.format(strg))
 with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 log.info('Read in configuration settings')
-STATE_LIST =["Recording", "Networking", " Solar", "Preview"]
+
 
 def main():
-
+    State_List = configs["STATE_LIST"]
     flags = {'stop_buttons_flag': False}
     def cleanup(flags):
         flags['stop_buttons_flag'] = True
         time.sleep(.1)
     try:
         recorder = Recorder(configs)
-        num_of_states = len(STATE_LIST) + 1
+        num_of_states = len(State_List) + 1
         state = State(num_of_states)
         button_handler = ButtonHandler(recorder,
                                        state,
+                                       State_List,
                                        lambda: flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()

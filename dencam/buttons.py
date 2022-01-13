@@ -13,7 +13,6 @@ from threading import Thread
 import RPi.GPIO as GPIO
 
 log = logging.getLogger(__name__)
-
 # Button pin number mappings
 SCREEN_BUTTON = 27
 FUNCTION_BUTTON = 23
@@ -30,42 +29,37 @@ class ButtonHandler(Thread):
 
     """
 
-    def __init__(self, recorder, state, stop_flag):
+    def __init__(self, recorder, state, State_List, stop_flag):
         super().__init__()
 
         self.recorder = recorder
         self.state = state
         self.stop_flag = stop_flag
-
+        self.State_List = State_List
         self.latch_screen_button = False
         self.latch_record_button = False
         self.latch_preview_button = False
         self.latch_zoom_button = False
-
         GPIO.setmode(GPIO.BCM)
-
         # button pins
         GPIO.setup(SCREEN_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(RECORD_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(FUNCTION_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(ZOOM_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
         # screen backlight control pin and related
         GPIO.setup(18, GPIO.OUT)
         self.backlight_pwm = GPIO.PWM(18, 1000)
         self.backlight_pwm.start(0)
         self._set_screen_brightness()
-
         self.off_countdown = 0
 
-    def run(self):
 
+    def run(self):
         while True:
             self._handle_buttons()
             time.sleep(.05)
             if self.stop_flag():
                 break
-
         log.debug('Button management cleaning up and shutting down.')
         GPIO.cleanup()
 
@@ -86,7 +80,7 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
 
                 self.state.goto_next()
-                if self.state.value == 4:
+                if self.state.value == self.State_List.index("BlankPage") + 1:
                     self.recorder.start_preview()
                 elif self.state.value == 0:
                     self.recorder.stop_preview()
@@ -99,12 +93,12 @@ class ButtonHandler(Thread):
             if not self.latch_record_button:
 
                 if(self.recorder.initial_pause_complete
-                   and self.state.value == 3):
+                   and self.state.value == self.State_List.index("RecordingPage" + 1)):
                     self.recorder.toggle_recording()
-                elif self.state.value == 4:
+                elif self.state.value == self.State_List.index("BlankPage") + 1:
                     self.recorder.toggle_zoom()
                 # elif some state with unused functbutt
-                    #self.whatevers.toggle_airplane_mode() b
+                    # self.whatevers.toggle_airplane_mode() b
 
                 self.latch_record_button = True
         else:

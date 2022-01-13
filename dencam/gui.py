@@ -20,7 +20,7 @@ class BaseController(Thread):
         super().__init__()
         self.recorder = recorder
         self.state = state
-
+        self.State_List = configs["STATE_LIST"]
         self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
 
     def run(self):
@@ -103,14 +103,9 @@ class BaseController(Thread):
 
         self.recorder.update_timestamp()
 
-        if self.state.value == 1:
-            self.show_frame('NetworkPage')
-        elif self.state.value == 2:
-            self.show_frame('RecordingPage')
-        elif self.state.value == 3:
-            self.show_frame('SolarPage')
-        elif self.state.value == 4:
-            self.show_frame('BlankPage')
+        if self.state.value >= 1 and self.state.value <= 4:
+            self.show_frame(self.State_List[self.state.value - 1])
+
         self._update_strings()
         self.window.after(100, self._update)
 
