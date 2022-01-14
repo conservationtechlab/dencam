@@ -150,6 +150,17 @@ The MPPT needs the following to function
      
 The first will run the python script to log data ever 12 hours, the second will 
 run every hour. Each writing to their respective file.
+
+For rebooting , we use the following cronjobs to restart the dencam system at 1:00 am.
+To open up the cronjon window,
+
+    $ sudo nano /etc/crontab
+    
+And the following takes care of rebooting and hardware clock sync
+
+    @reboot         root    hwclock --hctosys --utc
+    30 *    * * *   root    hwclock --hctosys --utc
+    0  1    * * *   root    /sbin/shutdown -r now
      
 
  
