@@ -134,3 +134,47 @@ TODO
 ## Setting up RTC
 
 TODO
+
+# Focus Score Tool
+
+## Purpose
+
+The purpose of the focus score tool is to help the user easily focus the
+camera. In order to do so, this tool displays a grid over the video feed
+with values in each section of the grid that denote how in focus the camera
+is for that given section. Generally, a higher value for a given section
+indicates that the section is more in focus, while a lower value indicates
+that the section is more out of focus. In order for the camera to be in
+focus, you need to manually adjust the lens and see how the values react.
+The goal is to have the object that you're trying to focus on have the
+highest value(s) possible.
+
+## Usage
+
+### Execute focus score tool
+
+In order to execute the focus score tool, make sure to follow the steps
+below in order.
+
+1. SSH into the Raspberry Pi
+2. cd into the root directory of the dencam repository\
+   i.e. `cd dencam`
+3. Activate the virtual environment\
+   i.e. `workon dencam_env`
+4. Install OpenCV\
+   i.e. `pip install opencv-python`
+5. Install Numpy\
+   i.e. `pip install numpy`
+6. Install Pillow\
+   i.e. `pip install Pillow`
+7. Execute the focus score tool\
+   i.e. `python utilities/examine_focus_w_grid.py`
+
+### Terminate focus score tool
+
+In order to terminate the focus score tool, press **ctrl + c** twice and
+then do one of the following:
+
+- Tap the PiTFT touchscreen on the Raspberry Pi
+- Shake the mouse connected to the Raspberry Pi
+- Press any key on the keyboard connected to the Raspberry Pi
