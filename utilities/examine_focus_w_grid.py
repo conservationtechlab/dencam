@@ -85,7 +85,7 @@ def show_frame():
 
     ret, frame = cap.read()
     frame = cv2.resize(frame, (display_width, display_height))
-    frame = cv2.flip(frame, 0)
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
     color_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
     gray_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2GRAY)
 
