@@ -77,6 +77,11 @@ Python 2, make sure the virtual environment will use Python 3:
     cd dencam
     python setup.py install
 
+### Install dencam dependencies with optional dependencies
+    
+    cd dencam
+    pip install dencam[dev]
+
 # Usage
 
 ## On Raspberry Pi 
