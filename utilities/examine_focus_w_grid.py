@@ -87,17 +87,17 @@ def show_frame():
     frame = cv2.resize(frame, (display_width, display_height))
     frame = cv2.rotate(frame, cv2.ROTATE_180)
     color_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-    gray_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2GRAY)
+    gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     image_data = Image.fromarray(color_image)
     tkinter_image = ImageTk.PhotoImage(image=image_data)
     canvas.itemconfig(image_on_canvas, image=tkinter_image)
 
-    for i in range(num_cols):
-        for j in range(num_rows):
-            left = int(sector_width * i)
+    for i in range(num_rows):
+        for j in range(num_cols):
+            left = int(sector_width * j)
             right = left + sector_width
-            top = int(sector_height * j)
+            top = int(sector_height * i)
             bottom = top + sector_height
 
             sector = gray_image[top:bottom, left:right]
