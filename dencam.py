@@ -45,16 +45,18 @@ NUM_STATES = 5
 def main():
 
     flags = {'stop_buttons_flag': False}
-
+    State_List = configs['STATE_LIST']
     def cleanup(flags):
         flags['stop_buttons_flag'] = True
         time.sleep(.1)
 
     try:
         recorder = Recorder(configs)
-        state = State(NUM_STATES)
+        number_of_states = len(State_List) + 1
+        state = State(number_of_states)
         button_handler = ButtonHandler(recorder,
                                        state,
+                                       State_List,
                                        lambda: flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()
