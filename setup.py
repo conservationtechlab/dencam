@@ -39,7 +39,7 @@ setuptools.setup(
         'rpi.gpio'
     ],
     extras_require={
-        'dev': ['numpy',
+        'all': ['numpy',
                 'opencv-python',
                 'pillow',
                 'scipy',

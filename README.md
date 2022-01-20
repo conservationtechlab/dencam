@@ -80,7 +80,7 @@ Python 2, make sure the virtual environment will use Python 3:
 ### Install dencam dependencies with optional dependencies
     
     cd dencam
-    pip install dencam[dev]
+    pip install .[all]
 
 # Usage
 
