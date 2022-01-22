@@ -181,7 +181,7 @@ def prep_fonts(controller):
                                  size=-int(scrn_height/9))
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
-    fonts['smallerer'] = tkFont.Font(family='Courier New',
+    fonts['smallest'] = tkFont.Font(family='Courier New',
                                      size=-int(scrn_height/16))
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
@@ -285,7 +285,7 @@ class SolarPage(tk.Frame):
         self.configure(bg='black')
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
-                                    font=fonts['smallerer'],
+                                    font=fonts['smallest'],
                                     fg='yellow',
                                     bg='black')
         self.solar_label.pack(fill=tk.X)

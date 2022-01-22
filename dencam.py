@@ -39,8 +39,6 @@ with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 log.info('Read in configuration settings')
 
-NUM_STATES = 5
-
 
 def main():
 
