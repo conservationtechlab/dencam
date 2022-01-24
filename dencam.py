@@ -15,13 +15,13 @@ panels.
 import logging
 import argparse
 import time
-
 import yaml
 
 from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import Controller, State
+from dencam.airplane_mode import AirplaneMode
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -53,8 +53,10 @@ def main():
     try:
         recorder = Recorder(configs)
         state = State(NUM_STATES)
+        Airplanemode = AirplaneMode(configs)
         button_handler = ButtonHandler(recorder,
                                        state,
+                                       Airplanemode,
                                        lambda: flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()

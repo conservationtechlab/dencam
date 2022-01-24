@@ -30,13 +30,13 @@ class ButtonHandler(Thread):
 
     """
 
-    def __init__(self, recorder, state, stop_flag):
+    def __init__(self, recorder, state, Airplanemode, stop_flag):
         super().__init__()
 
         self.recorder = recorder
         self.state = state
         self.stop_flag = stop_flag
-
+        self. Airplanemode = Airplanemode
         self.latch_screen_button = False
         self.latch_record_button = False
         self.latch_preview_button = False
@@ -90,7 +90,11 @@ class ButtonHandler(Thread):
                     self.recorder.start_preview()
                 elif self.state.value == 0:
                     self.recorder.stop_preview()
-
+                #elif self.state.value == 1:
+                    #if self.Airplanemode.get_Enabled():
+                        #self.Airplanemode.AP_Mode_OFF()
+                    #else:
+                        #self.Airplanemode.AP_Mode_ON()
                 self._set_screen_brightness()
         else:
             self.latch_screen_button = False
@@ -103,7 +107,11 @@ class ButtonHandler(Thread):
                     self.recorder.toggle_recording()
                 elif self.state.value == 4:
                     self.recorder.toggle_zoom()
-
+                elif self.state.value == 1:
+                    if object.get_Enabled:
+                        self.AP_Mode_OFF
+                    else:
+                        self.AP_Mode_ON
                 self.latch_record_button = True
         else:
             self.latch_record_button = False
