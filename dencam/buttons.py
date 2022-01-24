@@ -90,11 +90,6 @@ class ButtonHandler(Thread):
                     self.recorder.start_preview()
                 elif self.state.value == 0:
                     self.recorder.stop_preview()
-                #elif self.state.value == 1:
-                    #if self.Airplanemode.get_Enabled():
-                        #self.Airplanemode.AP_Mode_OFF()
-                    #else:
-                        #self.Airplanemode.AP_Mode_ON()
                 self._set_screen_brightness()
         else:
             self.latch_screen_button = False
@@ -108,10 +103,10 @@ class ButtonHandler(Thread):
                 elif self.state.value == 4:
                     self.recorder.toggle_zoom()
                 elif self.state.value == 1:
-                    if object.get_Enabled:
-                        self.AP_Mode_OFF
+                    if self.Airplanemode.get_Enabled():
+                        self.Airplanemode.AP_Mode_OFF()
                     else:
-                        self.AP_Mode_ON
+                        self.Airplanemode.AP_Mode_ON()
                 self.latch_record_button = True
         else:
             self.latch_record_button = False
