@@ -43,23 +43,24 @@ log.info('Read in configuration settings')
 def main():
 
     flags = {'stop_buttons_flag': False}
-    State_List = configs['STATE_LIST']
+    STATE_LIST = ['NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
+
     def cleanup(flags):
         flags['stop_buttons_flag'] = True
         time.sleep(.1)
 
     try:
         recorder = Recorder(configs)
-        number_of_states = len(State_List) + 1
+        number_of_states = len(STATE_LIST)
         state = State(number_of_states)
         button_handler = ButtonHandler(recorder,
                                        state,
-                                       State_List,
+                                       STATE_LIST,
                                        lambda: flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()
 
-        controller = Controller(configs, recorder, state)
+        controller = Controller(configs, recorder, STATE_LIST, state)
         controller.setDaemon(True)
         controller.start()
 

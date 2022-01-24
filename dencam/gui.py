@@ -16,11 +16,11 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
-    def __init__(self, configs, recorder, state):
+    def __init__(self, configs, recorder, state_list, state):
         super().__init__()
         self.recorder = recorder
         self.state = state
-        self.State_List = configs['STATE_LIST']
+        self.STATE_LIST = state_list
         self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
 
     def run(self):
@@ -103,8 +103,8 @@ class BaseController(Thread):
 
         self.recorder.update_timestamp()
 
-        if self.state.value >- 1 and self.state.value <= 4:
-            self.show_frame(self.State_List[self.state.value - 1])
+        if self.state.value >= 0 and self.state.value <= 4:
+            self.show_frame(self.STATE_LIST[self.state.value])
         self._update_strings()
         self.window.after(100, self._update)
 
@@ -144,8 +144,8 @@ class BaseController(Thread):
 
 
 class Controller(BaseController):
-    def __init__(self, configs, recorder, state):
-        super().__init__(configs, recorder, state)
+    def __init__(self, configs, recorder, state_list, state):
+        super().__init__(configs, recorder, state_list, state)
 
         self.RECORD_LENGTH = configs['RECORD_LENGTH']
 
@@ -181,7 +181,7 @@ def prep_fonts(controller):
                                  size=-int(scrn_height/9))
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
-    fonts['smallest'] = tkFont.Font(family='Courier New',
+    fonts['smallerer'] = tkFont.Font(family='Courier New',
                                      size=-int(scrn_height/16))
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
@@ -285,7 +285,7 @@ class SolarPage(tk.Frame):
         self.configure(bg='black')
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
-                                    font=fonts['smallest'],
+                                    font=fonts['smallerer'],
                                     fg='yellow',
                                     bg='black')
         self.solar_label.pack(fill=tk.X)
