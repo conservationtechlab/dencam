@@ -133,4 +133,92 @@ TODO
 
 ## Setting up RTC
 
-TODO
+For RPi's not connected to the internet a suitable battery powered hardware
+battery powered hardware clock will be required.
+
+Install clock overhanging the board farthest away from the USB plugs.Follow
+directions on the website exactly.
+
+Enter the following
+
+    sudo i2cdetect -y 1
+
+Be sure you see the device 68 show up in the matrix as seen below. If not,
+double check your connections.
+
+    $      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    60: -- -- -- -- -- -- -- -- 68 -- -- -- -- -- -- -- 
+    70: -- -- -- -- -- -- -- --
+    
+After the hardware checks out add support for the RTC by adding a device
+tree overlay. Run
+
+    sudo nano /boot/config.txt
+
+to the end of the file add
+
+    dtoverlay=i2c-rtc,ds3231
+ 
+Control x, and Y to save the file. Run the following to reboot
+
+    sudo reboot
+    
+Log in and run the following to see if the UU shows up where 0x68 should be
+
+    sudo i2detect -y 1
+
+UU should show as it does in the matrix below
+
+    $      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    60: -- -- -- -- -- -- -- -- UU -- -- -- -- -- -- -- 
+    70: -- -- -- -- -- -- -- --
+    
+Disable the "fake hwclock" which interferes with the 'real' hwclock by
+entering the following
+
+    sudo apt-get -y remove fake-hwclock
+    sudo update-rc.d -f fake-hwclock remove
+    sudo systemctl disable fake-hwclock
+    
+Now with the fake-hwclock off, you can start the original 'hardware clock'
+script
+
+Run the following
+
+    sudo nano /lib/udev/hwclock-set
+
+comment out these lines:
+
+    #if[-e/run/systemmd/system];then
+    #exit 0
+    #fi
+    #/sbin/hwclock --rtc=$dev --systz --badyear
+    #/sbin/hwclock --rtc=$dev --systz
+
+Run 
+
+    date
+
+to verify the time is corect. If not, double check your internet connection
+and reboot to allow the NTP to pull the correct date and time from the 
+internet.
+
+When date reads correctly run
+
+    sudo hwclock -w
+    sudo hwclock -r
+    sudo reboot
+    
+ 
