@@ -144,8 +144,10 @@ of the camera.
 
 ### VIDEO_QUALITY
 
-Takes in a positive integer in the range from 1-40, 1 being the highest, 
-40 being the lowest.
+Takes in a positive integer in the range from 10-40, 10 being the highest, 
+40 being the lowest. The value will affect the quality of video, starting
+at 10 and decreasing in quality up until 40. Recommended value should be
+in the range from 20-25 for our video purposes. 
 
 ### FRAME_RATE
 
@@ -166,9 +168,10 @@ landscape, pass values 0 or 180.
 The DenCam user interface is through the PiTFT screen.  It does not
 use the touchscreen functionality of the screen: the screen itself is
 only used for display and the top two physical buttons beside the
-screen are used for control.  DenCam will start on the Recording Page.
-The top button will advance the display through a series of status
-pages:
+screen are used for control. DenCam will start on the OffPage, which
+is in the middle of our traversal, and booted into automatically for
+power saving purposes.The top button will advance the display through 
+a series of status pages:
 
 * Networking Information Page
 * Recording Status Page
@@ -192,18 +195,21 @@ top button. Each page is displaying information designated to itself.
 
 ## Networking Information Page
 
-This page displays Raspberry Pi username, wLan0 IP address, and the name of 
-the wifi signal it is connected to.
+This page displays the hostname of the device along with wifi network
+information.
 
 ## Recording Status Page
 
 Displays the current number of video recordings saved and stores, the file
 directory they are currently being stored to, the amount of available
-storage, time stamp, and a countdown for the recording to start.
+storage, time stamp, and a countdown for the recording to start (which
+is only used for the initial dencam boot). When the countdown is done,
+that text will be replaced with a prompt that the dencam is currently
+recording. The second button is used to toggle recording on this page.
 
 ## Solar Display Page
 
-This page displays data recieved from the SunSaver decive in realtime.
+This page displays data received from the SunSaver device in real time.
 Currently it displays Battery Voltage(V), Array Voltage(V),
 Charge current(A), Load current(A), Ah charge(Daily)(Ah), and
 Ah load(Daily)(Ah).
@@ -211,12 +217,13 @@ Ah load(Daily)(Ah).
 ## Camera Preview Page
 
 Displays timestamp and current feed of the Camera, note this feed is 
-not necessarily being recorded.
+not necessarily being recorded. The second button will toggle the one-
+to-one pixel tool to aid focusing. 
 
 ## Blank page with screen illumination disabled
 
-Is a blank page that displays no information, mainly used as a 
-background for the Camera Preview Page.
+Is a blank page that displays no information, mainly used as a power
+saving utility.
 
 ## Setting up DenCam to run on boot
 
