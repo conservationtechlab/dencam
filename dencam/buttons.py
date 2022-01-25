@@ -70,7 +70,7 @@ class ButtonHandler(Thread):
         GPIO.cleanup()
 
     def _set_screen_brightness(self):
-        if self.state.value >= 0:
+        if self.state.value > 0:
             self.backlight_pwm.ChangeDutyCycle(100)
             self.screen_on = True
         else:
@@ -88,7 +88,7 @@ class ButtonHandler(Thread):
                 self.state.goto_next()
                 if self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.start_preview()
-                elif self.state.value == self.STATE_LIST.index("NetworkPage"):
+                elif self.state.value == self.STATE_LIST.index("OffPage"):
                     self.recorder.stop_preview()
 
                 self._set_screen_brightness()

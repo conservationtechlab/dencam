@@ -43,7 +43,7 @@ log.info('Read in configuration settings')
 def main():
 
     flags = {'stop_buttons_flag': False}
-    STATE_LIST = ['NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
+    STATE_LIST = ['OffPage', 'NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
 
     def cleanup(flags):
         flags['stop_buttons_flag'] = True

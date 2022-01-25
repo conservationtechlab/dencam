@@ -17,4 +17,3 @@ FRAME_RATE: 25
 
 # 0, 90, 180, 270. have not checked whether 90 and 270 crop image or what
 CAMERA_ROTATION: 180 
-
