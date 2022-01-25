@@ -66,7 +66,7 @@ class BaseController(Thread):
 
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.show_frame('NetworkPage')
+        self.show_frame('RecordingPage')
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
@@ -103,8 +103,11 @@ class BaseController(Thread):
 
         self.recorder.update_timestamp()
 
-        if (self.state.value >= self.STATE_LIST.index('NetworkPage')
-              and self.state.value <= self.STATE_LIST.index('BlankPage')):
+        networkp_index = self.STATE_LIST.index('NetworkPage')
+        blankp_index = self.STATE_LIST.index('BlankPage')
+
+        if (self.state.value >= networkp_index
+                and self.state.value <= blankp_index):
             self.show_frame(self.STATE_LIST[self.state.value])
         self._update_strings()
         self.window.after(100, self._update)
