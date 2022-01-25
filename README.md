@@ -1,7 +1,7 @@
 # Overview
 
 This repository contains control code for Mini DenCam, a polar bear
-maternal den observation device.  The project is a collaboration
+maternal den observation device. The project is a collaboration
 between the Conservation Technology Lab at the San Diego Zoo Wildlife
 Alliance and Polar Bears International.
 
@@ -144,34 +144,32 @@ of the camera.
 
 ### VIDEO_QUALITY
 
-Takes in a positive integer in the range from 10-40, 10 being the highest, 
-40 being the lowest. The value will affect the quality of video, starting
-at 10 and decreasing in quality up until 40. Recommended value should be
-in the range from 20-25 for our video purposes. 
+Takes in a positive integer in the range of 10 to 40 where 10 is extremely
+high quality, and 40 is extremely low. The recommended value should be in the
+range of 20 to 25. 
 
 ### FRAME_RATE
 
-Controls the frame rate of the recordings, taking in a postive integer 
-from the range 1-60. The higher the number the smoother the recording, 
-but the quality of the recording reduces.We found through testing that 30 
-is a decent halfway point, where the recording is smooth enough and the 
-change in quality is not as noticable.
+Controls the frame rate of the recordings, taking in a postive integer in the
+range of 1 to 60. The higher the number, the smoother the recording at the
+expense of quality. We found through testing that 30 is a decent halfway
+point between a smooth recording and an unnoticable change in quality.
 
 ### CAMERA_ROTATION
 
-Controls the rotation of the Camera display by taking in a positve integere
-representing the oreintation in degrees. To have the camera display in
-landscape, pass values 0 or 180.
+Controls the rotation of the camera display by taking in a positive integer,
+which represents the oreintation in degrees. To have the camera display in
+landscape, set the value to 0 or 180.
 
 ## Using the DenCam user interface
 
-The DenCam user interface is through the PiTFT screen.  It does not
+The DenCam user interface is through the PiTFT screen. It does not
 use the touchscreen functionality of the screen: the screen itself is
 only used for display and the top two physical buttons beside the
 screen are used for control. DenCam will start on the OffPage, which
-is in the middle of our traversal, and booted into automatically for
-power saving purposes.The top button will advance the display through 
-a series of status pages:
+is in the middle of our traversal. DenCam will boot into the OffPage
+automatically for power saving purposes. The top button will advance the
+display through a series of status pages:
 
 * Networking Information Page
 * Recording Status Page
@@ -200,12 +198,13 @@ information.
 
 ## Recording Status Page
 
-Displays the current number of video recordings saved and stores, the file
-directory they are currently being stored to, the amount of available
-storage, time stamp, and a countdown for the recording to start (which
-is only used for the initial dencam boot). When the countdown is done,
-that text will be replaced with a prompt that the dencam is currently
-recording. The second button is used to toggle recording on this page.
+This page displays the current number of video recordings that have been
+saved and stored, the file directory where the recordings are currently
+being written to, the amount of available storage, the timestamp, and a
+countdown for the recording to start (which is only used for the initial
+dencam boot). When the countdown is complete, the countdown text will be
+replaced with the recording status text. The second button is used to
+toggle the recording on this page.
 
 ## Solar Display Page
 
@@ -216,14 +215,14 @@ Ah load(Daily)(Ah).
 
 ## Camera Preview Page
 
-Displays timestamp and current feed of the Camera, note this feed is 
-not necessarily being recorded. The second button will toggle the one-
-to-one pixel tool to aid focusing. 
+This page displays the timestamp and current feed of the Camera. Note that
+this feed is not necessarily being recorded. The second button will toggle
+the one-to-one pixel tool to aid focusing.
 
 ## Blank page with screen illumination disabled
 
-Is a blank page that displays no information, mainly used as a power
-saving utility.
+This page is a blank page that displays no information. Its sole purpose
+is for power saving.
 
 ## Setting up DenCam to run on boot
 
