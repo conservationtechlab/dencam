@@ -78,7 +78,13 @@ Python 2, make sure the virtual environment will use Python 3:
     python setup.py install
 
 ### Install dencam dependencies with optional dependencies
-    
+
+Any functionality that is not integrated into the core dencam project requires
+optional dependencies to be installed. At the moment, there are two tools that
+haven't been integrated: `utilities/examine_focus_w_grid_scipy.py` and
+`utilities/examine_focus_w_grid.py`. In order to run either of the files, you
+must first install the dencam dependencies with optional dependencies.
+
     cd dencam
     pip install .[all]
 
