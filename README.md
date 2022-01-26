@@ -134,10 +134,18 @@ TODO
 ## Setting up RTC
 
 For RPi's not connected to the internet a suitable battery powered hardware
-battery powered hardware clock will be required.
+clock will be required.
 
 Install clock overhanging the board farthest away from the USB plugs.Follow
 directions on the website exactly.
+
+Adafruit RTC 1st Steps 
+https://learn.adafruit.com/adding-a-real-time-clock-to-raspberry-pi/set-up-and-test-i2c
+
+Adafruit RTC 2nd Steps
+https://learn.adafruit.com/adding-a-real-time-clock-to-raspberry-pi/set-rtc-time
+
+
 
 Enter the following
 
@@ -211,7 +219,7 @@ Run
 
     date
 
-to verify the time is corect. If not, double check your internet connection
+to verify the time is correct. If not, double check your internet connection
 and reboot to allow the NTP to pull the correct date and time from the 
 internet.
 
