@@ -95,7 +95,7 @@ def show_frame():
 
     for i in range(num_rows):
         for j in range(num_cols):
-            left = int(sector_width * j)
+            left = int(sector_width * j) + 1
             right = left + sector_width
             top = int(sector_height * i)
             bottom = top + sector_height

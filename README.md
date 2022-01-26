@@ -139,17 +139,22 @@ TODO
 
 ## Purpose
 
-The purpose of the focus score tool is to help the user easily focus the
-camera. In order to do so, this tool displays a grid over the video feed
+The purpose of a focus score tool is to help the user easily focus the
+camera. In order to do so, this tool displays a grid over the camera feed
 with values in each section of the grid that denote how in focus the camera
 is for that given section. Generally, a higher value for a given section
 indicates that the section is more in focus, while a lower value indicates
 that the section is more out of focus. In order for the camera to be in
 focus, you need to manually adjust the lens and see how the values react.
-The goal is to have the object that you're trying to focus on have the
+The goal is to have the object or landscape that you're focusing on have the
 highest value(s) possible.
 
 ## Usage
+There are two focus score tools which are each implemented differently.
+`utilities/examine_focus_w_grid.py` is an OpenCV-based implementation, while
+`utilities/examine_focus_w_grid_scipy.py` is a SciPy-based implementation.
+At the moment, the OpenCV-based implementation runs the best out of the two
+versions.
 
 ### Execute focus score tool
 
@@ -161,19 +166,17 @@ below in order.
    i.e. `cd dencam`
 3. Activate the virtual environment\
    i.e. `workon dencam_env`
-4. Install OpenCV\
-   i.e. `pip install opencv-python`
-5. Install Numpy\
-   i.e. `pip install numpy`
-6. Install Pillow\
-   i.e. `pip install Pillow`
-7. Execute the focus score tool\
-   i.e. `python utilities/examine_focus_w_grid.py`
+4. Install dencam dependencies with optional dependencies\
+   i.e. `pip install .[all]`
+5. Execute the focus score tool\
+   i.e. `python utilities/examine_focus_w_grid.py` or\
+   `python utilities/examine_focus_w_grid_scipy.py`
 
 ### Terminate focus score tool
 
-In order to terminate the focus score tool, press **ctrl + c** twice and
-then do one of the following:
+In order to terminate the focus score tool, press <kbd>Ctrl</kbd> + <kbd>C</kbd>
+twice. If the program hasn't closed on the Pi, then perform one of the following
+actions:
 
 - Tap the PiTFT touchscreen on the Raspberry Pi
 - Shake the mouse connected to the Raspberry Pi
