@@ -95,10 +95,19 @@ def show_frame():
 
     for i in range(num_rows):
         for j in range(num_cols):
-            left = int(sector_width * j) + 1
+            left = int(sector_width * j)
             right = left + sector_width
             top = int(sector_height * i)
             bottom = top + sector_height
+
+            # Issue: leftmost column of the grid displays high laplacian
+            # values when it shouldn't. The issue seems to be caused by a
+            # 1 pixel wide line that runs down the left side of the image.
+            # This issue should be investigated further.
+            # Workaround: add 1 pixel to the left of each sector belonging
+            # to the leftmost column.
+            if j == 0:
+                left += 1
 
             sector = gray_image[top:bottom, left:right]
             laplace = variance_of_laplacian(sector)
