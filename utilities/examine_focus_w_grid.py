@@ -13,12 +13,9 @@ different number for one scene (or grid element) versus another.
 """
 
 import argparse
-import time
 
 import cv2
 import numpy as np
-from picamera import PiCamera
-from picamera.array import PiRGBArray
 from screeninfo import get_monitors
 
 import tkinter as tk
@@ -58,11 +55,18 @@ window.geometry(f'{display_width}x{display_height}')  # Set window size
 window.attributes('-fullscreen', True)  # Make window fullscreen
 font = tkFont.Font(family='Helvetica', size=15, weight='normal')
 
+# Setup frame
+container = tk.Frame(window)
+container.pack(expand=True, fill='both')
+
 # Setup canvas
-canvas = tk.Canvas(window, width=display_width, height=display_height)
-canvas.pack(side='top', fill='both', expand=True)
-image = canvas.create_image(0, 0, anchor='nw')
-canvas.tag_lower(image)
+canvas = tk.Canvas(container,
+                   width=display_width,
+                   height=display_height,
+                   highlightthickness=0)
+canvas.pack(expand=True, fill='both')
+image_on_canvas = canvas.create_image(0, 0, anchor='nw')
+canvas.tag_lower(image_on_canvas)
 text_array = [[None for x in range(num_rows)] for y in range(num_cols)]
 rectangle_array = [[None for x in range(num_rows)] for y in range(num_cols)]
 
@@ -72,34 +76,38 @@ mv_avg_count = 0
 mv_avg_freq = 5  # Number of frames to perform moving average on
 laplace_array = np.full((num_rows, num_cols, mv_avg_freq), None)
 
-# Initialize camera and grab a reference to the raw camera capture
-camera = PiCamera()
-camera.rotation = 180
-camera.resolution = (640, 480)
-camera.framerate = 30
-rawCapture = PiRGBArray(camera, size=(640, 480))
+# Open a camera for video capturing
+cap = cv2.VideoCapture(0)
 
-# Allow the camera to warmup
-time.sleep(0.1)
 
-# Capture frames from the camera
-for frame in camera.capture_continuous(rawCapture,
-                                       format='rgb',
-                                       use_video_port=True):
-    # Grab the raw NumPy array representing the image
-    color_image = frame.array
+def show_frame():
+    global tkinter_image, mv_avg_count
 
-    tkinter_image = ImageTk.PhotoImage(image=Image.fromarray(color_image))
-    canvas.itemconfig(image, image=tkinter_image)
+    ret, frame = cap.read()
+    frame = cv2.resize(frame, (display_width, display_height))
+    frame = cv2.rotate(frame, cv2.ROTATE_180)
+    color_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+    gray_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    gray_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2GRAY)
+    image_data = Image.fromarray(color_image)
+    tkinter_image = ImageTk.PhotoImage(image=image_data)
+    canvas.itemconfig(image_on_canvas, image=tkinter_image)
 
-    for i in range(num_cols):
-        for j in range(num_rows):
-            left = int(sector_width * i)
+    for i in range(num_rows):
+        for j in range(num_cols):
+            left = int(sector_width * j)
             right = left + sector_width
-            top = int(sector_height * j)
+            top = int(sector_height * i)
             bottom = top + sector_height
+
+            # Issue: leftmost column of the grid displays high laplacian
+            # values when it shouldn't. The issue seems to be caused by a
+            # 1 pixel wide line that runs down the left side of the image.
+            # This issue should be investigated further.
+            # Workaround: add 1 pixel to the left of each sector belonging
+            # to the leftmost column.
+            if j == 0:
+                left += 1
 
             sector = gray_image[top:bottom, left:right]
             laplace = variance_of_laplacian(sector)
@@ -132,9 +140,10 @@ for frame in camera.capture_continuous(rawCapture,
 
     mv_avg_count += 1
 
-    # Clear the stream in preparation for the next frame
-    rawCapture.truncate(0)
-    canvas.update()
+    window.after(1, show_frame)
+
+
+show_frame()
 
 # Run the tkinter event loop
 window.mainloop()
