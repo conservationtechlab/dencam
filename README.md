@@ -138,6 +138,10 @@ On the Camera Preview Page, the same second button will toggle between
 the full resolution camera view and a one-to-one pixel view intended
 to aid in focusing the camera (the camera is focused manually).
 
+On the Network page, the second button will toggle on/off airplane mode.
+Note that airplane mode will be enabled or disabled on boot depending on
+the variable AIRPLANE_MODE in the config file.
+
 ## Setting up DenCam to run on boot
 
 TODO
