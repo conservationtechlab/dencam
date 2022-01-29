@@ -85,15 +85,11 @@ class ButtonHandler(Thread):
         if not GPIO.input(SCREEN_BUTTON):
             if not self.latch_screen_button:
                 self.latch_screen_button = True
-
                 self.state.goto_next()
                 if self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.start_preview()
                 elif self.state.value == self.STATE_LIST.index("OffPage"):
                     self.recorder.stop_preview()
-                elif self.state.value == self.STATE_LIST.index("NetworkPage"):
-                    self.airplane_mode.toggle()
-
                 self._set_screen_brightness()
         else:
             self.latch_screen_button = False
@@ -106,7 +102,8 @@ class ButtonHandler(Thread):
                     self.recorder.toggle_recording()
                 elif self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.toggle_zoom()
-
+                elif self.state.value == self.STATE_LIST.index("NetworkPage"):
+                    self.airplane_mode.toggle()
                 self.latch_record_button = True
         else:
             self.latch_record_button = False

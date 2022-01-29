@@ -47,9 +47,9 @@ class AirplaneMode:
 
     def __init__(self, configs):
         apm = configs['AIRPLANE_MODE']
-        if apm:
+        if apm is True:
             self.ap_mode_on()
-        if not apm:
+        if apm is False:
             self.ap_mode_off()
         self.enabled = apm
 
