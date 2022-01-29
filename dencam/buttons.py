@@ -30,13 +30,14 @@ class ButtonHandler(Thread):
 
     """
 
-    def __init__(self, recorder, state, state_list, stop_flag):
+    def __init__(self, recorder, state, state_list, airplane_mode, stop_flag):
         super().__init__()
 
         self.recorder = recorder
         self.state = state
         self.stop_flag = stop_flag
         self.STATE_LIST = state_list
+        self.airplane_mode = airplane_mode
         self.latch_screen_button = False
         self.latch_record_button = False
         self.latch_preview_button = False
@@ -90,6 +91,8 @@ class ButtonHandler(Thread):
                     self.recorder.start_preview()
                 elif self.state.value == self.STATE_LIST.index("OffPage"):
                     self.recorder.stop_preview()
+                elif self.state.value == self.STATE_LIST.index("NetworkPage"):
+                    self.airplane_mode.toggle()
 
                 self._set_screen_brightness()
         else:
