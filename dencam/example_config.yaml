@@ -1,6 +1,8 @@
 # length of videos to record in seconds
 RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
 
+STORAGE_LIMIT: 0.5  # in gigabytes
+
 # PiTFT SCREEN CHARACTERISTICS
 DISPLAY_RESOLUTION: [640, 480]
 

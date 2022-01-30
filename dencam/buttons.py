@@ -30,13 +30,13 @@ class ButtonHandler(Thread):
 
     """
 
-    def __init__(self, recorder, state, stop_flag):
+    def __init__(self, recorder, state, state_list, stop_flag):
         super().__init__()
 
         self.recorder = recorder
         self.state = state
         self.stop_flag = stop_flag
-
+        self.STATE_LIST = state_list
         self.latch_screen_button = False
         self.latch_record_button = False
         self.latch_preview_button = False
@@ -86,9 +86,9 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
 
                 self.state.goto_next()
-                if self.state.value == 4:
+                if self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.start_preview()
-                elif self.state.value == 0:
+                elif self.state.value == self.STATE_LIST.index("OffPage"):
                     self.recorder.stop_preview()
 
                 self._set_screen_brightness()
@@ -99,9 +99,9 @@ class ButtonHandler(Thread):
             if not self.latch_record_button:
 
                 if(self.recorder.initial_pause_complete
-                   and self.state.value == 3):
+                   and self.state.value == self.STATE_LIST.index("RecordingPage")):
                     self.recorder.toggle_recording()
-                elif self.state.value == 4:
+                elif self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.toggle_zoom()
 
                 self.latch_record_button = True

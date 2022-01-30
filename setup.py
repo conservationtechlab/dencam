@@ -31,12 +31,20 @@ setuptools.setup(
     packages=['dencam'],
     include_package_data=True,
     install_requires=[
-        'pyyaml',
-        'rpi.gpio',
-        'picamera',
+        'minimalmodbus',
         'netifaces',
-        'screeninfo',
+        'picamera',
+        'pyserial',
+        'pyyaml',
+        'rpi.gpio'
     ],
+    extras_require={
+        'all': ['numpy',
+                'opencv-python',
+                'pillow',
+                'scipy',
+                'screeninfo']
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
