@@ -200,6 +200,14 @@ On the Network page, the second button will toggle on/off airplane mode.
 Note that airplane mode will be enabled or disabled on boot depending on
 the variable AIRPLANE_MODE in the config file.
 
+## Setting up DenCam to run on boot
+
+TODO
+
+## Setting up RTC
+
+TODO
+
 # Dencam Pages
 
 The Dencam user interface has 5 pages, which are traversed using the 
@@ -238,14 +246,6 @@ the one-to-one pixel tool to aid focusing.
 
 This page is a blank page that displays no information. Its sole purpose
 is for power saving.
-
-## Setting up DenCam to run on boot
-
-TODO
-
-## Setting up RTC
-
-TODO
 
 # Focus Score Tool
 
