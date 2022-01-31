@@ -1,7 +1,7 @@
 # Overview
 
 This repository contains control code for Mini DenCam, a polar bear
-maternal den observation device.  The project is a collaboration
+maternal den observation device. The project is a collaboration
 between the Conservation Technology Lab at the San Diego Zoo Wildlife
 Alliance and Polar Bears International.
 
@@ -9,13 +9,13 @@ Alliance and Polar Bears International.
 
 The target hardware is a Raspberry Pi 4 Model B single board computer
 with a Picamera-style camera and the AdaFruit PiTFT screen (2.8"
-resistive touch model with 4 GPIO-connected buttons)
-attached. Typically several storage devices are connected via the USB
-ports on the Pi (e.g. microSD card readers). 
+resistive touch model with 4 GPIO-connected buttons) attached.
+Typically, several storage devices are connected via the USB
+ports on the Pi (e.g. microSD card readers).
 
 This hardware is typically integrated into a larger assembly that
 includes a weatherproof enclosure, batteries, solar charge controller,
-and external solar panels.  Documentation of the full mechanical and
+and external solar panels. Documentation of the full mechanical and
 electrical design and construction of the DenCam system is not
 included here but it is hoped that this code (which only needs the
 components explicitly mentioned in the preceding paragraph) can still
@@ -24,60 +24,57 @@ contribute to the DenCam project.
 
 # Operating System
 
-Currently DenCam runs on Raspian Stretch and Buster.  Problems have
+Currently, DenCam runs on Raspian Stretch and Buster. Problems have
 been encountered with Bullseye (specifically with interfacing with the
 picamera).
 
-# Screen setup
-
-TODO: add instructions for setting up PiTFT screen using script from
-adafruit.  Possibly we should include the script in the repo.
-
-# Installing from PyPI
+# Install from PyPI
 
     pip install dencam
 
-# Installing from GitHub repository
+# Install from GitHub repository
 
-### Install virtualenvwrapper
+## Install virtualenvwrapper
 
-     sudo pip3 install virtualenv virtualenvwrapper
+    sudo pip3 install virtualenv virtualenvwrapper
 
-### Setup virtual environment  ~/.bashrc file
+## Setup virtual environment ~/.bashrc file
 
-     echo -e "\n# Virtual environment setup" >> ~/.bashrc
-     echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
-     echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
-     echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
-     source ~/.bashrc
+```sh
+echo -e "\n# Virtual environment setup" >> ~/.bashrc
+echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
+echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+source ~/.bashrc
+```
 
-### Create virtual environment for dencam project
+## Create virtual environment for dencam project
 
     mkvirtualenv dencam_env
 
 Note that DenCam requires Python 3 so if the default on your system is
 Python 2, make sure the virtual environment will use Python 3:
 
-       mkvirtualenv dencam_env -p python3
+    mkvirtualenv dencam_env -p python3
 
-### Activate virtual environment (not necessary if you just made it)
+## Activate virtual environment (not necessary if you just made it)
 
     workon dencam_env
 
-### Clone the dencam repository
+## Clone the dencam repository
 
     git clone https://github.com/icr-ctl/dencam.git
 
-### Update apt package sources list
+## Update apt package sources list
 
     sudo apt update
 
-### Install dencam dependencies
+## Install dencam dependencies
 
     cd dencam
     python setup.py install
 
-### Install dencam dependencies with optional dependencies
+## Install dencam dependencies with optional dependencies
 
 Any functionality that is not integrated into the core dencam project requires
 optional dependencies to be installed. At the moment, there are two tools that
@@ -87,6 +84,20 @@ must first install the dencam dependencies with optional dependencies.
 
     cd dencam
     pip install .[all]
+
+## Execute install.sh
+
+    sudo chmod u+x install.sh
+    ./install.sh
+
+The above terminal commands give execution permission to the current user
+and then executes the `install.sh` script. When the script asks if you'd like
+to reboot, enter <kbd>Y</kbd> for yes. Rebooting is necessary for the
+settings to take effect. Note: this script should only be run once. The
+script will do the following:
+
+* Disable screen saver
+* Setup PiTFT screen
 
 # Usage
 
@@ -101,34 +112,81 @@ You can copy this example file and modify it to your specific purposes
 and thus then run DenCam on a properly set up system (see Setup
 section above for how to set up system) via:
 
-```
-Usage:
-    ./dencam.py cfgs/YOUR_CONFIG_FILE.yaml
-    
-```
+    Usage:
+        ./dencam.py cfgs/YOUR_CONFIG_FILE.yaml
 
 If you are connected to the Raspberry Pi via SSH, then first do:
-```
-   export DISPLAY=:0
-```
+
+    export DISPLAY=:0
+
 ## Explanation of parameters in the configuration file
 
-TODO
+The configuration file stores variables used throughout the dencam 
+code.
+
+### RECORD_LENGTH
+
+Takes a positive integer value of the length each recording will be
+(in seconds). Passing a value of 300 will make each recording 5 min.
+
+### STORAGE_LIMIT
+Takes in a positive float value which will be the minimum amount of storage
+(in gigabytes) necessary in order to start a recording.
+
+### DISPLAY_RESOLUTION
+
+Takes two integer values, used to set the resolution of the display 
+pages of the Dencam.
+
+### PAUSE_BEFORE_RECORD
+
+Takes in a positive integer value which will be the seconds to wait
+after the dencam has initially started until the first recording begins
+
+### POWER_OFF_DELAY
+
+Controls the amount of time the off button needs to be held down for, until 
+the Pi shuts down.
+
+### CAMERA_RESOLUTION
+
+Takes in two positive integers that will be used to dictate the resolution
+of the camera.
+
+### VIDEO_QUALITY
+
+Takes in a positive integer in the range of 10 to 40 where 10 is extremely
+high quality, and 40 is extremely low. The recommended value should be in the
+range of 20 to 25. 
+
+### FRAME_RATE
+
+Controls the frame rate of the recordings, taking in a positive integer in the
+range of 1 to 60. The higher the number, the smoother the recording at the
+expense of quality. We found through testing that 30 is a decent halfway
+point between a smooth recording and an unnoticeable change in quality.
+
+### CAMERA_ROTATION
+
+Controls the rotation of the camera display by taking in a positive integer,
+which represents the orientation in degrees. To have the camera display in
+landscape, set the value to 0 or 180.
 
 ## Using the DenCam user interface
 
-The DenCam user interface is through the PiTFT screen.  It does not
+The DenCam user interface is through the PiTFT screen. It does not
 use the touchscreen functionality of the screen: the screen itself is
 only used for display and the top two physical buttons beside the
-screen are used for control.  DenCam will start with the screen blank.
-The top button will advance the display through a series of status
-pages:
+screen are used for control. DenCam will start on the OffPage, which
+is in the middle of our traversal. DenCam will boot into the OffPage
+automatically for power saving purposes. The top button will advance the
+display through a series of status pages:
 
 * Networking Information Page
 * Recording Status Page
+* Solar Display Page
 * Camera Preview Page
 * Blank page with screen illumination disabled
-* Solar Display Page
 
 On the Recording Status Page, the second button will toggle recording
 on and off (recording will begin automatically after the countdown set
@@ -149,6 +207,45 @@ TODO
 ## Setting up RTC
 
 TODO
+
+# Dencam Pages
+
+The Dencam user interface has 5 pages, which are traversed using the 
+top button. Each page is displaying information designated to itself.
+(i.e. Solar Display Page displays information received from Sun Saver)
+
+## Networking Information Page
+
+This page displays the hostname of the device along with wifi network
+information.
+
+## Recording Status Page
+
+This page displays the current number of video recordings that have been
+saved and stored, the file directory where the recordings are currently
+being written to, the amount of available storage, the timestamp, and a
+countdown for the recording to start (which is only used for the initial
+dencam boot). When the countdown is complete, the countdown text will be
+replaced with the recording status text. The second button is used to
+toggle the recording on this page.
+
+## Solar Display Page
+
+This page displays data received from the SunSaver device in real time.
+Currently it displays Battery Voltage(V), Array Voltage(V),
+Charge current(A), Load current(A), Ah charge(Daily)(Ah), and
+Ah load(Daily)(Ah).
+
+## Camera Preview Page
+
+This page displays the timestamp and current feed of the Camera. Note that
+this feed is not necessarily being recorded. The second button will toggle
+the one-to-one pixel tool to aid focusing.
+
+## Blank page with screen illumination disabled
+
+This page is a blank page that displays no information. Its sole purpose
+is for power saving.
 
 # Focus Score Tool
 
@@ -189,9 +286,9 @@ below in order.
 
 ### Terminate focus score tool
 
-In order to terminate the focus score tool, press <kbd>Ctrl</kbd> + <kbd>C</kbd>
-twice. If the program hasn't closed on the Pi, then perform one of the following
-actions:
+In order to terminate the focus score tool, press
+<kbd>Ctrl</kbd> + <kbd>C</kbd> twice. If the program hasn't closed on the
+Pi, then perform one of the following actions:
 
 - Tap the PiTFT touchscreen on the Raspberry Pi
 - Shake the mouse connected to the Raspberry Pi
