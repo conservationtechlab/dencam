@@ -93,7 +93,7 @@ must first install the dencam dependencies with optional dependencies.
 The above terminal commands give execution permission to the current user
 and then executes the `install.sh` script. When the script asks if you'd like
 to reboot, enter <kbd>Y</kbd> for yes. Rebooting is necessary for the
-settings to take effect. Note: this script should only be ran once. The
+settings to take effect. Note: this script should only be run once. The
 script will do the following:
 
 * Disable screen saver
@@ -161,15 +161,15 @@ range of 20 to 25.
 
 ### FRAME_RATE
 
-Controls the frame rate of the recordings, taking in a postive integer in the
+Controls the frame rate of the recordings, taking in a positive integer in the
 range of 1 to 60. The higher the number, the smoother the recording at the
 expense of quality. We found through testing that 30 is a decent halfway
-point between a smooth recording and an unnoticable change in quality.
+point between a smooth recording and an unnoticeable change in quality.
 
 ### CAMERA_ROTATION
 
 Controls the rotation of the camera display by taking in a positive integer,
-which represents the oreintation in degrees. To have the camera display in
+which represents the orientation in degrees. To have the camera display in
 landscape, set the value to 0 or 180.
 
 ## Using the DenCam user interface
@@ -212,7 +212,7 @@ TODO
 
 The Dencam user interface has 5 pages, which are traversed using the 
 top button. Each page is displaying information designated to itself.
-(i.e. Solar Display Page displays information recieved from Sun Saver)
+(i.e. Solar Display Page displays information received from Sun Saver)
 
 ## Networking Information Page
 
