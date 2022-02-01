@@ -9,7 +9,7 @@ four buttons that are part of the PiTFT screen PCB.
 import logging
 import time
 from threading import Thread
-
+from dencam import sunsaver_log
 import RPi.GPIO as GPIO
 
 log = logging.getLogger(__name__)
@@ -104,6 +104,8 @@ class ButtonHandler(Thread):
                     self.recorder.toggle_zoom()
                 elif self.state.value == self.STATE_LIST.index("NetworkPage"):
                     self.airplane_mode.toggle()
+                elif self.state.value == self.STATE_LIST.index("SolarPage"):
+                    sunsaver_log.log_solar_info()
                 self.latch_record_button = True
         else:
             self.latch_record_button = False
