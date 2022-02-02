@@ -17,6 +17,7 @@ def get_free_space(media_path):
 
 
 def log_solar_info():
+    storage_limit = 0.5
     solar_list = ['init']
     now = datetime.now()
     date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
@@ -57,7 +58,7 @@ def log_solar_info():
             SerialException):
         solar_list = [date_time_string + ' ERROR READING FROM SUNSAVER']
     SunSaver.serial.close()
-    if True:
+    if get_free_space('/home/pi/dencam/') > storage_limit:
         if not os.path.exists('/home/pi/dencam/solar.csv'):
             header_row = ['Date', 'Time', 'Batt Volts',
                           'Array volts', 'Load volts',
