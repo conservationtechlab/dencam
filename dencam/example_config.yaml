@@ -1,6 +1,8 @@
 # length of videos to record in seconds
 RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
 
+STORAGE_LIMIT: 0.5  # in gigabytes
+
 # PiTFT SCREEN CHARACTERISTICS
 DISPLAY_RESOLUTION: [640, 480]
 
@@ -17,3 +19,6 @@ FRAME_RATE: 25
 
 # 0, 90, 180, 270. have not checked whether 90 and 270 crop image or what
 CAMERA_ROTATION: 180 
+
+# airplane mode variable True for on, False for off
+AIRPLANE_MODE: False

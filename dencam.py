@@ -22,7 +22,7 @@ from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import Controller, State
-
+from dencam.networking import AirplaneMode
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
                     help='Filename of a YAML Mini DenCam configuration file.')
@@ -39,12 +39,11 @@ with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 log.info('Read in configuration settings')
 
-NUM_STATES = 5
-
 
 def main():
 
     flags = {'stop_buttons_flag': False}
+    STATE_LIST = ['OffPage', 'NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
 
     def cleanup(flags):
         flags['stop_buttons_flag'] = True
@@ -52,14 +51,18 @@ def main():
 
     try:
         recorder = Recorder(configs)
-        state = State(NUM_STATES)
+        number_of_states = len(STATE_LIST)
+        state = State(number_of_states)
+        airplane_mode = AirplaneMode(configs)
         button_handler = ButtonHandler(recorder,
                                        state,
+                                       STATE_LIST,
+                                       airplane_mode,
                                        lambda: flags['stop_buttons_flag'])
         button_handler.setDaemon(True)
         button_handler.start()
 
-        controller = Controller(configs, recorder, state)
+        controller = Controller(configs, recorder, STATE_LIST, state)
         controller.setDaemon(True)
         controller.start()
 

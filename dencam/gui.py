@@ -16,11 +16,11 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
-    def __init__(self, configs, recorder, state):
+    def __init__(self, configs, recorder, state_list, state):
         super().__init__()
         self.recorder = recorder
         self.state = state
-
+        self.STATE_LIST = state_list
         self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
 
     def run(self):
@@ -103,14 +103,12 @@ class BaseController(Thread):
 
         self.recorder.update_timestamp()
 
-        if self.state.value == 1:
-            self.show_frame('NetworkPage')
-        elif self.state.value == 2:
-            self.show_frame('RecordingPage')
-        elif self.state.value == 3:
-            self.show_frame('SolarPage')
-        elif self.state.value == 4:
-            self.show_frame('BlankPage')
+        networkp_index = self.STATE_LIST.index('NetworkPage')
+        blankp_index = self.STATE_LIST.index('BlankPage')
+
+        if (self.state.value >= networkp_index
+                and self.state.value <= blankp_index):
+            self.show_frame(self.STATE_LIST[self.state.value])
         self._update_strings()
         self.window.after(100, self._update)
 
@@ -150,8 +148,8 @@ class BaseController(Thread):
 
 
 class Controller(BaseController):
-    def __init__(self, configs, recorder, state):
-        super().__init__(configs, recorder, state)
+    def __init__(self, configs, recorder, state_list, state):
+        super().__init__(configs, recorder, state_list, state)
 
         self.RECORD_LENGTH = configs['RECORD_LENGTH']
 

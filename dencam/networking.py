@@ -41,3 +41,30 @@ def get_network_info():
             text += (ssid.decode('utf-8').split('ESSID:')[-1].replace('"', ''))
 
     return text
+
+
+class AirplaneMode:
+
+    def __init__(self, configs):
+        apm = configs['AIRPLANE_MODE']
+        if apm is True:
+            self.ap_mode_on()
+        if apm is False:
+            self.ap_mode_off()
+        self.enabled = apm
+
+    def ap_mode_off(self):
+        subprocess.call("rfkill unblock wlan", shell=True)
+        subprocess.call("rfkill unblock bluetooth", shell=True)
+
+    def ap_mode_on(self):
+        subprocess.call("rfkill block wlan", shell=True)
+        subprocess.call("rfkill block bluetooth", shell=True)
+
+    def toggle(self):
+        if self.enabled:
+            self.ap_mode_on()
+            self.enabled = False
+        elif self.enabled is False:
+            self.ap_mode_off()
+            self.enabled = True

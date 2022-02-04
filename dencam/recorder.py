@@ -59,8 +59,8 @@ class BaseRecorder(ABC):
         self.zoom_on = False
 
         # recording setup
+        self.STORAGE_LIMIT = configs['STORAGE_LIMIT']
         self.recording = False
-        self.STORAGE_LIMIT = 0.5
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
@@ -126,7 +126,7 @@ class BaseRecorder(ABC):
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
-                if free_space >= self.STORAGE_LIMIT:  # half a gig
+                if free_space >= self.STORAGE_LIMIT:
                     log.info('Using external media: '
                              + '{}'.format(media_device))
                     log.debug('Free space on device: '
