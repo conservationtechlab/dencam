@@ -66,7 +66,7 @@ class BaseController(Thread):
 
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.show_frame('RecordingPage')
+        self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
