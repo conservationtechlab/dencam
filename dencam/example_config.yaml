@@ -1,7 +1,9 @@
 # length of videos to record in seconds
 RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
 
-STORAGE_LIMIT: 0.5  # in gigabytes
+FILE_SIZE_SAFETY_FACTOR: 2  # between 2 and 10
+PI_RESERVED_STORAGE: 2  # in gigabytes
+AVG_VIDEO_FILE_SIZE: 1500  # in megabytes (1 gigabyte = 1000 megabytes)
 
 # PiTFT SCREEN CHARACTERISTICS
 DISPLAY_RESOLUTION: [640, 480]

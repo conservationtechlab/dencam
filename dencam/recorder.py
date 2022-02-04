@@ -59,7 +59,10 @@ class BaseRecorder(ABC):
         self.zoom_on = False
 
         # recording setup
-        self.STORAGE_LIMIT = configs['STORAGE_LIMIT']
+        self.FILE_SIZE = configs['AVG_VIDEO_FILE_SIZE']/1000  # in gigabytes
+        self.SAFETY_FACTOR = configs['FILE_SIZE_SAFETY_FACTOR']
+        self.RESERVED_STORAGE = configs['PI_RESERVED_STORAGE']
+        self.VID_FILE_SIZE = self.FILE_SIZE * self.SAFETY_FACTOR
         self.recording = False
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
@@ -126,7 +129,7 @@ class BaseRecorder(ABC):
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
-                if free_space >= self.STORAGE_LIMIT:
+                if free_space >= self.VID_FILE_SIZE:
                     log.info('Using external media: '
                              + '{}'.format(media_device))
                     log.debug('Free space on device: '
@@ -141,7 +144,7 @@ class BaseRecorder(ABC):
                             + 'Checking home directory for free space.')
                 media_path = default_path
                 free_space = self.get_free_space(media_path)
-                if free_space >= self.STORAGE_LIMIT:
+                if free_space >= (self.VID_FILE_SIZE + self.RESERVED_STORAGE):
                     log.info('Using home directory.')
                     log.debug('Free space in home directory: '
                               + '{:.2f} GB'.format(free_space))
@@ -154,7 +157,7 @@ class BaseRecorder(ABC):
                         + 'Checking home directory for free space.')
             media_path = default_path
             free_space = self.get_free_space(media_path)
-            if free_space >= self.STORAGE_LIMIT:
+            if free_space >= (self.VID_FILE_SIZE + self.RESERVED_STORAGE):
                 log.info('Using home directory.')
                 log.debug('Free space in home directory: '
                           + '{:.2f} GB'.format(free_space))
