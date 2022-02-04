@@ -154,7 +154,7 @@ Enter the following
 Be sure you see the device 68 show up in the matrix as seen below. If not,
 double check your connections.
 
-    $      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    $   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
     00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
     10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
     20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
@@ -179,11 +179,11 @@ Control x, and Y to save the file. Run the following to reboot
     
 Log in and run the following to see if the UU shows up where 0x68 should be
 
-    sudo i2detect -y 1
+    sudo i2cdetect -y 1
 
 UU should show as it does in the matrix below
 
-    $      0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    $   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
     00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
     10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
     20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
