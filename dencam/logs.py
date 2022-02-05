@@ -20,7 +20,9 @@ def setup_logger(level, filename=None):
         now = datetime.now()
         date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
         user = getpass.getuser()
-        path = os.path.join('/home', user)
+        path = os.path.join('/home', user, 'logs')
+        if not os.path.exists(path):
+            os.makedirs(path)
         filename = os.path.join(path, date_time_string + '_dencam.log')
 
     f_handler = logging.FileHandler(filename)
