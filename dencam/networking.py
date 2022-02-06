@@ -63,8 +63,8 @@ class AirplaneMode:
 
     def toggle(self):
         if self.enabled:
-            self.ap_mode_on()
+            self.ap_mode_off()
             self.enabled = False
         elif self.enabled is False:
-            self.ap_mode_off()
+            self.ap_mode_on()
             self.enabled = True

@@ -66,7 +66,7 @@ class BaseController(Thread):
 
             frame.grid(row=0, column=0, sticky='nsew')
 
-        self.show_frame('RecordingPage')
+        self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
         frame = self.frames[page_name]
@@ -186,7 +186,8 @@ def prep_fonts(controller):
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
     fonts['smallerer'] = tkFont.Font(family='Courier New',
-                                     size=-int(scrn_height/16))
+                                     size=-int(scrn_height/12),
+                                     weight = "bold")
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',
