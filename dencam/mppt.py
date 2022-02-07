@@ -1,6 +1,8 @@
-import minimalmodbus
+
 import csv
 import os
+import minimalmodbus
+
 from serial import SerialException
 from datetime import datetime
 
@@ -24,6 +26,21 @@ def get_solardisplay_info():
     return solar_text
 
 
+alarm_list = ["RTS open", "RTS shorted", "RTS disconnected",
+              "Ths open", "Ths shorted", "SSMPTT hot",
+              "Current limit", "Current offset",
+              "Undefind", "Undefined", "Uncalibrated",
+              "RTS miswire", "Undefined", "Undefined", "miswire",
+              "PET open", "P12", "High Va current limit",
+              "Alarm 19", "Alarm 20", "Alarm 21",
+              "Alarm 22", "Alarm 23", "Alarm 24"]
+
+field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
+               'Load_Voltage', 'Charge_Current', 'Load_Current',
+               'Ambient_Temp', 'RTS_Temp', 'Charge_State',
+               'Ah_Charge', 'Ah_Load', 'Alarm', 'MPPT_Error']
+
+
 def get_free_space(media_path):
     try:
         statvfs = os.statvfs(media_path)
@@ -34,19 +51,12 @@ def get_free_space(media_path):
         return 0
 
 
-alarm_list = ["RTS open", "RTS shorted", "RTS disconnected",
-              "Ths open", "Ths shorted", "SSMPTT hot", "Current limit",
-              "Current offset", "Undefind", "Undefined", "Uncalibrated",
-              "RTS miswire", "Undefined", "Undefined", "miswire",
-              "PET open", "P12", "High Va current limit", "Alarm 19",
-              "Alarm 20", "Alarm 21", "Alarm 22", "Alarm 23", "Alarm 24"]
-
-
 def float_to_string(value):
     return "{:.1f}".format(value)
 
 
-def fill_solar_list():
+def log_solar_info():
+    usb_error = False
     solar_list = ['init']
     now = datetime.now()
     date_string = now.strftime("%Y-%m-%d")
@@ -54,59 +64,49 @@ def fill_solar_list():
     try:
         SunSaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
     except SerialException:
+        usb_error = True
         solar_list = [date_string, time_string,
                       'N/A', 'N/A', 'N/A', 'N/A',
                       'N/A', 'N/A', 'N/A', 'N/A',
                       'N/A', 'N/A', 'N/A',
                       'USB PORT ERROR']
-        return solar_list
-    SunSaver.serial.baudrate = 9600
-    SunSaver.serial.stopbits = 2
-    try:
-        volt_batt = SunSaver.read_register(8) * 100 * 2**-(15)
-        volt_arr = SunSaver.read_register(9) * 100 * 2**-(15)
-        volt_ld = SunSaver.read_register(10) * 100 * 2**-(15)
-        curr_chrg = SunSaver.read_register(11) * 79.16 * 2**-(15)
-        curr_ld = SunSaver.read_register(12) * 79.16 * 2**-(15)
-        temp_amb = SunSaver.read_register(15)
-        temp_rts = SunSaver.read_register(16)
-        charge_state = SunSaver.read_register(17)
-        ah_charge = SunSaver.read_register(45) * 0.1
-        ah_load = SunSaver.read_register(46) * 0.1
-        alarm = SunSaver.read_register(50)
-        solar_list = [float_to_string(date_string),
-                      float_to_string(time_string),
-                      float_to_string(volt_batt),
-                      float_to_string(volt_arr),
-                      float_to_string(volt_ld),
-                      float_to_string(curr_chrg),
-                      float_to_string(curr_ld),
-                      float_to_string(temp_amb),
-                      float_to_string(temp_rts),
-                      float_to_string(charge_state),
-                      float_to_string(ah_charge),
-                      float_to_string(ah_load),
-                      alarm_list[alarm],
-                      'N/A']
-    except (minimalmodbus.NoResponseError,
-            minimalmodbus.InvalidResponseError,
-            SerialException):
-        solar_list = [date_string, time_string, 'N/A',
-                      'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
-                      'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
-                      'NO CONNECTION TO  SUNSAVER']
-    SunSaver.serial.close()
-    return solar_list
-
-
-field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
-               'Load_Voltage', 'Charge_Current', 'Load_Current',
-               'Ambient_Temp', 'RTS_Temp', 'Charge_State',
-               'Ah_Charge', 'Ah_Load', 'Alarm', 'MPPT_Error']
-
-
-def log_solar_info():
-    solar_list = fill_solar_list()
+    if not usb_error:
+        SunSaver.serial.baudrate = 9600
+        SunSaver.serial.stopbits = 2
+        try:
+            volt_batt = SunSaver.read_register(8) * 100 * 2**-(15)
+            volt_arr = SunSaver.read_register(9) * 100 * 2**-(15)
+            volt_ld = SunSaver.read_register(10) * 100 * 2**-(15)
+            curr_chrg = SunSaver.read_register(11) * 79.16 * 2**-(15)
+            curr_ld = SunSaver.read_register(12) * 79.16 * 2**-(15)
+            temp_amb = SunSaver.read_register(15)
+            temp_rts = SunSaver.read_register(16)
+            charge_state = SunSaver.read_register(17)
+            ah_charge = SunSaver.read_register(45) * 0.1
+            ah_load = SunSaver.read_register(46) * 0.1
+            alarm = SunSaver.read_register(50)
+            solar_list = [float_to_string(date_string),
+                          float_to_string(time_string),
+                          float_to_string(volt_batt),
+                          float_to_string(volt_arr),
+                          float_to_string(volt_ld),
+                          float_to_string(curr_chrg),
+                          float_to_string(curr_ld),
+                          float_to_string(temp_amb),
+                          float_to_string(temp_rts),
+                          float_to_string(charge_state),
+                          float_to_string(ah_charge),
+                          float_to_string(ah_load),
+                          alarm_list[alarm],
+                          'N/A']
+        except (minimalmodbus.NoResponseError,
+                minimalmodbus.InvalidResponseError,
+                SerialException):
+            solar_list = [date_string, time_string, 'N/A',
+                          'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
+                          'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
+                          'NO CONNECTION TO  SUNSAVER']
+        SunSaver.serial.close()
     if True:
         if not os.path.exists('/home/pi/dencam/solar.csv'):
             with open('/home/pi/dencam/solar.csv', 'w', newline='') as csvfile:
@@ -128,6 +128,3 @@ def log_solar_info():
                                 'Ah_Load': solar_list[11],
                                 'Alarm': solar_list[12],
                                 'MPPT_Error': solar_list[13]})
-
-
-log_solar_info()

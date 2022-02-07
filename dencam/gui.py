@@ -187,7 +187,7 @@ def prep_fonts(controller):
                                    size=-int(scrn_height/12))
     fonts['smallerer'] = tkFont.Font(family='Courier New',
                                      size=-int(scrn_height/12),
-                                     weight = "bold")
+                                     weight="bold")
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',
