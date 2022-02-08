@@ -4,8 +4,6 @@ This module contains classes and functions for interfacing with the
 four buttons that are part of the PiTFT screen PCB.
 
 """
-
-
 import logging
 import time
 from threading import Thread
@@ -13,7 +11,6 @@ from threading import Thread
 import RPi.GPIO as GPIO
 
 from dencam import mppt
-
 
 log = logging.getLogger(__name__)
 
