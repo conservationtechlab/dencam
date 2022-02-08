@@ -74,8 +74,8 @@ def log_solar_info():
             ah_charge = SunSaver.read_register(45) * 0.1
             ah_load = SunSaver.read_register(46) * 0.1
             alarm = SunSaver.read_register(50)
-            solar_list = [float_to_string(date_string),
-                          float_to_string(time_string),
+            solar_list = [date_string,
+                          time_string,
                           float_to_string(volt_batt),
                           float_to_string(volt_arr),
                           float_to_string(volt_ld),
