@@ -1,10 +1,24 @@
-
 import csv
 import os
-import minimalmodbus
-
-from serial import SerialException
 from datetime import datetime
+
+import minimalmodbus
+from serial import SerialException
+
+
+alarm_list = ["RTS open", "RTS shorted", "RTS disconnected",
+              "Ths open", "Ths shorted", "SSMPTT hot",
+              "Current limit", "Current offset",
+              "Undefind", "Undefined", "Uncalibrated",
+              "RTS miswire", "Undefined", "Undefined", "miswire",
+              "PET open", "P12", "High Va current limit",
+              "Alarm 19", "Alarm 20", "Alarm 21",
+              "Alarm 22", "Alarm 23", "Alarm 24"]
+
+field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
+               'Load_Voltage', 'Charge_Current', 'Load_Current',
+               'Ambient_Temp', 'RTS_Temp', 'Charge_State',
+               'Ah_Charge', 'Ah_Load', 'Alarm', 'MPPT_Error']
 
 
 def get_solardisplay_info():
@@ -24,31 +38,6 @@ def get_solardisplay_info():
     solar_text += '\nAlarm: ' + last_row['Alarm']
     solar_text += '\nMPPT_Error: ' + last_row['MPPT_Error']
     return solar_text
-
-
-alarm_list = ["RTS open", "RTS shorted", "RTS disconnected",
-              "Ths open", "Ths shorted", "SSMPTT hot",
-              "Current limit", "Current offset",
-              "Undefind", "Undefined", "Uncalibrated",
-              "RTS miswire", "Undefined", "Undefined", "miswire",
-              "PET open", "P12", "High Va current limit",
-              "Alarm 19", "Alarm 20", "Alarm 21",
-              "Alarm 22", "Alarm 23", "Alarm 24"]
-
-field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
-               'Load_Voltage', 'Charge_Current', 'Load_Current',
-               'Ambient_Temp', 'RTS_Temp', 'Charge_State',
-               'Ah_Charge', 'Ah_Load', 'Alarm', 'MPPT_Error']
-
-
-def get_free_space(media_path):
-    try:
-        statvfs = os.statvfs(media_path)
-        bytes_available = statvfs.f_frsize * statvfs.f_bavail
-        gigabytes_available = bytes_available/1000000000
-        return gigabytes_available
-    except FileNotFoundError:
-        return 0
 
 
 def float_to_string(value):
@@ -107,24 +96,24 @@ def log_solar_info():
                           'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
                           'NO CONNECTION TO  SUNSAVER']
         SunSaver.serial.close()
-    if True:
-        if not os.path.exists('/home/pi/dencam/solar.csv'):
-            with open('/home/pi/dencam/solar.csv', 'w', newline='') as csvfile:
-                csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
-                csvwriter.writeheader()
-        with open('/home/pi/dencam/solar.csv', 'a', newline='') as csv_file:
-            csvwriter = csv.DictWriter(csv_file, fieldnames=field_names)
-            csvwriter.writerow({'Date': solar_list[0],
-                                'Time': solar_list[1],
-                                'Battery_Voltage': solar_list[2],
-                                'Array_Voltage': solar_list[3],
-                                'Load_Voltage': solar_list[4],
-                                'Charge_Current': solar_list[5],
-                                'Load_Current': solar_list[6],
-                                'Ambient_Temp': solar_list[7],
-                                'RTS_Temp': solar_list[8],
-                                'Charge_State': solar_list[9],
-                                'Ah_Charge': solar_list[10],
-                                'Ah_Load': solar_list[11],
-                                'Alarm': solar_list[12],
-                                'MPPT_Error': solar_list[13]})
+
+    if not os.path.exists('/home/pi/dencam/solar.csv'):
+        with open('/home/pi/dencam/solar.csv', 'w', newline='') as csvfile:
+            csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
+            csvwriter.writeheader()
+    with open('/home/pi/dencam/solar.csv', 'a', newline='') as csv_file:
+        csvwriter = csv.DictWriter(csv_file, fieldnames=field_names)
+        csvwriter.writerow({'Date': solar_list[0],
+                            'Time': solar_list[1],
+                            'Battery_Voltage': solar_list[2],
+                            'Array_Voltage': solar_list[3],
+                            'Load_Voltage': solar_list[4],
+                            'Charge_Current': solar_list[5],
+                            'Load_Current': solar_list[6],
+                            'Ambient_Temp': solar_list[7],
+                            'RTS_Temp': solar_list[8],
+                            'Charge_State': solar_list[9],
+                            'Ah_Charge': solar_list[10],
+                            'Ah_Load': solar_list[11],
+                            'Alarm': solar_list[12],
+                            'MPPT_Error': solar_list[13]})

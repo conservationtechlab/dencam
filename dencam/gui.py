@@ -10,8 +10,10 @@ import time
 import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
+
 from dencam import networking
 from dencam import mppt
+
 log = logging.getLogger(__name__)
 
 
