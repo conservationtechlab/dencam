@@ -1,4 +1,4 @@
-from dencam import mppt
+import mppt
 
 
 mppt.log_solar_info()
