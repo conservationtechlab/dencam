@@ -10,8 +10,10 @@ import time
 import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
+
 from dencam import networking
 from dencam import mppt
+
 log = logging.getLogger(__name__)
 
 
@@ -186,7 +188,8 @@ def prep_fonts(controller):
     fonts['smaller'] = tkFont.Font(family='Courier New',
                                    size=-int(scrn_height/12))
     fonts['smallerer'] = tkFont.Font(family='Courier New',
-                                     size=-int(scrn_height/16))
+                                     size=-int(scrn_height/12),
+                                     weight="bold")
     fonts['error'] = tkFont.Font(family='Courier New',
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',

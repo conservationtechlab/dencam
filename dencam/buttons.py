@@ -4,13 +4,13 @@ This module contains classes and functions for interfacing with the
 four buttons that are part of the PiTFT screen PCB.
 
 """
-
-
 import logging
 import time
 from threading import Thread
 
 import RPi.GPIO as GPIO
+
+from dencam import mppt
 
 log = logging.getLogger(__name__)
 
@@ -98,12 +98,15 @@ class ButtonHandler(Thread):
             if not self.latch_record_button:
 
                 if(self.recorder.initial_pause_complete
-                   and self.state.value == self.STATE_LIST.index("RecordingPage")):
+                   and self.state.value ==
+                   self.STATE_LIST.index("RecordingPage")):
                     self.recorder.toggle_recording()
                 elif self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.toggle_zoom()
                 elif self.state.value == self.STATE_LIST.index("NetworkPage"):
                     self.airplane_mode.toggle()
+                elif self.state.value == self.STATE_LIST.index("SolarPage"):
+                    mppt.log_solar_info()
                 self.latch_record_button = True
         else:
             self.latch_record_button = False

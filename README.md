@@ -200,6 +200,35 @@ On the Network page, the second button will toggle on/off airplane mode.
 Note that airplane mode will be enabled or disabled on boot depending on
 the variable AIRPLANE_MODE in the config file.
 
+On the Solar page, the second button will allow user to manually log info.
+This will also update the information being displayed on the page as well.
+
+## SunSaver device setup
+
+The SunSaver device is able to connect to any usb port on the rasberry pi,
+prior to the dencam being booted that is. After which it is not advised to
+disconnect while dencam is running. The SunSaver is able to be turned on
+and off while dencam is running, the SolarPage will display errors when
+SunSaver may be off or there is an errro with the usb connection.
+
+
+## Setting up cronjobs
+
+Dencam uses a few cronjobs for varying purposes. To set up the cronjob 
+for rebooting the dencam every day at 1am use:
+
+    $ sudo nano /etc/crontab
+
+    @reboot         root    hwclock --hctosys --utc
+    30 *    * * *   root    hwclock --hctosys --utc
+    0  1    * * *   root    /sbin/shutdown -r now
+
+The cronjob that logs SunSaver data every hour uses:
+
+     * * * * * python /home/pi/dencam/dencam/sunsaver_log.py
+     
+where 'pi' can be interchange with the device's hostname.
+
 ## Setting up DenCam to run on boot
 
 TODO
@@ -232,7 +261,7 @@ toggle the recording on this page.
 ## Solar Display Page
 
 This page displays data received from the SunSaver device in real time.
-Currently it displays Battery Voltage(V), Array Voltage(V),
+Currently it displays the date and time, Battery Voltage(V), Array Voltage(V),
 Charge current(A), Load current(A), Ah charge(Daily)(Ah), and
 Ah load(Daily)(Ah).
 
