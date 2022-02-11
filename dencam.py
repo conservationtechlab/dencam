@@ -62,7 +62,7 @@ def main():
         button_handler.setDaemon(True)
         button_handler.start()
 
-        controller = Controller(configs, recorder, STATE_LIST, state)
+        controller = Controller(configs, recorder, STATE_LIST, state, airplane_mode)
         controller.setDaemon(True)
         controller.start()
 

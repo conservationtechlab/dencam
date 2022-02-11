@@ -18,12 +18,13 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
-    def __init__(self, configs, recorder, state_list, state):
+    def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__()
         self.recorder = recorder
         self.state = state
         self.STATE_LIST = state_list
         self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
+        self.airplane_mode = airplane_mode
 
     def run(self):
         self._setup()
@@ -144,14 +145,21 @@ class BaseController(Thread):
 
         # prep network text
         network_info = networking.get_network_info()
-        self.ip_text.set(network_info)
+        airplane_text = "\nAirplane Mode: "
+        if (self.airplane_mode.enabled):
+            airplane_text += "On"
+        else:
+            airplane_text += "Off"
+        self.ip_text.set(network_info + airplane_text)
+
+        # prep solar text
         solar_info = mppt.get_solardisplay_info()
         self.solar_text.set(solar_info)
 
 
 class Controller(BaseController):
-    def __init__(self, configs, recorder, state_list, state):
-        super().__init__(configs, recorder, state_list, state)
+    def __init__(self, configs, recorder, state_list, state, airplane_mode):
+        super().__init__(configs, recorder, state_list, state, airplane_mode)
 
         self.RECORD_LENGTH = configs['RECORD_LENGTH']
 
