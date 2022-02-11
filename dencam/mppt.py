@@ -1,6 +1,7 @@
 import csv
 import os
 from datetime import datetime
+from io import StringIO
 
 import minimalmodbus
 from serial import SerialException
@@ -24,8 +25,10 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 def get_solardisplay_info():
     if not os.path.exists('/home/pi/dencam/solar.csv'):
         return 'File Does Not Exist'
-    with open('/home/pi/dencam/solar.csv', newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
+    with open('/home/pi/dencam/solar.csv', newline='', encoding='utf8') as cf:
+        parsed_csvfile = cf.read()
+        parsed_csvfile = parsed_csvfile.replace('\x00', '')
+        reader = csv.DictReader(StringIO(parsed_csvfile))
         for row in reader:
             last_row = row
     solar_text = last_row['Date'] + '\n' + last_row['Time']
