@@ -176,19 +176,25 @@ class BaseRecorder(ABC):
             for usb_drive in usb_drive_list:
                 usb_drive_dir = media_dir + '/' + usb_drive
                 try:
-                    result = subprocess.Popen(['sudo', 'rmdir', usb_drive_dir],
-                                            stdout=subprocess.PIPE,
-                                            stderr=subprocess.PIPE)
+                    result = subprocess.Popen(
+                        ['sudo', 'rmdir', usb_drive_dir],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    )
                     output, error = result.communicate()
                     if output:
-                        log.info('Ghost drive (subprocess - output): ' + output.decode('ascii'))
+                        log.info('Ghost drive (subprocess - output): ' +
+                                 output.decode('ascii'))
                     if error:
-                        log.info('Ghost drive (subprocess - error): ' + error.decode('ascii').strip())
+                        log.info('Ghost drive (subprocess - error): ' +
+                                 error.decode('ascii').strip())
                 except OSError as os_error:
-                    log.info('Ghost drive (OSError - code): ' + os_error.errno)
-                    log.info('Ghost drive (OSError - message): ' + os_error.strerror)
-                    log.info('Ghost drive (OSError - filename): ' + os_error.filename)
-                except:
+                    log.info('Ghost drive (OSError - code): ' +
+                             os_error.errno)
+                    log.info('Ghost drive (OSError - message): ' +
+                             os_error.strerror)
+                    log.info('Ghost drive (OSError - filename): ' +
+                             os_error.filename)
+                except Exception:
                     log.info('Ghost drive (Error): ' + sys.exc_info())
 
     def get_free_space(self, media_path=None):
