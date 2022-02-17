@@ -365,8 +365,8 @@ the sunsaver alarm, and an error status.
 
 Sunsaver alarm uses the built in alarm messages used by the sunsaver.
 
-Error status displays errors when it does not detect usb connection to the
-sunsaver or if 
+Error status displays an errror usually when their is no usb connection detected
+or the sunsaver may be off.
 
 ## Camera Preview Page
 
