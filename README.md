@@ -225,13 +225,16 @@ for rebooting the dencam every day at 1am use:
 
 The cronjob that logs SunSaver data every hour uses:
 
-    * */1 * * * /home/pi/.virtualenvs/dencam/bin/python3 /home/pi/dencam/dencam/sunsaver_log.py
+    0 * * * * /home/pi/.virtualenvs/dencam/bin/python3 /home/pi/dencam/dencam/sunsaver_log.py
      
 where 'pi' can be interchange with the device's hostname.
 If there is a need to adjust logging intervals the format of the cronjob timing 
 will be:
 
-    *(min) *(hour) *(day) *(mnth) *(weekday)
+    *(min) *(hour) *(day) *(mnth) *(weekday) [fullpath to python] [fullpath to script] 
+
+Attached is a website to help configure the run time for cronjobs
+https://crontab.guru
     
 ## Setting up DenCam to run on boot
 
@@ -365,7 +368,7 @@ the sunsaver alarm, and an error status.
 
 Sunsaver alarm uses the built in alarm messages used by the sunsaver.
 
-Error status displays an errror usually when their is no usb connection detected
+Error status displays an errror usually when there is no usb connection detected
 or the sunsaver may be off.
 
 ## Camera Preview Page
