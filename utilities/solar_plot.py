@@ -6,6 +6,7 @@ Example usage: python solar_plot.py /home/pi/dencam/solar.csv
 import argparse
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import pandas as pd
 
 parser = argparse.ArgumentParser()
@@ -22,32 +23,29 @@ args = parser.parse_args()
 file_path = args.filepath
 column_to_plot = args.column
 
+dataframe = pd.read_csv(file_path)
+dataframe['datetime'] = pd.to_datetime(dataframe.Date + ' ' + dataframe.Time)
 
-def _get_x_axis_label(date, time):
-    date_time_label = []
-    for i in range(len(date)):
-        date_time_label.append(str(date[i])[5:] + ':' + time[i][:3])
-    return date_time_label
+# plt.rcParams["figure.autolayout"] = True
 
+fig, ax = plt.subplots(figsize=(800, 6))
+fig.canvas.manager.set_window_title('Plot of One Column of DenCam Solar data')
+ax.set_title(column_to_plot)
+ax.plot(dataframe['datetime'],
+        dataframe[column_to_plot],
+        'g--',
+        label=column_to_plot)
+ax.scatter(dataframe['datetime'],
+           dataframe[column_to_plot],
+           marker='o')
 
-data_frame = pd.read_csv(file_path)
+ax.tick_params(labelrotation=60)
+ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+ax.xaxis.set_minor_locator(mdates.HourLocator(interval=6))
+ax.tick_params(axis='both', which='major', labelsize=10,
+               width=2.5, length=10)
+ax.tick_params(axis='x', which='minor', labelsize=10,
+               width=1.5, length=5, pad=30)
 
-plt.rcParams["figure.figsize"] = [800, 6]
-plt.rcParams["figure.autolayout"] = True
-plt.xticks(rotation=90)
-plt.rc('axes', labelsize=5)
-
-date_list = data_frame["Date"].tolist()
-time_list = data_frame["Time"].tolist()
-date_time_label = _get_x_axis_label(date_list, time_list)
-
-plt.title(column_to_plot)
-plt.plot(date_time_label,
-         data_frame[column_to_plot],
-         'g--',
-         label=column_to_plot)
-plt.scatter(date_time_label,
-            data_frame[column_to_plot],
-            marker='o')
-plt.xticks(date_time_label[::5])
+# plt.gcf().autofmt_xdate()
 plt.show()
