@@ -4,7 +4,6 @@ Example usage: python solar_plot.py /home/pi/dencam/solar.csv
 
 """
 import argparse
-import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -43,7 +42,12 @@ time_list = data_frame["Time"].tolist()
 date_time_label = _get_x_axis_label(date_list, time_list)
 
 plt.title(column_to_plot)
-plt.plot(date_time_label, data_frame[column_to_plot], 'g--', label=column_to_plot)
-plt.scatter(date_time_label, data_frame[column_to_plot], marker='o')
+plt.plot(date_time_label,
+         data_frame[column_to_plot],
+         'g--',
+         label=column_to_plot)
+plt.scatter(date_time_label,
+            data_frame[column_to_plot],
+            marker='o')
 plt.xticks(date_time_label[::5])
 plt.show()
