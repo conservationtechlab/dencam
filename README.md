@@ -26,11 +26,12 @@ contribute to the DenCam project.
 
 Currently, DenCam runs on Raspian Stretch and Buster. Problems have
 been encountered with Bullseye (specifically with interfacing with the
-picamera).
+picamera). Buster must be 32 bit and not 64 bit otherwise there is an issue
+with the libmmal.so library
 
 # Install from PyPI
 
-    pip install dencam
+    pip3 install dencam
 
 # Install from GitHub repository
 
@@ -53,7 +54,7 @@ source ~/.bashrc
     mkvirtualenv dencam_env
 
 Note that DenCam requires Python 3 so if the default on your system is
-Python 2, make sure the virtual environment will use Python 3:
+Python 2 (it is if you are using Buster OS), make sure the virtual environment will use Python 3:
 
     mkvirtualenv dencam_env -p python3
 
@@ -87,6 +88,17 @@ must first install the dencam dependencies with optional dependencies.
 
 ## Execute install.sh
 
+Check if your screen is resistive touch or capacitive touch: If you're unsure,
+look on the backside of the screen, there will be two dotted off areas, one
+labeled resistive, one labeled capacitive. If the capacitors are connected and the
+resistors are not, it is capacitive and you will need to adjust the respective command
+within install.sh. If the resistors are connected and the capacitors are not, it is 
+resistive and you can keep install.sh how it is. If switching from resistive to capacitive,
+you'll change the --display28r command to --display=28c instead. The fbcp parameter
+indicates that the screen will mirror onto a monitor if connected via hdmi, which
+is preferrable for debugging but feel free to change that as well if you do not
+need hdmi mirroring. For more information about the screen setup see [here.](https://learn.adafruit.com/adafruit-2-8-pitft-capacitive-touch/easy-install-2)
+
     sudo chmod u+x install.sh
     ./install.sh
 
@@ -113,7 +125,7 @@ and thus then run DenCam on a properly set up system (see Setup
 section above for how to set up system) via:
 
     Usage:
-        ./dencam.py cfgs/YOUR_CONFIG_FILE.yaml
+        ./dencam.py dencam/example_config.yaml
 
 If you are connected to the Raspberry Pi via SSH, then first do:
 
