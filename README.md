@@ -131,6 +131,25 @@ If you are connected to the Raspberry Pi via SSH, then first do:
 
     export DISPLAY=:0
 
+## Enabling Autostart
+
+Create an autostart directory that will tell the Raspberry Pi to override the global autostart instructions so dencam will run on boot. 
+
+    mkdir .config/autostart
+
+In this directory, create a .desktop file that points to the virutal environemnt, dencam.py, and your config file. 
+Note: Filepaths to your virtual environments, dencam.py, and config file may be different than shown below.
+
+    cd .config/autostart
+    echo '[Desktop Entry]' >> dencam.desktop
+    echo 'Type=Application' >> dencam.desktop
+    echo 'Name=DENCAM' >> dencam.desktop
+    echo 'Exec=/home/pi/.virtualenvs/dencam_env/bin/python3.7 /home/pi/dencam/dencam.py /home/dencam/cfgs/example_config.yaml' >> dencam.desktop
+
+To test: 
+
+    reboot
+
 ## Explanation of parameters in the configuration file
 
 The configuration file stores variables used throughout the dencam 
