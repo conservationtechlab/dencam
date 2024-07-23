@@ -17,12 +17,14 @@ import argparse
 import time
 
 import yaml
-
+from error_handling import show_error_screen, hide_error_screen
 from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import Controller, State
 from dencam.networking import AirplaneMode
+from picamera.exc import PiCameraMMALError
+
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
                     help='Filename of a YAML Mini DenCam configuration file.')
@@ -41,6 +43,7 @@ log.info('Read in configuration settings')
 
 
 def main():
+    error_screen_shown = 0
 
     flags = {'stop_buttons_flag': False}
     STATE_LIST = ['OffPage', 'NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
@@ -50,25 +53,37 @@ def main():
         time.sleep(.1)
 
     try:
-        recorder = Recorder(configs)
-        number_of_states = len(STATE_LIST)
-        state = State(number_of_states)
-        airplane_mode = AirplaneMode(configs)
-        button_handler = ButtonHandler(recorder,
-                                       state,
-                                       STATE_LIST,
-                                       airplane_mode,
-                                       lambda: flags['stop_buttons_flag'])
-        button_handler.setDaemon(True)
-        button_handler.start()
+        while True:
+            try:  
+                recorder = Recorder(configs)
+                if error_screen_shown == 1:
+                    hide_error_screen(error_screen)
+                    error_screen_shown = 0
+            except PiCameraMMALError as e:
+                print("Camera failed to initialize, check cable connection")
+                if error_screen_shown == 0:
+                    error_screen = show_error_screen()
+                    error_screen_shown = 1
+                time.sleep(5)
+                continue
+            number_of_states = len(STATE_LIST)
+            state = State(number_of_states)
+            airplane_mode = AirplaneMode(configs)
+            button_handler = ButtonHandler(recorder,
+                                           state,
+                                           STATE_LIST,
+                                           airplane_mode,
+                                           lambda: flags['stop_buttons_flag'])
+            button_handler.setDaemon(True)
+            button_handler.start()
 
-        controller = Controller(configs, recorder, STATE_LIST, state, airplane_mode)
-        controller.setDaemon(True)
-        controller.start()
+            controller = Controller(configs, recorder, STATE_LIST, state, airplane_mode)
+            controller.setDaemon(True)
+            controller.start()
 
-        while(True):
-            pass
-            time.sleep(.1)
+            while(True):
+                pass
+                time.sleep(.1)
 
     except KeyboardInterrupt:
         log.debug('Keyboard interrupt received.')
