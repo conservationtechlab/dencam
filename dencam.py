@@ -17,7 +17,7 @@ import argparse
 import time
 
 import yaml
-from error_handling import show_error_screen, hide_error_screen
+from dencam.error_handling import show_error_screen, hide_error_screen
 from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
@@ -43,8 +43,6 @@ log.info('Read in configuration settings')
 
 
 def main():
-    error_screen_shown = False
-
     flags = {'stop_buttons_flag': False}
     STATE_LIST = ['OffPage', 'NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
 
@@ -53,19 +51,21 @@ def main():
         time.sleep(.1)
 
     try:
-        while True:
+        error_screen_shown = False
+        checking_cam_connection = True
+        while checking_cam_connection:
             try:  
                 recorder = Recorder(configs)
-                if error_screen_shown == True:
-                    hide_error_screen(error_screen)
-                    error_screen_shown = False
-                break
+                checking_cam_connection = False
             except PiCameraMMALError as e:
                 print("Camera failed to initialize, check cable connection")
-                if error_screen_shown == False:
+                if not error_screen_shown:
                     error_screen = show_error_screen()
                     error_screen_shown = True
                 time.sleep(.5)
+        if error_screen_shown:
+                hide_error_screen(error_screen)
+                error_screen_shown = False
 
         number_of_states = len(STATE_LIST)
         state = State(number_of_states)
