@@ -17,12 +17,15 @@ import argparse
 import time
 
 import yaml
+from picamera.exc import PiCameraMMALError
 
 from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
-from dencam.gui import Controller, State
+from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
                     help='Filename of a YAML Mini DenCam configuration file.')
@@ -41,7 +44,6 @@ log.info('Read in configuration settings')
 
 
 def main():
-
     flags = {'stop_buttons_flag': False}
     STATE_LIST = ['OffPage', 'NetworkPage', 'RecordingPage', "SolarPage", "BlankPage"]
 
@@ -50,7 +52,20 @@ def main():
         time.sleep(.1)
 
     try:
-        recorder = Recorder(configs)
+        checking_camera = True
+        error_screen = None
+        while checking_camera:
+            try:
+                recorder = Recorder(configs)
+                checking_camera = False
+            except PiCameraMMALError as cam_error:
+                log.warning(cam_error)
+                if error_screen is None:
+                    error_screen = ErrorScreen()
+                time.sleep(.5)
+        if error_screen is not None:
+            error_screen.hide()
+
         number_of_states = len(STATE_LIST)
         state = State(number_of_states)
         airplane_mode = AirplaneMode(configs)
