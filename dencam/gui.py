@@ -322,7 +322,7 @@ class ErrorScreen():
         label.pack(expand=True)
         self.screen.update()
 
-    def hide_error_screen(self):
+    def hide(self):
         """Function to destroy screen
 
         """

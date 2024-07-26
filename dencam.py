@@ -18,6 +18,7 @@ import time
 
 import yaml
 from picamera.exc import PiCameraMMALError
+
 from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
@@ -52,18 +53,19 @@ def main():
 
     try:
         checking_camera = True
-        screen = None
+        error_screen = None
         while checking_camera:
             try:
                 recorder = Recorder(configs)
                 checking_camera = False
             except PiCameraMMALError as cam_error:
                 log.warning(cam_error)
-                if screen is None:
-                    screen = ErrorScreen()
+                if error_screen is None:
+                    error_screen = ErrorScreen()
                 time.sleep(.5)
-        if screen is not None:
-            screen.hide_error_screen()
+        if error_screen is not None:
+            error_screen.hide()
+
         number_of_states = len(STATE_LIST)
         state = State(number_of_states)
         airplane_mode = AirplaneMode(configs)
