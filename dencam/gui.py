@@ -306,14 +306,24 @@ class SolarPage(tk.Frame):
         self.solar_label.pack(fill=tk.X)
 
 
-class ErrorScreen():    
+class ErrorScreen():
+    """Class that creates a screen which displays error
+    information about a camera connection and will delete
+    the screen after.
+
+    """
     def __init__(self):
         self.screen = tk.Tk()
         self.screen.attributes('-fullscreen', True)
         self.screen.configure(background='black')
-        label = tk.Label(self.screen, text="Camera connection error\nplease check connection to camera", fg="white", bg="black", font=("Helvetica", 28))
+        label = tk.Label(self.screen,
+                         text="Camera error\ncheck wiring to camera",
+                         fg="white", bg="black", font=("Helvetica", 28))
         label.pack(expand=True)
         self.screen.update()
 
     def hide_error_screen(self):
+        """Function to destroy screen
+
+        """
         self.screen.destroy()
