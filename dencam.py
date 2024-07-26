@@ -17,13 +17,13 @@ import argparse
 import time
 
 import yaml
-from dencam.error_handling import show_error_screen, hide_error_screen
+from picamera.exc import PiCameraMMALError
 from dencam import logs
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
-from dencam.gui import Controller, State
+from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
-from picamera.exc import PiCameraMMALError
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -51,22 +51,19 @@ def main():
         time.sleep(.1)
 
     try:
-        error_screen_shown = False
-        checking_cam_connection = True
-        while checking_cam_connection:
-            try:  
+        checking_camera = True
+        screen = None
+        while checking_camera:
+            try:
                 recorder = Recorder(configs)
-                checking_cam_connection = False
-            except PiCameraMMALError as e:
-                print("Camera failed to initialize, check cable connection")
-                if not error_screen_shown:
-                    error_screen = show_error_screen()
-                    error_screen_shown = True
+                checking_camera = False
+            except PiCameraMMALError as cam_error:
+                log.warning(cam_error)
+                if screen is None:
+                    screen = ErrorScreen()
                 time.sleep(.5)
-        if error_screen_shown:
-                hide_error_screen(error_screen)
-                error_screen_shown = False
-
+        if screen is not None:
+            screen.hide_error_screen()
         number_of_states = len(STATE_LIST)
         state = State(number_of_states)
         airplane_mode = AirplaneMode(configs)
