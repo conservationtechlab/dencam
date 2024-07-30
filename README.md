@@ -258,7 +258,7 @@ The cronjob that logs SunSaver data every hour uses:
 
     0 * * * * /home/pi/.virtualenvs/dencam/bin/python3 /home/pi/dencam/dencam/sunsaver_log.py
      
-where 'pi' can be interchange with the device's hostname.
+where 'pi' can be interchanged with the active username on the Pi.
 If there is a need to adjust logging intervals the format of the cronjob timing 
 will be:
 
