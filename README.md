@@ -125,7 +125,7 @@ and thus then run DenCam on a properly set up system (see Setup
 section above for how to set up system) via:
 
     Usage:
-        ./dencam.py dencam/example_config.yaml
+        ./dencam.py cfgs/YOUR_CONFIG_FILE.yaml
 
 If you are connected to the Raspberry Pi via SSH, then first do:
 
