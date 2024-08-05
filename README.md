@@ -26,11 +26,12 @@ contribute to the DenCam project.
 
 Currently, DenCam runs on Raspian Stretch and Buster. Problems have
 been encountered with Bullseye (specifically with interfacing with the
-picamera).
+picamera). Buster must be 32 bit and not 64 bit otherwise there is an issue
+with the libmmal.so library
 
 # Install from PyPI
 
-    pip install dencam
+    pip3 install dencam
 
 # Install from GitHub repository
 
@@ -53,7 +54,7 @@ source ~/.bashrc
     mkvirtualenv dencam_env
 
 Note that DenCam requires Python 3 so if the default on your system is
-Python 2, make sure the virtual environment will use Python 3:
+Python 2 (it is if you are using Buster OS), make sure the virtual environment will use Python 3:
 
     mkvirtualenv dencam_env -p python3
 
@@ -87,6 +88,17 @@ must first install the dencam dependencies with optional dependencies.
 
 ## Execute install.sh
 
+Check if your screen is resistive touch or capacitive touch: If you're unsure,
+look on the backside of the screen, there will be two dotted off areas, one
+labeled resistive, one labeled capacitive. If the capacitors are connected and the
+resistors are not, it is capacitive and you will need to adjust the respective command
+within install.sh. If the resistors are connected and the capacitors are not, it is 
+resistive and you can keep install.sh how it is. If switching from resistive to capacitive,
+you'll change the --display28r command to --display=28c instead. The fbcp parameter
+indicates that the screen will mirror onto a monitor if connected via hdmi, which
+is preferrable for debugging but feel free to change that as well if you do not
+need hdmi mirroring. For more information about the screen setup see [here.](https://learn.adafruit.com/adafruit-2-8-pitft-capacitive-touch/easy-install-2)
+
     sudo chmod u+x install.sh
     ./install.sh
 
@@ -118,6 +130,25 @@ section above for how to set up system) via:
 If you are connected to the Raspberry Pi via SSH, then first do:
 
     export DISPLAY=:0
+
+## Enabling Autostart
+
+Create an autostart directory that will tell the Raspberry Pi to override the global autostart instructions so dencam will run on boot. 
+
+    mkdir .config/autostart
+
+In this directory, create a .desktop file that points to the virutal environemnt, dencam.py, and your config file. 
+Note: Filepaths to your virtual environments, dencam.py, and config file may be different than shown below.
+
+    cd .config/autostart
+    echo '[Desktop Entry]' >> dencam.desktop
+    echo 'Type=Application' >> dencam.desktop
+    echo 'Name=DENCAM' >> dencam.desktop
+    echo 'Exec=/home/pi/.virtualenvs/dencam_env/bin/python3.7 /home/pi/dencam/dencam.py /home/dencam/cfgs/example_config.yaml' >> dencam.desktop
+
+To test: 
+
+    reboot
 
 ## Explanation of parameters in the configuration file
 
@@ -209,7 +240,7 @@ The SunSaver device is able to connect to any usb port on the rasberry pi,
 prior to the dencam being booted that is. After which it is not advised to
 disconnect while dencam is running. The SunSaver is able to be turned on
 and off while dencam is running, the SolarPage will display errors when
-SunSaver may be off or there is an errro with the usb connection.
+SunSaver may be off or there is an error with the usb connection.
 
 
 ## Setting up cronjobs
@@ -225,17 +256,117 @@ for rebooting the dencam every day at 1am use:
 
 The cronjob that logs SunSaver data every hour uses:
 
-     * * * * * python /home/pi/dencam/dencam/sunsaver_log.py
+    0 * * * * /home/pi/.virtualenvs/dencam/bin/python3 /home/pi/dencam/dencam/sunsaver_log.py
      
-where 'pi' can be interchange with the device's hostname.
+where 'pi' can be interchanged with the active username on the Pi.
+If there is a need to adjust logging intervals the format of the cronjob timing 
+will be:
 
+    *(min) *(hour) *(day) *(mnth) *(weekday) [fullpath to python] [fullpath to script] 
+
+Attached is a website to help configure the run time for cronjobs
+https://crontab.guru
+    
 ## Setting up DenCam to run on boot
 
 TODO
 
 ## Setting up RTC
+For RPi's not connected to the internet a suitable battery powered hardware
+clock will be required.
 
-TODO
+Install clock overhanging the board farthest away from the USB plugs.Follow
+directions on the website exactly.
+
+Adafruit RTC 1st Steps 
+https://learn.adafruit.com/adding-a-real-time-clock-to-raspberry-pi/set-up-and-test-i2c
+
+Adafruit RTC 2nd Steps
+https://learn.adafruit.com/adding-a-real-time-clock-to-raspberry-pi/set-rtc-time
+
+
+
+Enter the following
+
+    sudo i2cdetect -y 1
+
+Be sure you see the device 68 show up in the matrix as seen below. If not,
+double check your connections.
+
+    $   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    60: -- -- -- -- -- -- -- -- 68 -- -- -- -- -- -- -- 
+    70: -- -- -- -- -- -- -- --
+    
+After the hardware checks out add support for the RTC by adding a device
+tree overlay. Run
+
+    sudo nano /boot/config.txt
+
+to the end of the file add
+
+    dtoverlay=i2c-rtc,ds3231
+ 
+Control x, and Y to save the file. Run the following to reboot
+
+    sudo reboot
+    
+Log in and run the following to see if the UU shows up where 0x68 should be
+
+    sudo i2cdetect -y 1
+
+UU should show as it does in the matrix below
+
+    $   0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+    60: -- -- -- -- -- -- -- -- UU -- -- -- -- -- -- -- 
+    70: -- -- -- -- -- -- -- --
+    
+Disable the "fake hwclock" which interferes with the 'real' hwclock by
+entering the following
+
+    sudo apt-get -y remove fake-hwclock
+    sudo update-rc.d -f fake-hwclock remove
+    sudo systemctl disable fake-hwclock
+    
+Now with the fake-hwclock off, you can start the original 'hardware clock'
+script
+
+Run the following
+
+    sudo nano /lib/udev/hwclock-set
+
+comment out these lines:
+
+    #if[-e/run/systemmd/system];then
+    #exit 0
+    #fi
+    #/sbin/hwclock --rtc=$dev --systz --badyear
+    #/sbin/hwclock --rtc=$dev --systz
+
+Run 
+
+    date
+
+to verify the time is correct. If not, double check your internet connection
+and reboot to allow the NTP to pull the correct date and time from the 
+internet.
+
+When date reads correctly run
+
+    sudo hwclock -w
+    sudo hwclock -r
+    sudo reboot
 
 # Dencam Pages
 
@@ -260,10 +391,16 @@ toggle the recording on this page.
 
 ## Solar Display Page
 
-This page displays data received from the SunSaver device in real time.
+This page displays the latest log in the solar csv file, which can be updated 
+using the function button.
 Currently it displays the date and time, Battery Voltage(V), Array Voltage(V),
-Charge current(A), Load current(A), Ah charge(Daily)(Ah), and
-Ah load(Daily)(Ah).
+Charge current(A), Load current(A), Ah charge(Daily)(Ah), Ah load(Daily)(Ah), 
+the sunsaver alarm, and an error status.
+
+Sunsaver alarm uses the built in alarm messages used by the sunsaver.
+
+Error status displays an errror usually when there is no usb connection detected
+or the sunsaver may be off.
 
 ## Camera Preview Page
 

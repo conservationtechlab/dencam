@@ -31,7 +31,7 @@ setuptools.setup(
     packages=['dencam'],
     include_package_data=True,
     install_requires=[
-        'minimalmodbus',
+        'minimalmodbus==2.0.1',
         'netifaces',
         'picamera',
         'pyserial',
