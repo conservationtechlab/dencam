@@ -1,3 +1,5 @@
+'''Handles the data import from the sunsaver mppt controller
+and formats the data to be displayed on the screen'''
 import csv
 import os
 from datetime import datetime
@@ -23,12 +25,14 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 
 def get_solardisplay_info():
+    '''Reads the solar data and formats it for display'''
     if not os.path.exists('/home/pi/dencam/solar.csv'):
         error_msg = "\nSolar information\nnot found\n\nEnsure \
 sunsaver_log.py\nis running as cronjob"
         return error_msg
-    with open('/home/pi/dencam/solar.csv', newline='', encoding='utf8') as cf:
-        parsed_csvfile = cf.read()
+    with open('/home/pi/dencam/solar.csv', newline='',
+              encoding='utf8') as solar:
+        parsed_csvfile = solar.read()
         parsed_csvfile = parsed_csvfile.replace('\x00', '')
         reader = csv.DictReader(StringIO(parsed_csvfile))
         for row in reader:
@@ -46,17 +50,20 @@ sunsaver_log.py\nis running as cronjob"
 
 
 def float_to_string(value):
+    '''Turns numerical input to string to be able to display'''
     return "{:.1f}".format(value)
 
 
 def log_solar_info():
+    '''Reads solar data from the charge controller and writes
+it to a csv'''
     usb_error = False
     solar_list = ['init']
     now = datetime.now()
     date_string = now.strftime("%Y-%m-%d")
     time_string = now.strftime('%Hh%Mm%Ss')
     try:
-        SunSaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
+        sunsaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
     except SerialException:
         usb_error = True
         solar_list = [date_string, time_string,
@@ -65,20 +72,20 @@ def log_solar_info():
                       'N/A', 'N/A', 'N/A',
                       'USB PORT ERROR']
     if not usb_error:
-        SunSaver.serial.baudrate = 9600
-        SunSaver.serial.stopbits = 2
+        sunsaver.serial.baudrate = 9600
+        sunsaver.serial.stopbits = 2
         try:
-            volt_batt = SunSaver.read_register(8) * 100 * 2**-(15)
-            volt_arr = SunSaver.read_register(9) * 100 * 2**-(15)
-            volt_ld = SunSaver.read_register(10) * 100 * 2**-(15)
-            curr_chrg = SunSaver.read_register(11) * 79.16 * 2**-(15)
-            curr_ld = SunSaver.read_register(12) * 79.16 * 2**-(15)
-            temp_amb = SunSaver.read_register(15)
-            temp_rts = SunSaver.read_register(16)
-            charge_state = SunSaver.read_register(17)
-            ah_charge = SunSaver.read_register(45) * 0.1
-            ah_load = SunSaver.read_register(46) * 0.1
-            alarm = SunSaver.read_register(50)
+            volt_batt = sunsaver.read_register(8) * 100 * 2**-(15)
+            volt_arr = sunsaver.read_register(9) * 100 * 2**-(15)
+            volt_ld = sunsaver.read_register(10) * 100 * 2**-(15)
+            curr_chrg = sunsaver.read_register(11) * 79.16 * 2**-(15)
+            curr_ld = sunsaver.read_register(12) * 79.16 * 2**-(15)
+            temp_amb = sunsaver.read_register(15)
+            temp_rts = sunsaver.read_register(16)
+            charge_state = sunsaver.read_register(17)
+            ah_charge = sunsaver.read_register(45) * 0.1
+            ah_load = sunsaver.read_register(46) * 0.1
+            alarm = sunsaver.read_register(50)
             solar_list = [date_string,
                           time_string,
                           float_to_string(volt_batt),
@@ -100,13 +107,15 @@ def log_solar_info():
                           'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
                           'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
                           'NO CONNECTION TO  SUNSAVER']
-        SunSaver.serial.close()
+        sunsaver.serial.close()
 
     if not os.path.exists('/home/pi/dencam/solar.csv'):
-        with open('/home/pi/dencam/solar.csv', 'w', newline='') as csvfile:
+        with open('/home/pi/dencam/solar.csv', 'w', newline='',
+                  encoding='utf8') as csvfile:
             csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
             csvwriter.writeheader()
-    with open('/home/pi/dencam/solar.csv', 'a', newline='') as csv_file:
+    with open('/home/pi/dencam/solar.csv', 'a', newline='',
+              encoding='utf8') as csv_file:
         csvwriter = csv.DictWriter(csv_file, fieldnames=field_names)
         csvwriter.writerow({'Date': solar_list[0],
                             'Time': solar_list[1],
