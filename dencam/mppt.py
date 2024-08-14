@@ -24,7 +24,9 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 def get_solardisplay_info():
     if not os.path.exists('/home/pi/dencam/solar.csv'):
-        return 'File Does Not Exist'
+        error_msg = "\nSolar information\nnot found\n\nEnsure \
+sunsaver_log.py\nis running as cronjob"
+        return error_msg
     with open('/home/pi/dencam/solar.csv', newline='', encoding='utf8') as cf:
         parsed_csvfile = cf.read()
         parsed_csvfile = parsed_csvfile.replace('\x00', '')
