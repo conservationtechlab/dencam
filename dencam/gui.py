@@ -10,6 +10,7 @@ import time
 import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
+from PIL import Image,ImageTk
 
 from dencam import networking
 from dencam import mppt
@@ -270,6 +271,9 @@ class RecordingPage(tk.Frame):
                                     bg='black')
         self.error_label.pack(fill=tk.X)
 
+        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
+        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="blue")
+        self.next_page.place(x=615, y=450)
 
 class NetworkPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -285,6 +289,15 @@ class NetworkPage(tk.Frame):
                                  fg='red',
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
+        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
+        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="red")
+        self.next_page.place(x=615, y=450)
+        self.airplane_button = tk.Canvas(self, height=20, width=20, bg='black', highlightthickness=0)
+        self.plane = ImageTk.PhotoImage(Image.open("/home/pi/dencam/dencam/images/plane.png"))
+        self.airplane_button.create_image(5, 5, image=self.plane)
+        self.airplane_button.place(x=610, y=325)
+
+
 
 
 class BlankPage(tk.Frame):
@@ -298,13 +311,20 @@ class SolarPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         fonts = prep_fonts(controller)
         self.configure(bg='black')
+        self.page_label = tk.Label(self, text="Solar Page", font=fonts['smaller'], fg='yellow', bg='black')
+        self.page_label.pack(fill=tk.X)
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
                                     font=fonts['smallerer'],
                                     fg='yellow',
                                     bg='black')
         self.solar_label.pack(fill=tk.X)
-
+        self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
+        self.canvas.create_oval(3, 3, 13, 13, outline="yellow", fill="yellow", width=2)
+        self.canvas.place(x=610, y=325)
+        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
+        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="yellow")
+        self.next_page.place(x=615, y=450)
 
 class ErrorScreen():
     """Class that creates a screen which displays error
