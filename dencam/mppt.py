@@ -1,5 +1,5 @@
-'''Handles the data import from the sunsaver mppt controller
-and formats the data to be displayed on the screen'''
+"""Functions to grab the data from the sunsaver mppt controller
+and format it to be displayed on the screen"""
 import csv
 import os
 from datetime import datetime
@@ -25,7 +25,7 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 
 def get_solardisplay_info():
-    '''Reads the solar data and formats it for display'''
+    """Reads the solar data and formats it for display"""
     if not os.path.exists('/home/pi/dencam/solar.csv'):
         error_msg = "\nSolar information\nnot found\n\nPress second \
 \nbutton and \nrefer to \nset-up instructions"
@@ -53,13 +53,13 @@ controller to Pi\n and press second\nbutton"
 
 
 def float_to_string(value):
-    '''Turns numerical input to string to be able to display'''
+    """Turns numerical input to string to be able to display"""
     return "{:.1f}".format(value)
 
 
 def log_solar_info():
-    '''Reads solar data from the charge controller and writes
-it to a csv'''
+    """Reads solar data from the charge controller and writes
+it to a csv"""
     usb_error = False
     solar_list = ['init']
     now = datetime.now()
