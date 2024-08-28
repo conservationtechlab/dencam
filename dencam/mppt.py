@@ -47,7 +47,8 @@ def get_solardisplay_info():
     solar_text += '\nAlarm: ' + last_row['Alarm']
     usb_error = last_row['MPPT_Error']
     if usb_error == "USB PORT ERROR":
-        solar_text = "\nUSB Port Error"
+        solar_text = "\nCheck USB connection\nfrom solar charge\n\
+controller to Pi\n and press second\nbutton"
     return solar_text
 
 
