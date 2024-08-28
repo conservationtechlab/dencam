@@ -27,8 +27,8 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 def get_solardisplay_info():
     '''Reads the solar data and formats it for display'''
     if not os.path.exists('/home/pi/dencam/solar.csv'):
-        error_msg = "\nSolar information\nnot found\n\nEnsure \
-sunsaver_log.py\nis running as cronjob"
+        error_msg = "\nSolar information\nnot found\n\nPress circle \
+\nbutton and \nrefer to \nset-up instructions"
         return error_msg
     with open('/home/pi/dencam/solar.csv', newline='',
               encoding='utf8') as solar:
@@ -45,8 +45,12 @@ sunsaver_log.py\nis running as cronjob"
     solar_text += '\nAh Charge: ' + last_row['Ah_Charge']
     solar_text += '\nAh Load: ' + last_row['Ah_Load']
     solar_text += '\nAlarm: ' + last_row['Alarm']
-    solar_text += '\nMPPT_Error: ' + last_row['MPPT_Error']
-    return solar_text
+    usb_error =  last_row['MPPT_Error']
+    if usb_error == "USB PORT ERROR":
+        solar_text = "\nUSB Port Error"
+        return solar_text
+    else:
+        return solar_text
 
 
 def float_to_string(value):
