@@ -45,12 +45,10 @@ def get_solardisplay_info():
     solar_text += '\nAh Charge: ' + last_row['Ah_Charge']
     solar_text += '\nAh Load: ' + last_row['Ah_Load']
     solar_text += '\nAlarm: ' + last_row['Alarm']
-    usb_error =  last_row['MPPT_Error']
+    usb_error = last_row['MPPT_Error']
     if usb_error == "USB PORT ERROR":
         solar_text = "\nUSB Port Error"
-        return solar_text
-    else:
-        return solar_text
+    return solar_text
 
 
 def float_to_string(value):
