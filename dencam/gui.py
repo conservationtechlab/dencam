@@ -293,8 +293,10 @@ class NetworkPage(tk.Frame):
         self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="red")
         self.next_page.place(x=615, y=450)
         self.airplane_button = tk.Canvas(self, height=20, width=20, bg='black', highlightthickness=0)
-        self.plane = ImageTk.PhotoImage(Image.open("/home/pi/dencam/dencam/images/plane.png"))
-        self.airplane_button.create_image(5, 5, image=self.plane)
+        self.plane = Image.open("/home/pi/dencam/dencam/images/plane.png")
+        self.s_plane = self.plane.resize((19, 16))
+        self.small_plane = ImageTk.PhotoImage(self.s_plane)
+        self.airplane_button.create_image(1, 1, image=self.small_plane)
         self.airplane_button.place(x=610, y=325)
 
 
