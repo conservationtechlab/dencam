@@ -1,4 +1,3 @@
-
 """Functions to interface with SunSaver
 
 """
@@ -27,7 +26,7 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 
 def get_solardisplay_info():
-    """Reads the solar data and formats it for display"""
+    """Read the solar data from CSV file and format it for display"""
     if not os.path.exists('/home/pi/dencam/solar.csv'):
         error_msg = "\nSolar information\nnot found\n\nPress " + \
                     "second\nbutton and \nrefer to \nset-up" + \
@@ -56,13 +55,12 @@ def get_solardisplay_info():
 
 
 def float_to_string(value):
-    """Turns numerical input to string to be able to display"""
+    """Turn numerical input to string for display"""
     return f"{value:.1f}"
 
 
 def log_solar_info():
-    """Reads solar data from the charge controller and writes
-it to a csv"""
+    """Read solar data from the SunSaver and write it to a CSV file"""
     usb_error = False
     solar_list = ['init']
     now = datetime.now()
