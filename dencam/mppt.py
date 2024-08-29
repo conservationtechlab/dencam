@@ -1,4 +1,6 @@
+
 """Functions to interface with SunSaver
+
 """
 import csv
 import os
@@ -55,7 +57,7 @@ def get_solardisplay_info():
 
 def float_to_string(value):
     """Turns numerical input to string to be able to display"""
-    return "{:.1f}".format(value)
+    return f"{value:.1f}"
 
 
 def log_solar_info():
