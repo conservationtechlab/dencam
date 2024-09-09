@@ -228,6 +228,8 @@ class RecordingPage(tk.Frame):
         fonts = prep_fonts(controller)
 
         self.configure(bg='black')
+        self.page_label = tk.Label(self, text="Recording Page", font=fonts['smaller'], fg='blue', bg='black')
+        self.page_label.pack(fill=tk.X)
 
         self.vid_count_label = tk.Label(self,
                                         textvariable=controller.vid_count_text,
@@ -274,6 +276,9 @@ class RecordingPage(tk.Frame):
         self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
         self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="blue")
         self.next_page.place(x=615, y=450)
+        self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
+        self.canvas.create_oval(3, 3, 13, 13, outline="blue", fill="blue", width=2)
+        self.canvas.place(x=610, y=325)
 
 class NetworkPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -282,21 +287,23 @@ class NetworkPage(tk.Frame):
         fonts = prep_fonts(controller)
 
         self.configure(bg='black')
+        self.page_label = tk.Label(self, text="Network Page", font=fonts['smaller'], fg='cyan', bg='black')
+        self.page_label.pack(fill=tk.X)
 
         self.ip_label = tk.Label(self,
                                  textvariable=controller.ip_text,
                                  font=fonts['smaller'],
-                                 fg='red',
+                                 fg='cyan',
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
         self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="red")
+        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="cyan")
         self.next_page.place(x=615, y=450)
-        self.airplane_button = tk.Canvas(self, height=20, width=20, bg='black', highlightthickness=0)
+        self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
         self.plane = Image.open("/home/pi/dencam/dencam/images/plane.png")
-        self.s_plane = self.plane.resize((19, 16))
+        self.s_plane = self.plane.resize((30, 30))
         self.small_plane = ImageTk.PhotoImage(self.s_plane)
-        self.airplane_button.create_image(1, 1, image=self.small_plane)
+        self.airplane_button.create_image(15, 15, image=self.small_plane)
         self.airplane_button.place(x=610, y=325)
 
 
