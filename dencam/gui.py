@@ -228,7 +228,9 @@ class RecordingPage(tk.Frame):
         fonts = prep_fonts(controller)
 
         self.configure(bg='black')
-        self.page_label = tk.Label(self, text="Recording Page", font=fonts['smaller'], fg='blue', bg='black')
+        self.page_label = tk.Label(self, text="Recording Page",
+                                   font=fonts['smaller'],
+                                   fg='blue', bg='black')
         self.page_label.pack(fill=tk.X)
 
         self.vid_count_label = tk.Label(self,
@@ -274,10 +276,10 @@ class RecordingPage(tk.Frame):
         self.error_label.pack(fill=tk.X)
 
         self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="blue")
+        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="pink1")
         self.next_page.place(x=615, y=450)
         self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
-        self.canvas.create_oval(3, 3, 13, 13, outline="blue", fill="blue", width=2)
+        self.canvas.create_oval(3, 3, 13, 13, outline="pink1", fill="pink1", width=2)
         self.canvas.place(x=610, y=325)
 
 class NetworkPage(tk.Frame):
@@ -313,7 +315,18 @@ class BlankPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
+        fonts = prep_fonts(controller)
 
+        self.page_label = tk.Label(self, text="Camera Preview", font=fonts['smaller'], fg='cyan', bg='black')
+        self.page_label.pack(side=tk.TOP, fill=tk.X)
+        self.button_label = tk.Label(self, text="+/-", font=fonts['smaller'], fg='cyan', bg='black')
+        self.button_label.pack(side=tk.BOTTOM, fill=tk.X)
+        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
+        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="cyan")
+        self.next_page.place(x=615, y=450)
+        self.upper_button = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
+        self.upper_button.create_polygon(20, 20, 10, 10, 0, 20, fill="cyan")
+        self.upper_button.place(x=380, y=450)
 
 class SolarPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -328,12 +341,20 @@ class SolarPage(tk.Frame):
                                     fg='yellow',
                                     bg='black')
         self.solar_label.pack(fill=tk.X)
-        self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
-        self.canvas.create_oval(3, 3, 13, 13, outline="yellow", fill="yellow", width=2)
-        self.canvas.place(x=610, y=325)
+        self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
+        self.plane = Image.open("/home/pi/dencam/dencam/images/yellow_arrow.jpg")
+        self.s_plane = self.plane.resize((30, 30))
+        self.small_plane = ImageTk.PhotoImage(self.s_plane)
+        self.airplane_button.create_image(15, 15, image=self.small_plane)
+        self.airplane_button.place(x=610, y=325)
+
+       # self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
+       # self.canvas.create_oval(3, 3, 13, 13, outline="yellow", fill="yellow", width=2)
+       # self.canvas.place(x=610, y=325)
         self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
         self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="yellow")
         self.next_page.place(x=615, y=450)
+
 
 class ErrorScreen():
     """Class that creates a screen which displays error
