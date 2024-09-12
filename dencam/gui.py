@@ -280,7 +280,7 @@ class RecordingPage(tk.Frame):
         self.next_page.place(x=615, y=450)
         self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
         self.canvas.create_oval(3, 3, 13, 13, outline="pink1", fill="pink1", width=2)
-        self.canvas.place(x=610, y=325)
+        self.canvas.place(x=615, y=325)
 
 class NetworkPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -302,7 +302,7 @@ class NetworkPage(tk.Frame):
         self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="cyan")
         self.next_page.place(x=615, y=450)
         self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
-        self.plane = Image.open("/home/pi/dencam/dencam/images/plane.png")
+        self.plane = Image.open("/home/pi/github3/dencam/dencam/images/plane.png")
         self.s_plane = self.plane.resize((30, 30))
         self.small_plane = ImageTk.PhotoImage(self.s_plane)
         self.airplane_button.create_image(15, 15, image=self.small_plane)
@@ -342,7 +342,7 @@ class SolarPage(tk.Frame):
                                     bg='black')
         self.solar_label.pack(fill=tk.X)
         self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
-        self.plane = Image.open("/home/pi/dencam/dencam/images/yellow_arrow.jpg")
+        self.plane = Image.open("/home/pi/github3/dencam/dencam/images/yellow2.png")
         self.s_plane = self.plane.resize((30, 30))
         self.small_plane = ImageTk.PhotoImage(self.s_plane)
         self.airplane_button.create_image(15, 15, image=self.small_plane)
