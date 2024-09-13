@@ -287,7 +287,7 @@ class NetworkPage(tk.Frame):
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
         self.version_label = tk.Label(self,
-                                      text=("Firmware Version: " + __version__),
+                                      text=("Firmware Version: "+ __version__),
                                       font=fonts['smaller'],
                                       fg='red',
                                       bg='black')
