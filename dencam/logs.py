@@ -4,6 +4,7 @@ import getpass
 
 from datetime import datetime
 
+from dencam import __version__
 
 def setup_logger(level, filename=None):
     logger = logging.getLogger()
@@ -33,5 +34,6 @@ def setup_logger(level, filename=None):
     f_handler.setFormatter(f_formatter)
     logger.addHandler(f_handler)
     f_handler.setLevel(logging.DEBUG)
+    logger.info("Firmware Version:" +__version__)
 
     return logger
