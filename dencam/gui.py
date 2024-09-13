@@ -203,6 +203,9 @@ def prep_fonts(controller):
                                  size=-int(scrn_height/12))
     fonts['big'] = tkFont.Font(family='Courier New',
                                size=-int(scrn_height/5))
+    fonts['buttons'] = tkFont.Font(family='Courier New',
+                               size=-int(scrn_height/24))
+
 
     return fonts
 
@@ -301,12 +304,19 @@ class NetworkPage(tk.Frame):
         self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
         self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="cyan")
         self.next_page.place(x=615, y=450)
-        self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
-        self.plane = Image.open("/home/pi/github3/dencam/dencam/images/plane.png")
-        self.s_plane = self.plane.resize((30, 30))
-        self.small_plane = ImageTk.PhotoImage(self.s_plane)
-        self.airplane_button.create_image(15, 15, image=self.small_plane)
-        self.airplane_button.place(x=610, y=325)
+
+        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=125, x=515, y=430)
+
+        self.page_label = tk.Label(self, text="Airplane Mode", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=180, x=460, y=310)
+
+       # self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
+       # self.plane = Image.open("/home/pi/github3/dencam/dencam/images/plane.png")
+       # self.s_plane = self.plane.resize((30, 30))
+       # self.small_plane = ImageTk.PhotoImage(self.s_plane)
+       # self.airplane_button.create_image(15, 15, image=self.small_plane)
+       # self.airplane_button.place(x=610, y=325)
 
 
 
