@@ -1,11 +1,11 @@
 # Overview
 
-This repository contains control code for Mini DenCam, a polar bear
+This repository contains control code for Mini DenCam and Cyclops, a polar bear
 maternal den observation device. The project is a collaboration
 between the Conservation Technology Lab at the San Diego Zoo Wildlife
 Alliance and Polar Bears International.
 
-# Hardware
+# Hardware - Mini Dencam
 
 The target hardware is a Raspberry Pi 4 Model B single board computer
 with a Picamera-style camera and the AdaFruit PiTFT screen (2.8"
@@ -22,7 +22,7 @@ components explicitly mentioned in the preceding paragraph) can still
 be useful to others who are pursuing related projects or want to
 contribute to the DenCam project.
 
-# Operating System
+# Operating System - Mini Dencam
 
 Currently, DenCam runs on Raspian Stretch and Buster. Problems have
 been encountered with Bullseye (specifically with interfacing with the
@@ -459,3 +459,18 @@ Pi, then perform one of the following actions:
 - Tap the PiTFT touchscreen on the Raspberry Pi
 - Shake the mouse connected to the Raspberry Pi
 - Press any key on the keyboard connected to the Raspberry Pi
+
+
+# Cyclops
+Smaller with PTZ unit
+# Operating Systen
+This version utilizes a Raspberry Pi 5 and the Bookworm operating system.
+# Installation
+- clone the repo
+- slightly different package installation and environment creation process than mini dencam
+- need to unzip and download the wpsl or whatever files (from pinpoint)
+- optional extra install that just downloads the cyclops dependencies and the base dencam dependencies
+- something to run the solar data stuff
+# Usage
+- filling out the other example yaml with the ptz camera information
+- running cyclops.py which will use the other version of recorder_cyclops.py
