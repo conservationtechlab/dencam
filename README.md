@@ -477,7 +477,14 @@ netmask 255.255.255.0'
 Then reboot the pi. To verify the ethernet connection to the PTZ unit, once rebooted and if the pi is connected via ethernet to the PTZ and the PTZ unit is powered, you can run:
 'ping 192.168.2.64' 
 and you should see ping times with no errors coming from the PTZ unit. If your PTZ unit has a different IP address than 192.168.2.64, ping the actual IP instead. 
-- clone the repo
+## Setup virtual environments and clone the Dencam repo
+## Setup WSDL
+In order to control the PTZ, you will need to install WSDL files which allow for ONVIF controls. The packages are included in the dencam repo, so just sopy these lines in your terminal to install the files:
+'''cp wsdl/wsdl.tar.gz ~/.virtualenvs/dencam_env/lib/python3.11/site-packages/
+ cd ~/.virtualenvs/dencam_env/lib/python3.11/site-packages/
+ tar xzf wsdl.tar.gz
+ rm wsdl.tar.gz
+ cd -'''
 - slightly different package installation and environment creation process than mini dencam
 - need to unzip and download the wpsl or whatever files (from pinpoint)
 - optional extra install that just downloads the cyclops dependencies and the base dencam dependencies
