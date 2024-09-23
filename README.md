@@ -466,6 +466,17 @@ Smaller with PTZ unit
 # Operating Systen
 This version utilizes a Raspberry Pi 5 and the Bookworm operating system.
 # Installation
+## Setting Up Raspberry Pi Configs
+You must create a ethernet subnetwork for the pi to be able to communicate with the PTZ unit. After installing Bookworm onto the pi and setting up the internet connection, run these commands in your terminal:
+'sudo nano /etc/network/interfaces.d/eth0'
+and then paste these lines into the empty text file:
+'allow-hotplug eth0
+iface eth0 inet static
+address 192.168.2.1/24
+netmask 255.255.255.0'
+Then reboot the pi. To verify the ethernet connection to the PTZ unit, once rebooted and if the pi is connected via ethernet to the PTZ and the PTZ unit is powered, you can run:
+'ping 192.168.2.64' 
+and you should see ping times with no errors coming from the PTZ unit. If your PTZ unit has a different IP address than 192.168.2.64, ping the actual IP instead. 
 - clone the repo
 - slightly different package installation and environment creation process than mini dencam
 - need to unzip and download the wpsl or whatever files (from pinpoint)
