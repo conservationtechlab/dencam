@@ -86,6 +86,7 @@ class BaseRecorder(ABC):
 
     def start_preview(self):
         self.camera.start_system()
+        print("start_preview in cyclops.py is starting system function")
         self.preview_on = True
 
     def stop_preview(self):

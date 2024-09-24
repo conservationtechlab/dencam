@@ -88,8 +88,10 @@ class ButtonHandler(Thread):
                 self.state.goto_next()
                 if self.state.value == self.STATE_LIST.index("BlankPage"):
                     self.recorder.start_preview()
+                    print("starting preview after button press")
                 elif self.state.value == self.STATE_LIST.index("OffPage"):
                     self.recorder.stop_preview()
+                    print("stopping preview after button press")
                 self._set_screen_brightness()
         else:
             self.latch_screen_button = False
