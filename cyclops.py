@@ -21,7 +21,7 @@ import yaml
 
 from dencam import logs
 from dencam.buttons import ButtonHandler
-from dencam.cyclops import Cyclops
+from dencam.cyclops import Recorder
 from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
 
@@ -51,7 +51,7 @@ def main():
         flags['stop_buttons_flag'] = True
         time.sleep(.1)
     try:
-        recorder = Cyclops(configs)
+        recorder = Recorder(configs)
         number_of_states = len(STATE_LIST)
         state = State(number_of_states)
         airplane_mode = AirplaneMode(configs)

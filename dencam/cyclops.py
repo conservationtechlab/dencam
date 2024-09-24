@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 
 
 from datetime import datetime
-import aim_ptz
+from dencam.ptz_control_and_display import PTZControlSystem
 
 
 log = logging.getLogger(__name__)
@@ -58,6 +58,8 @@ class BaseRecorder(ABC):
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
+        self.camera = PTZControlSystem(configs)
+
     @abstractmethod
     def stop_recording(self):
         return
@@ -67,32 +69,7 @@ class BaseRecorder(ABC):
         return
 
     def toggle_ptz_control(self):
-        if not self.zoom_on:
-            self.controller = aim_ptz.MyController(interface='/dev/input/js0', connecting_using_ds4drv=False)
-            self.controller.listen()
-            pan, tilt, zoom = ptz.get_position()
-            pan_deg = convert.command_to_degrees(pan, 360.0)
-            tilt_deg = convert.command_to_degrees(tilt, 90.0)
-            zoom_power = convert.zoom_to_power(zoom, CAM_ZOOM_POWER)
-
-            print(f'Pan: {pan_deg:.2f} Tilt: {tilt_deg:.2f}, Zoom: {zoom_power:.1f}')
-
-            if args.replace:
-                print("Writing new PTZ coordinates into config file.")
-                ptzstr = f"INIT_POS: [{pan_deg:.2f}, {tilt_deg:.2f}, {zoom_power:.2f}]"
-                with open(CONFIG_FILE, "r+", encoding='utf-8') as file:
-                    lines = file.readlines()
-
-                    for i, line in enumerate(lines):
-                        if line.startswith("INIT_POS:"):
-                            lines[i] = ptzstr + "\n"
-                            file.seek(0)  # Move the file pointer to the beginning
-                            file.writelines(lines)  # Write the modified lines
-                            file.truncate()  # Truncate any remaining content
-                            break  # Stop searching once the line is found
-
-        else:
-            self.zoom_on = not self.zoom_on
+        return
 
     def toggle_recording(self):
         if self.recording:
@@ -102,19 +79,17 @@ class BaseRecorder(ABC):
 
     def toggle_preview(self):
         if not self.preview_on:
-            self.camview.start()
+            self.camera.start_system()
         else:
-            self.camview.stop()
+            self.camera.stop_system()
         self.preview_on = not self.preview_on
 
     def start_preview(self):
-        self.camview = aim_ptz.CamView()
-        self.camview.setDaimon(True)
-        self.camview.start()
+        self.camera.start_system()
         self.preview_on = True
 
     def stop_preview(self):
-        self.camview.stop()
+        self.camera.stop_system()
         self.preview_on = False
 
     def _video_path_selector(self):
