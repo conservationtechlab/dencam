@@ -287,11 +287,12 @@ class NetworkPage(tk.Frame):
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
         self.version_label = tk.Label(self,
-                                      text=("Firmware Version: "+ __version__),
+                                      text=("DenCam Firmware v" + __version__),
                                       font=fonts['smaller'],
                                       fg='red',
                                       bg='black')
         self.version_label.pack(side=tk.BOTTOM, fill=tk.X)
+
 
 class BlankPage(tk.Frame):
     def __init__(self, parent, controller):
