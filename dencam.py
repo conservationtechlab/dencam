@@ -19,12 +19,11 @@ import time
 import yaml
 from picamera.exc import PiCameraMMALError
 
-from dencam import logs
+from dencam import logs, __version__
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -33,7 +32,7 @@ args = parser.parse_args()
 
 LOGGING_LEVEL = logging.INFO
 log = logs.setup_logger(LOGGING_LEVEL)
-log.info('*** MINIDENCAM STARTING UP ***')
+log.info('*** MINIDENCAM v%s STARTING UP ***', __version__)
 strg = logging.getLevelName(log.getEffectiveLevel())
 # clearly below line only reports for debug and info levels
 log.info('Logging level is {}'.format(strg))

@@ -11,6 +11,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
 
+from dencam import __version__
 from dencam import networking
 from dencam import mppt
 
@@ -285,6 +286,12 @@ class NetworkPage(tk.Frame):
                                  fg='red',
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
+        self.version_label = tk.Label(self,
+                                      text=("DenCam Firmware v" + __version__),
+                                      font=fonts['smaller'],
+                                      fg='red',
+                                      bg='black')
+        self.version_label.pack(side=tk.BOTTOM, fill=tk.X)
 
 
 class BlankPage(tk.Frame):
