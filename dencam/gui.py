@@ -23,8 +23,8 @@ class BaseController(Thread):
         super().__init__()
         self.recorder = recorder
         self.state = state
-        self.STATE_LIST = state_list
-        self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
+        self.state_list = state_list
+        self.pause_before_record = configs['PAUSE_BEFORE_RECORD']
         self.airplane_mode = airplane_mode
 
     def run(self):
@@ -107,12 +107,12 @@ class BaseController(Thread):
 
         self.recorder.update_timestamp()
 
-        networkp_index = self.STATE_LIST.index('NetworkPage')
-        blankp_index = self.STATE_LIST.index('BlankPage')
+        networkp_index = self.state_list.index('NetworkPage')
+        blankp_index = self.state_list.index('BlankPage')
 
         if (self.state.value >= networkp_index
                 and self.state.value <= blankp_index):
-            self.show_frame(self.STATE_LIST[self.state.value])
+            self.show_frame(self.state_list[self.state.value])
         self._update_strings()
         self.window.after(100, self._update)
 
@@ -120,34 +120,34 @@ class BaseController(Thread):
         """Draw the readout for the user to the screen.
 
         """
-        strg = "Vids this run: " + str(self.recorder.vid_count)
+        strg = f"Vids this run: {str(self.recorder.vid_count)}"
         self.vid_count_text.set(strg)
 
         # prepare storage info text
         free_space = self.recorder.get_free_space()
-        storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
+        storage_string = f"Free: {free_space:.2f} GB"
         log.debug('Storage as seen in main update loop: ' + storage_string)
         self.storage_text.set(storage_string)
 
-        strg = 'To: {}'.format(self.recorder.video_path)
+        strg = f"To: {self.recorder.video_path}"
         self.device_text.set(strg)
 
-        strg = 'Time: ' + self._get_time()
+        strg = f"Time: {self._get_time()}"
         self.time_text.set(strg)
 
         # prepare record state info text
         if not self.recorder.initial_pause_complete:
-            remaining = self.PAUSE_BEFORE_RECORD - self.elapsed_time
-            rec_text = '{0:.0f}'.format(remaining)
+            remaining = self.pause_before_record - self.elapsed_time
+            rec_text = f"{remaining:.0f}"
         else:
             state = 'Recording' if self.recorder.recording else 'Idle'
-            rec_text = '{}'.format(state)
+            rec_text = f"{state}"
         self.recording_text.set(rec_text)
 
         # prep network text
         network_info = networking.get_network_info()
         airplane_text = "\nAirplane Mode: "
-        if (self.airplane_mode.enabled):
+        if self.airplane_mode.enabled:
             airplane_text += "On"
         else:
             airplane_text += "Off"
@@ -162,15 +162,15 @@ class Controller(BaseController):
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__(configs, recorder, state_list, state, airplane_mode)
 
-        self.RECORD_LENGTH = configs['RECORD_LENGTH']
+        self.record_length = configs['RECORD_LENGTH']
 
     def _update(self):
         super()._update()
-        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
+        if ((self.elapsed_time > self.pause_before_record
              and not self.recorder.initial_pause_complete)):
             self.recorder.initial_pause_complete = True
             self.recorder.start_recording()
-        elif (self.elapsed_time > self.RECORD_LENGTH
+        elif (self.elapsed_time > self.record_length
               and self.recorder.recording):
             self.recorder.stop_recording()
             self.recorder.start_recording()
