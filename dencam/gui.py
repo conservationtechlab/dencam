@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
-    """DenCam UI controller superclass
+    """DenCam UI controller base class
 
     """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
