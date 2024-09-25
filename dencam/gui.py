@@ -394,8 +394,8 @@ class SolarPage(tk.Frame):
 class ErrorScreen():
     """Handles display of camera connection error information
 
-    This class is used before before cor UI controller is even invoked
-    as resolving this error supercedes all other functionality.
+    This class is used before core UI controller is even invoked as
+    resolving this error supercedes all other functionality.
 
     """
     def __init__(self):
