@@ -85,7 +85,6 @@ class BaseController(Thread):
 
         Parameters
         ----------
-
         page_name : str
             Name of page to show
 
@@ -117,7 +116,9 @@ class BaseController(Thread):
         return shours + ':' + smins + ':' + ssecs
 
     def _update(self):
-        """Core loop method run at 10 Hz
+        """Execute core loop method
+
+        Runs at 10 Hz (every 100 milliseconds)
 
         """
         self.elapsed_time = time.time() - self.recorder.record_start_time
@@ -175,7 +176,7 @@ class BaseController(Thread):
         self.solar_text.set(solar_info)
 
     def _prep_fonts(self):
-        """ Populate the dict of fonts used in UI
+        """Populate the dict of fonts used in UI
 
         """
 
@@ -230,13 +231,28 @@ class State():
     order and returning to the first state/page once the end is
     reached.
 
+    Parameters
+    ----------
+    num_states : int
+        Total number of states in state machine
+
+    Attributes
+    ----------
+    value : int
+        Index of current state
+
+    Methods
+    -------
+    goto_next()
+        Increment to next state
+
     """
     def __init__(self, num_states):
         self.value = 0
         self.num_states = num_states
 
     def goto_next(self):
-        """Increments to next state
+        """Increment to next state
 
         """
         self.value += 1
