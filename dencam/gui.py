@@ -19,6 +19,9 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
+    """DenCam UI controller superclass
+
+    """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__()
         self.recorder = recorder
@@ -33,7 +36,9 @@ class BaseController(Thread):
         self.window.mainloop()
 
     def _setup(self):
-        # GUI setup
+        """Set up the Tkinter GUI
+
+        """
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
         self.window.title('DenCam Control')
@@ -73,6 +78,15 @@ class BaseController(Thread):
         self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
+        """Display given page in UI
+
+        Parameters
+        ----------
+
+        page_name : str
+            Name of page to show
+
+        """
         frame = self.frames[page_name]
         frame.tkraise()
 
@@ -117,7 +131,7 @@ class BaseController(Thread):
         self.window.after(100, self._update)
 
     def _update_strings(self):
-        """Draw the readout for the user to the screen.
+        """Update all the strings used in the UI readout
 
         """
         strg = f"Vids this run: {str(self.recorder.vid_count)}"
@@ -126,7 +140,7 @@ class BaseController(Thread):
         # prepare storage info text
         free_space = self.recorder.get_free_space()
         storage_string = f"Free: {free_space:.2f} GB"
-        log.debug('Storage as seen in main update loop: ' + storage_string)
+        log.debug('Storage as seen in main update loop: %s', storage_string)
         self.storage_text.set(storage_string)
 
         strg = f"To: {self.recorder.video_path}"
@@ -159,6 +173,14 @@ class BaseController(Thread):
 
 
 class Controller(BaseController):
+    """DenCam UI Controller
+
+    Extends BaseController to add mechanics for 1) fixing the duration
+    of each recording using a value drawn from user configs (and
+    re-initializing recording after each duration has elapsed) and b)
+    starting first recording after a user-configured wait period.
+
+    """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__(configs, recorder, state_list, state, airplane_mode)
 
@@ -177,18 +199,46 @@ class Controller(BaseController):
 
 
 class State():
+    """Class that implements a simple, linear state machine
+
+    The states available to the device are essentially which UI page
+    is being displayed and is available for interaction.  This State
+    class creates the mechanics for storing the current state and
+    incrementing it.  The latter is all that is necessary because the
+    interface only allows cycling through each state/page in a fixed
+    order and returning to the first state/page once the end is
+    reached.
+
+    """
     def __init__(self, num_states):
         self.value = 0
         self.num_states = num_states
 
     def goto_next(self):
+        """Increments to next state
+
+        """
         self.value += 1
         if self.value >= self.num_states:
             self.value = 0
 
 
 def prep_fonts(controller):
-    # set font sizes
+    """ Create a dict of fonts used in UI
+
+    Parameters
+    ---------
+
+    controller : Controller
+       Need this to get the screen dimensions to scale fonts
+
+    Returns
+    -------
+
+    fonts : dict of str
+        Dictionary of a set of fonts to use in the UI
+
+    """
     fonts = {}
 
     scrn_height = controller.window.winfo_screenheight()
@@ -208,7 +258,7 @@ def prep_fonts(controller):
 
 
 class RecordingPage(tk.Frame):
-    """Page that displays information related to DenCam recording.
+    """UI Page that displays information related to DenCam recording.
 
     This page displays:
     - number of videos recorded this run
@@ -217,8 +267,8 @@ class RecordingPage(tk.Frame):
     - current clock time
     - whether currently recording (countdown if in countdown state)
 
-    On this page, second button toggles recording but that is
-    implemented elsewhere
+    On this page, action button toggles recording but actual 
+    implementation is not in this class.
 
     """
 
@@ -273,6 +323,20 @@ class RecordingPage(tk.Frame):
 
 
 class NetworkPage(tk.Frame):
+    """UI page that displays info related to network connection
+
+    Displays:
+    - hostname of device
+    - version of firmware (included on this page as first page of UI),
+    - whether in airplane mode.
+
+    If connected to a network, also displays:
+    - IP address
+    - SSID of WiFi AP that device is connected to
+
+    On this page, action button toggles airplane mode on and off.
+
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -295,12 +359,23 @@ class NetworkPage(tk.Frame):
 
 
 class BlankPage(tk.Frame):
+    """UI Page that is blank
+
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
 
 
 class SolarPage(tk.Frame):
+    """UI Page that displays the solar data from charge controller
+
+    On this page, UI action button refreshes solar data (mechanics of
+    the refresh might bear some more detail added here or in a
+    docstring associated with place where those mechanics are
+    implemented)
+
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         fonts = prep_fonts(controller)
@@ -314,9 +389,10 @@ class SolarPage(tk.Frame):
 
 
 class ErrorScreen():
-    """Class that creates a screen which displays error
-    information about a camera connection and will delete
-    the screen after.
+    """Handles display of camera connection error information
+
+    This class is used before before cor UI controller is even invoked
+    as resolving this error supercedes all other functionality.
 
     """
     def __init__(self):
@@ -330,7 +406,7 @@ class ErrorScreen():
         self.screen.update()
 
     def hide(self):
-        """Function to destroy screen
+        """Destroy the error screen
 
         """
         self.screen.destroy()
