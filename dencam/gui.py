@@ -116,7 +116,7 @@ class BaseController(Thread):
         return shours + ':' + smins + ':' + ssecs
 
     def _update(self):
-        """Execute core loop method
+        """Execute core loop activities
 
         Runs at 10 Hz (every 100 milliseconds)
 
