@@ -29,6 +29,7 @@ class BaseController(Thread):
         self.state_list = state_list
         self.pause_before_record = configs['PAUSE_BEFORE_RECORD']
         self.airplane_mode = airplane_mode
+        self.fonts = {}
 
     def run(self):
         self._setup()
@@ -42,6 +43,8 @@ class BaseController(Thread):
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
         self.window.title('DenCam Control')
+
+        self._prep_fonts()
 
         self.vid_count_text = tk.StringVar()
         self.vid_count_text.set('|')
@@ -171,6 +174,24 @@ class BaseController(Thread):
         solar_info = mppt.get_solardisplay_info()
         self.solar_text.set(solar_info)
 
+    def _prep_fonts(self):
+        """ Populate the dict of fonts used in UI
+
+        """
+
+        scrn_height = self.window.winfo_screenheight()
+        self.fonts['small'] = tkFont.Font(family='Courier New',
+                                          size=-int(scrn_height/9))
+        self.fonts['smaller'] = tkFont.Font(family='Courier New',
+                                            size=-int(scrn_height/12))
+        self.fonts['smallerer'] = tkFont.Font(family='Courier New',
+                                              size=-int(scrn_height/12),
+                                              weight="bold")
+        self.fonts['error'] = tkFont.Font(family='Courier New',
+                                          size=-int(scrn_height/12))
+        self.fonts['big'] = tkFont.Font(family='Courier New',
+                                        size=-int(scrn_height/5))
+
 
 class Controller(BaseController):
     """DenCam UI Controller
@@ -223,40 +244,6 @@ class State():
             self.value = 0
 
 
-def prep_fonts(controller):
-    """ Create a dict of fonts used in UI
-
-    Parameters
-    ---------
-
-    controller : Controller
-       Need this to get the screen dimensions to scale fonts
-
-    Returns
-    -------
-
-    fonts : dict of str
-        Dictionary of a set of fonts to use in the UI
-
-    """
-    fonts = {}
-
-    scrn_height = controller.window.winfo_screenheight()
-    fonts['small'] = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/9))
-    fonts['smaller'] = tkFont.Font(family='Courier New',
-                                   size=-int(scrn_height/12))
-    fonts['smallerer'] = tkFont.Font(family='Courier New',
-                                     size=-int(scrn_height/12),
-                                     weight="bold")
-    fonts['error'] = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/12))
-    fonts['big'] = tkFont.Font(family='Courier New',
-                               size=-int(scrn_height/5))
-
-    return fonts
-
-
 class RecordingPage(tk.Frame):
     """UI Page that displays information related to DenCam recording.
 
@@ -267,7 +254,7 @@ class RecordingPage(tk.Frame):
     - current clock time
     - whether currently recording (countdown if in countdown state)
 
-    On this page, action button toggles recording but actual 
+    On this page, action button toggles recording but actual
     implementation is not in this class.
 
     """
@@ -275,7 +262,7 @@ class RecordingPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
 
         self.configure(bg='black')
 
@@ -340,7 +327,7 @@ class NetworkPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
 
         self.configure(bg='black')
 
@@ -378,7 +365,7 @@ class SolarPage(tk.Frame):
     """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
         self.configure(bg='black')
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
