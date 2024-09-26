@@ -87,11 +87,13 @@ class ButtonHandler(Thread):
                 self.latch_screen_button = True
                 self.state.goto_next()
                 if self.state.value == self.STATE_LIST.index("BlankPage"):
+                    print("1. attempting to start preview from within buttons.py")
                     self.recorder.start_preview()
-                    print("starting preview after button press")
+                    print("6. should have successfully started  preview after button press")
                 elif self.state.value == self.STATE_LIST.index("OffPage"):
+                    print("attempting to stop preview after button press, inside buttons.py")
                     self.recorder.stop_preview()
-                    print("stopping preview after button press")
+                    print("should have successfully stopped  preview after button press")
                 self._set_screen_brightness()
         else:
             self.latch_screen_button = False
@@ -104,7 +106,7 @@ class ButtonHandler(Thread):
                    self.STATE_LIST.index("RecordingPage")):
                     self.recorder.toggle_recording()
                 elif self.state.value == self.STATE_LIST.index("BlankPage"):
-                    self.recorder.toggle_zoom()
+                    self.recorder.toggle_control()
                 elif self.state.value == self.STATE_LIST.index("NetworkPage"):
                     self.airplane_mode.toggle()
                 elif self.state.value == self.STATE_LIST.index("SolarPage"):

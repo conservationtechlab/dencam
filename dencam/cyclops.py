@@ -31,6 +31,7 @@ class BaseRecorder(ABC):
 
     def __init__(self, configs):
         self.preview_on = False
+        self.control_on = False
 
         self.record_start_time = time.time()  # also used in initial countdown
 
@@ -57,8 +58,9 @@ class BaseRecorder(ABC):
         self.recording = False
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
-
+        print("inside cyclops.py, calling ptz_control_and_display.py's ptzcontrolsystem class and initializing camera object")
         self.camera = PTZControlSystem(configs)
+        print("initialized camera ptzcontrolsystem class from within cyclops.py")
 
     @abstractmethod
     def stop_recording(self):
@@ -68,9 +70,14 @@ class BaseRecorder(ABC):
     def start_recording(self):
         return
 
-    def toggle_ptz_control(self):
+    def toggle_control(self):
+#        if not self.control_on:
+ #           self.camera.start_control()
+  #          self.control_on = True
+   #     else:
+    #        self.camera.stop_control()
+     #       self.control_on = False
         return
-
     def toggle_recording(self):
         if self.recording:
             self.stop_recording()
@@ -79,18 +86,26 @@ class BaseRecorder(ABC):
 
     def toggle_preview(self):
         if not self.preview_on:
+            print("inside toggle preview definition within cyclops.py, attempting so start_system")
             self.camera.start_system()
+            print("successfully started_system in toggle preview in cyclops.py")
+            self.preview_on = True
         else:
+            print("attempting to stop system after toggle preview is called in cyclops.py")
             self.camera.stop_system()
-        self.preview_on = not self.preview_on
+            print("should have stopped system of camera object in toggle preview in cyclops.py")
+            self.preview_on = False
 
     def start_preview(self):
+        print("2. inside cyclops.py start preview, attempting to start system")
         self.camera.start_system()
-        print("start_preview in cyclops.py is starting system function")
+        print("5. start_preview in cyclops.py ran successfully")
         self.preview_on = True
 
     def stop_preview(self):
+        print("attempting to stop preview within cyclops.py")
         self.camera.stop_system()
+        print("should have successfully stopped preview from within cyclops.py, stop system")
         self.preview_on = False
 
     def _video_path_selector(self):
