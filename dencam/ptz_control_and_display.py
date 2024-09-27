@@ -19,12 +19,17 @@ class CamView:
         self.orientation = orientation
         self.headless = headless
         self.running = False
-        GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        pin = 27
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         self.window_created = False
+
+        self.last_button_state = GPIO.input(pin)
+        self.last_press_time = time.time()
+
 
     def start_stream(self):
         self.running = True
-        print("3. starting stream in camview class inside ptz_control start_stream")
         if not self.headless and not self.window_created:
             print("6.5, checked if headless or not and will now attempt to create windows i guess")
             cv2.namedWindow("Control PTZ Camera", cv2.WINDOW_NORMAL)
@@ -33,6 +38,7 @@ class CamView:
             cv2.setWindowProperty("Control PTZ Camera", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             cv2.resizeWindow("Control PTZ Camera", 320, 210)
             print("7. inside ptz_control start stream, window should have been created")
+
 
         while self.running:
             frame = self.cam.get_frame()
@@ -46,8 +52,15 @@ class CamView:
                 break
 
     def check_button_press(self):
-        if not GPIO.input(27):
+        current_state = GPIO.input(27)
+        current_time = time.time()
+
+        if current_state == GPIO.LOW and self.last_button_state == GPIO.HIGH and (current_time - self.last_press_time) >0.2:
+            self.last_press_time = current_time
+            self.last_button_state = current_state
             return True
+
+        self.last_button_state = current_state
         return False
 
     def stop_stream(self):
@@ -276,9 +289,6 @@ class PTZControlSystem:
         self.stream = stream_overrise if stream_override else configs['STREAM']
         self.orientation = configs['ORIENTATION']
         self.headless = configs['HEADLESS']
-
-
-    def start_system(self):
         self.cam_view = CamView(
             self.ip,
             self.user,
@@ -286,6 +296,8 @@ class PTZControlSystem:
             self.stream,
             self.orientation,
             self.headless)
+
+    def start_system(self):
         self.cam_view.start_stream()
         print("4. started stream")
 
