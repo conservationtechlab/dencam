@@ -278,12 +278,13 @@ class RecordingPage(tk.Frame):
                                     bg='black')
         self.error_label.pack(fill=tk.X)
 
-        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="pink1")
-        self.next_page.place(x=615, y=450)
-        self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
-        self.canvas.create_oval(3, 3, 13, 13, outline="pink1", fill="pink1", width=2)
-        self.canvas.place(x=615, y=325)
+
+        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='blue', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=125, x=515, y=430)
+
+        self.page_label = tk.Label(self, text="Toggle Recording", font=fonts['buttons'], fg='blue', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=200, x=440, y=310)
+
 
 class NetworkPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -292,33 +293,21 @@ class NetworkPage(tk.Frame):
         fonts = prep_fonts(controller)
 
         self.configure(bg='black')
-        self.page_label = tk.Label(self, text="Network Page", font=fonts['smaller'], fg='cyan', bg='black')
+        self.page_label = tk.Label(self, text="Network Page", font=fonts['smaller'], fg='red', bg='black')
         self.page_label.pack(fill=tk.X)
 
         self.ip_label = tk.Label(self,
                                  textvariable=controller.ip_text,
                                  font=fonts['smaller'],
-                                 fg='cyan',
+                                 fg='red',
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
-        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="cyan")
-        self.next_page.place(x=615, y=450)
 
-        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='red', bg='black', highlightthickness=2)
         self.page_label.place(height=50, width=125, x=515, y=430)
 
-        self.page_label = tk.Label(self, text="Airplane Mode", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self, text="Airplane Mode", font=fonts['buttons'], fg='red', bg='black', highlightthickness=2)
         self.page_label.place(height=50, width=180, x=460, y=310)
-
-       # self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
-       # self.plane = Image.open("/home/pi/github3/dencam/dencam/images/plane.png")
-       # self.s_plane = self.plane.resize((30, 30))
-       # self.small_plane = ImageTk.PhotoImage(self.s_plane)
-       # self.airplane_button.create_image(15, 15, image=self.small_plane)
-       # self.airplane_button.place(x=610, y=325)
-
-
 
 
 class BlankPage(tk.Frame):
@@ -329,14 +318,11 @@ class BlankPage(tk.Frame):
 
         self.page_label = tk.Label(self, text="Camera Preview", font=fonts['smaller'], fg='cyan', bg='black')
         self.page_label.pack(side=tk.TOP, fill=tk.X)
-        self.button_label = tk.Label(self, text="+/-", font=fonts['smaller'], fg='cyan', bg='black')
-        self.button_label.pack(side=tk.BOTTOM, fill=tk.X)
-        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="cyan")
-        self.next_page.place(x=615, y=450)
-        self.upper_button = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.upper_button.create_polygon(20, 20, 10, 10, 0, 20, fill="cyan")
-        self.upper_button.place(x=380, y=450)
+        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=125, x=515, y=430)
+        self.page_label = tk.Label(self, text="Upper Button = Toggle Zoom", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=320, x=0, y=430)
+
 
 class SolarPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -349,21 +335,15 @@ class SolarPage(tk.Frame):
                                     textvariable=controller.solar_text,
                                     font=fonts['smallerer'],
                                     fg='yellow',
-                                    bg='black')
+                                    bg='black',
+                                    justify="left")
         self.solar_label.pack(fill=tk.X)
-        self.airplane_button = tk.Canvas(self, height=40, width=40, bg='black', highlightthickness=0)
-        self.plane = Image.open("/home/pi/github3/dencam/dencam/images/yellow2.png")
-        self.s_plane = self.plane.resize((30, 30))
-        self.small_plane = ImageTk.PhotoImage(self.s_plane)
-        self.airplane_button.create_image(15, 15, image=self.small_plane)
-        self.airplane_button.place(x=610, y=325)
 
-       # self.canvas = tk.Canvas(self, height = 15, width=15, bg='black', highlightthickness=0)
-       # self.canvas.create_oval(3, 3, 13, 13, outline="yellow", fill="yellow", width=2)
-       # self.canvas.place(x=610, y=325)
-        self.next_page = tk.Canvas(self, height=20, width=20, bg="black", highlightthickness=0)
-        self.next_page.create_polygon(0, 0, 10, 10, 0, 19, fill="yellow")
-        self.next_page.place(x=615, y=450)
+        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='yellow', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=125, x=515, y=430)
+
+        self.page_label = tk.Label(self, text="Update Data", font=fonts['buttons'], fg='yellow', bg='black', highlightthickness=2)
+        self.page_label.place(height=50, width=160, x=480, y=310)
 
 
 class ErrorScreen():
