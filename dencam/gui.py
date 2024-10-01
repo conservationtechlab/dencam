@@ -10,7 +10,6 @@ import time
 import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
-from PIL import Image,ImageTk
 
 from dencam import networking
 from dencam import mppt
@@ -204,8 +203,7 @@ def prep_fonts(controller):
     fonts['big'] = tkFont.Font(family='Courier New',
                                size=-int(scrn_height/5))
     fonts['buttons'] = tkFont.Font(family='Courier New',
-                               size=-int(scrn_height/24))
-
+                                   size=-int(scrn_height/24))
 
     return fonts
 
@@ -278,11 +276,20 @@ class RecordingPage(tk.Frame):
                                     bg='black')
         self.error_label.pack(fill=tk.X)
 
-
-        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='blue', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='blue',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=125, x=515, y=430)
 
-        self.page_label = tk.Label(self, text="Toggle Recording", font=fonts['buttons'], fg='blue', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Toggle Recording",
+                                   font=fonts['buttons'],
+                                   fg='blue',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=200, x=440, y=310)
 
 
@@ -293,7 +300,11 @@ class NetworkPage(tk.Frame):
         fonts = prep_fonts(controller)
 
         self.configure(bg='black')
-        self.page_label = tk.Label(self, text="Network Page", font=fonts['smaller'], fg='red', bg='black')
+        self.page_label = tk.Label(self,
+                                   text="Network Page",
+                                   font=fonts['smaller'],
+                                   fg='red',
+                                   bg='black')
         self.page_label.pack(fill=tk.X)
 
         self.ip_label = tk.Label(self,
@@ -303,10 +314,20 @@ class NetworkPage(tk.Frame):
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
 
-        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='red', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='red',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=125, x=515, y=430)
 
-        self.page_label = tk.Label(self, text="Airplane Mode", font=fonts['buttons'], fg='red', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Airplane Mode",
+                                   font=fonts['buttons'],
+                                   fg='red',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=180, x=460, y=310)
 
 
@@ -316,11 +337,25 @@ class BlankPage(tk.Frame):
         self.configure(bg='black')
         fonts = prep_fonts(controller)
 
-        self.page_label = tk.Label(self, text="Camera Preview", font=fonts['smaller'], fg='cyan', bg='black')
+        self.page_label = tk.Label(self,
+                                   text="Camera Preview",
+                                   font=fonts['smaller'],
+                                   fg='cyan',
+                                   bg='black')
         self.page_label.pack(side=tk.TOP, fill=tk.X)
-        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='cyan',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=125, x=515, y=430)
-        self.page_label = tk.Label(self, text="Upper Button = Toggle Zoom", font=fonts['buttons'], fg='cyan', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Upper Button = Toggle Zoom",
+                                   font=fonts['buttons'],
+                                   fg='cyan',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=320, x=0, y=430)
 
 
@@ -329,7 +364,11 @@ class SolarPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         fonts = prep_fonts(controller)
         self.configure(bg='black')
-        self.page_label = tk.Label(self, text="Solar Page", font=fonts['smaller'], fg='yellow', bg='black')
+        self.page_label = tk.Label(self,
+                                   text="Solar Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='black')
         self.page_label.pack(fill=tk.X)
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
@@ -339,10 +378,20 @@ class SolarPage(tk.Frame):
                                     justify="left")
         self.solar_label.pack(fill=tk.X)
 
-        self.page_label = tk.Label(self, text="Next Page", font=fonts['buttons'], fg='yellow', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=125, x=515, y=430)
 
-        self.page_label = tk.Label(self, text="Update Data", font=fonts['buttons'], fg='yellow', bg='black', highlightthickness=2)
+        self.page_label = tk.Label(self,
+                                   text="Update Data",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
         self.page_label.place(height=50, width=160, x=480, y=310)
 
 
