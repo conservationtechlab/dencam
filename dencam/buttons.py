@@ -19,7 +19,7 @@ SCREEN_BUTTON = 27
 FUNCTION_BUTTON = 23
 RECORD_BUTTON = 22
 #ZOOM_BUTTON = 17
-
+RELAY_PIN = 17
 
 class ButtonHandler(Thread):
     """Handles the GPIO pins on the pi that are being used.
@@ -50,7 +50,8 @@ class ButtonHandler(Thread):
         GPIO.setup(RECORD_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(FUNCTION_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
  #       GPIO.setup(ZOOM_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
+        GPIO.setup(RELAY_PIN, GPIO.OUT)
+        GPIO.output(RELAY_PIN, 0)
         # screen backlight control pin and related
         GPIO.setup(18, GPIO.OUT)
         self.backlight_pwm = GPIO.PWM(18, 1000)
