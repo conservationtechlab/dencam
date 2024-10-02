@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 SCREEN_BUTTON = 27
 FUNCTION_BUTTON = 23
 RECORD_BUTTON = 22
-ZOOM_BUTTON = 17
+#ZOOM_BUTTON = 17
 
 
 class ButtonHandler(Thread):
@@ -49,7 +49,7 @@ class ButtonHandler(Thread):
         GPIO.setup(SCREEN_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(RECORD_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(FUNCTION_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(ZOOM_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+ #       GPIO.setup(ZOOM_BUTTON, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # screen backlight control pin and related
         GPIO.setup(18, GPIO.OUT)
