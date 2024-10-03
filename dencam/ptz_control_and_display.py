@@ -36,7 +36,8 @@ class CamView:
             print("6.6 apparently but not really, should have just created the named window")
             cv2.setWindowProperty("Control PTZ Camera", cv2.WND_PROP_TOPMOST, 1)
             cv2.setWindowProperty("Control PTZ Camera", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-            cv2.resizeWindow("Control PTZ Camera", 320, 210)
+            cv2.moveWindow("Control PTZ Camera", 0, -30)
+            cv2.resizeWindow("Control PTZ Camera", 320, 240)
             print("7. inside ptz_control start stream, window should have been created")
 
 
