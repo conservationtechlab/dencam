@@ -113,7 +113,7 @@ def log_solar_info():
                           'NO CONNECTION TO  SUNSAVER']
         sunsaver.serial.close()
 
-    if not os.path.exists(solar_path):
+    if not os.path.exists("./solar.csv"):
         with open("./solar.csv", 'w', newline='',
                   encoding='utf8') as csvfile:
             csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
