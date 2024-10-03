@@ -38,6 +38,7 @@ def get_network_info():
         text += ('{}: {}\n'.format(interface, ip))
         if interface == 'wlan0':
             ssid = subprocess.check_output(['iwgetid'])
+            text += "SSID: "
             text += (ssid.decode('utf-8').split('ESSID:')[-1].replace('"', ''))
 
     return text
