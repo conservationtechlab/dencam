@@ -336,7 +336,7 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=125, x=515, y=430)
+        self.page_label.place(height=50, width=135, x=505, y=430)
 
         self.page_label = tk.Label(self,
                                    text="Toggle Recording",
@@ -394,7 +394,7 @@ class NetworkPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=125, x=515, y=430)
+        self.page_label.place(height=50, width=135, x=505, y=430)
 
         self.page_label = tk.Label(self,
                                    text="Airplane Mode",
@@ -426,7 +426,7 @@ class BlankPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=125, x=515, y=430)
+        self.page_label.place(height=50, width=135, x=505, y=430)
         self.page_label = tk.Label(self,
                                    text="Upper Button = Toggle Zoom",
                                    font=fonts['buttons'],
@@ -469,7 +469,7 @@ class SolarPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=125, x=515, y=430)
+        self.page_label.place(height=50, width=135, x=505, y=430)
 
         self.page_label = tk.Label(self,
                                    text="Update Data",
