@@ -28,7 +28,7 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 def get_solardisplay_info():
     """Read the solar data from CSV file and format it for display"""
-    with open(./solar_path.yaml) as f:
+    with open(solar_path.yaml) as f:
         path = yaml.load(f, Loader=yaml.SafeLoader)
     solar_path = path['PATH']
     if not os.path.exists(solar_path):
@@ -117,7 +117,7 @@ def log_solar_info():
                           'NO CONNECTION TO  SUNSAVER']
         sunsaver.serial.close()
 
-    with open(./solar_path.yaml) as f:
+    with open(solar_path.yaml) as f:
         path = yaml.load(f, Loader=yaml.SafeLoader)
     solar_path = path['PATH']
 
