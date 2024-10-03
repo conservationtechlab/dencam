@@ -11,6 +11,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
 
+from dencam import __version__
 from dencam import networking
 from dencam import mppt
 
@@ -18,13 +19,17 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
+    """DenCam UI controller base class
+
+    """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__()
         self.recorder = recorder
         self.state = state
-        self.STATE_LIST = state_list
-        self.PAUSE_BEFORE_RECORD = configs['PAUSE_BEFORE_RECORD']
+        self.state_list = state_list
+        self.pause_before_record = configs['PAUSE_BEFORE_RECORD']
         self.airplane_mode = airplane_mode
+        self.fonts = {}
 
     def run(self):
         self._setup()
@@ -32,10 +37,14 @@ class BaseController(Thread):
         self.window.mainloop()
 
     def _setup(self):
-        # GUI setup
+        """Set up the Tkinter GUI
+
+        """
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
         self.window.title('DenCam Control')
+
+        self._prep_fonts()
 
         self.vid_count_text = tk.StringVar()
         self.vid_count_text.set('|')
@@ -72,6 +81,14 @@ class BaseController(Thread):
         self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
+        """Display given page in UI
+
+        Parameters
+        ----------
+        page_name : str
+            Name of page to show
+
+        """
         frame = self.frames[page_name]
         frame.tkraise()
 
@@ -99,54 +116,56 @@ class BaseController(Thread):
         return shours + ':' + smins + ':' + ssecs
 
     def _update(self):
-        """Core loop method run at 10 Hz
+        """Execute core loop activities
+
+        Runs at 10 Hz (every 100 milliseconds)
 
         """
         self.elapsed_time = time.time() - self.recorder.record_start_time
 
         self.recorder.update_timestamp()
 
-        networkp_index = self.STATE_LIST.index('NetworkPage')
-        blankp_index = self.STATE_LIST.index('BlankPage')
+        networkp_index = self.state_list.index('NetworkPage')
+        blankp_index = self.state_list.index('BlankPage')
 
         if (self.state.value >= networkp_index
                 and self.state.value <= blankp_index):
-            self.show_frame(self.STATE_LIST[self.state.value])
+            self.show_frame(self.state_list[self.state.value])
         self._update_strings()
         self.window.after(100, self._update)
 
     def _update_strings(self):
-        """Draw the readout for the user to the screen.
+        """Update all the strings used in the UI readout
 
         """
-        strg = "Vids this run: " + str(self.recorder.vid_count)
+        strg = f"Vids this run: {str(self.recorder.vid_count)}"
         self.vid_count_text.set(strg)
 
         # prepare storage info text
         free_space = self.recorder.get_free_space()
-        storage_string = 'Free: ' + '{0:.2f}'.format(free_space) + ' GB'
-        log.debug('Storage as seen in main update loop: ' + storage_string)
+        storage_string = f"Free: {free_space:.2f} GB"
+        log.debug('Storage as seen in main update loop: %s', storage_string)
         self.storage_text.set(storage_string)
 
-        strg = 'To: {}'.format(self.recorder.video_path)
+        strg = f"To: {self.recorder.video_path}"
         self.device_text.set(strg)
 
-        strg = 'Time: ' + self._get_time()
+        strg = f"Time: {self._get_time()}"
         self.time_text.set(strg)
 
         # prepare record state info text
         if not self.recorder.initial_pause_complete:
-            remaining = self.PAUSE_BEFORE_RECORD - self.elapsed_time
-            rec_text = '{0:.0f}'.format(remaining)
+            remaining = self.pause_before_record - self.elapsed_time
+            rec_text = f"{remaining:.0f}"
         else:
             state = 'Recording' if self.recorder.recording else 'Idle'
-            rec_text = '{}'.format(state)
+            rec_text = f"{state}"
         self.recording_text.set(rec_text)
 
         # prep network text
         network_info = networking.get_network_info()
         airplane_text = "\nAirplane Mode: "
-        if (self.airplane_mode.enabled):
+        if self.airplane_mode.enabled:
             airplane_text += "On"
         else:
             airplane_text += "Off"
@@ -156,60 +175,95 @@ class BaseController(Thread):
         solar_info = mppt.get_solardisplay_info()
         self.solar_text.set(solar_info)
 
+    def _prep_fonts(self):
+        """Populate the dict of fonts used in UI
+
+        """
+
+        scrn_height = self.window.winfo_screenheight()
+        self.fonts['small'] = tkFont.Font(family='Courier New',
+                                          size=-int(scrn_height/9))
+        self.fonts['smaller'] = tkFont.Font(family='Courier New',
+                                            size=-int(scrn_height/12))
+        self.fonts['smallerer'] = tkFont.Font(family='Courier New',
+                                              size=-int(scrn_height/12),
+                                              weight="bold")
+        self.fonts['error'] = tkFont.Font(family='Courier New',
+                                          size=-int(scrn_height/12))
+        self.fonts['big'] = tkFont.Font(family='Courier New',
+                                        size=-int(scrn_height/5))
+        self.fonts['buttons'] = tkFont.Font(family='Courier New',
+                                            size=-int(scrn_height/24))
+
 
 class Controller(BaseController):
+    """DenCam UI Controller
+
+    Extends BaseController to add mechanics for 1) fixing the duration
+    of each recording using a value drawn from user configs (and
+    re-initializing recording after each duration has elapsed) and b)
+    starting first recording after a user-configured wait period.
+
+    """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__(configs, recorder, state_list, state, airplane_mode)
 
-        self.RECORD_LENGTH = configs['RECORD_LENGTH']
+        self.record_length = configs['RECORD_LENGTH']
 
     def _update(self):
         super()._update()
-        if ((self.elapsed_time > self.PAUSE_BEFORE_RECORD
+        if ((self.elapsed_time > self.pause_before_record
              and not self.recorder.initial_pause_complete)):
             self.recorder.initial_pause_complete = True
             self.recorder.start_recording()
-        elif (self.elapsed_time > self.RECORD_LENGTH
+        elif (self.elapsed_time > self.record_length
               and self.recorder.recording):
             self.recorder.stop_recording()
             self.recorder.start_recording()
 
 
 class State():
+    """Class that implements a simple, linear state machine
+
+    The states available to the device are essentially which UI page
+    is being displayed and is available for interaction.  This State
+    class creates the mechanics for storing the current state and
+    incrementing it.  The latter is all that is necessary because the
+    interface only allows cycling through each state/page in a fixed
+    order and returning to the first state/page once the end is
+    reached.
+
+    Parameters
+    ----------
+    num_states : int
+        Total number of states in state machine
+
+    Attributes
+    ----------
+    value : int
+        Index of current state
+
+    Methods
+    -------
+    goto_next()
+        Increment to next state
+
+    """
     def __init__(self, num_states):
         self.value = 0
         self.num_states = num_states
 
     def goto_next(self):
+        """Increment to next state
+
+        """
         self.value += 1
         if self.value >= self.num_states:
             self.value = 0
-
-
-def prep_fonts(controller):
-    # set font sizes
-    fonts = {}
-
-    scrn_height = controller.window.winfo_screenheight()
-    fonts['small'] = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/9))
-    fonts['smaller'] = tkFont.Font(family='Courier New',
-                                   size=-int(scrn_height/12))
-    fonts['smallerer'] = tkFont.Font(family='Courier New',
-                                     size=-int(scrn_height/12),
-                                     weight="bold")
-    fonts['error'] = tkFont.Font(family='Courier New',
-                                 size=-int(scrn_height/12))
-    fonts['big'] = tkFont.Font(family='Courier New',
-                               size=-int(scrn_height/5))
-    fonts['buttons'] = tkFont.Font(family='Courier New',
-                                   size=-int(scrn_height/24))
-
-    return fonts
-
-
+            
+            
 class RecordingPage(tk.Frame):
-    """Page that displays information related to DenCam recording.
+    """UI Page that displays information related to DenCam recording.
 
     This page displays:
     - number of videos recorded this run
@@ -218,15 +272,15 @@ class RecordingPage(tk.Frame):
     - current clock time
     - whether currently recording (countdown if in countdown state)
 
-    On this page, second button toggles recording but that is
-    implemented elsewhere
+    On this page, action button toggles recording but actual
+    implementation is not in this class.
 
     """
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
 
         self.configure(bg='black')
         self.page_label = tk.Label(self, text="Recording Page",
@@ -294,10 +348,24 @@ class RecordingPage(tk.Frame):
 
 
 class NetworkPage(tk.Frame):
+    """UI page that displays info related to network connection
+
+    Displays:
+    - hostname of device
+    - version of firmware (included on this page as first page of UI),
+    - whether in airplane mode.
+
+    If connected to a network, also displays:
+    - IP address
+    - SSID of WiFi AP that device is connected to
+
+    On this page, action button toggles airplane mode on and off.
+
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
 
         self.configure(bg='black')
         self.page_label = tk.Label(self,
@@ -313,6 +381,12 @@ class NetworkPage(tk.Frame):
                                  fg='red',
                                  bg='black')
         self.ip_label.pack(fill=tk.X)
+        self.version_label = tk.Label(self,
+                                      text=("DenCam Firmware v" + __version__),
+                                      font=fonts['smaller'],
+                                      fg='red',
+                                      bg='black')
+        self.version_label.pack(side=tk.BOTTOM, fill=tk.X)
 
         self.page_label = tk.Label(self,
                                    text="Next Page",
@@ -332,10 +406,13 @@ class NetworkPage(tk.Frame):
 
 
 class BlankPage(tk.Frame):
+    """UI Page that is blank
+
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
 
         self.page_label = tk.Label(self,
                                    text="Camera Preview",
@@ -360,9 +437,17 @@ class BlankPage(tk.Frame):
 
 
 class SolarPage(tk.Frame):
+    """UI Page that displays the solar data from charge controller
+
+    On this page, UI action button refreshes solar data (mechanics of
+    the refresh might bear some more detail added here or in a
+    docstring associated with place where those mechanics are
+    implemented)
+
+    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        fonts = prep_fonts(controller)
+        fonts = controller.fonts
         self.configure(bg='black')
         self.page_label = tk.Label(self,
                                    text="Solar Page",
@@ -396,9 +481,10 @@ class SolarPage(tk.Frame):
 
 
 class ErrorScreen():
-    """Class that creates a screen which displays error
-    information about a camera connection and will delete
-    the screen after.
+    """Handles display of camera connection error information
+
+    This class is used before core UI controller is even invoked as
+    resolving this error supercedes all other functionality.
 
     """
     def __init__(self):
@@ -412,7 +498,7 @@ class ErrorScreen():
         self.screen.update()
 
     def hide(self):
-        """Function to destroy screen
+        """Destroy the error screen
 
         """
         self.screen.destroy()

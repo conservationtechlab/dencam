@@ -1,3 +1,6 @@
+"""Functions to interface with SunSaver
+
+"""
 import csv
 import os
 from datetime import datetime
@@ -23,10 +26,15 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 
 def get_solardisplay_info():
+    """Read the solar data from CSV file and format it for display"""
     if not os.path.exists('/home/pi/dencam/solar.csv'):
-        return 'File Does Not Exist'
-    with open('/home/pi/dencam/solar.csv', newline='', encoding='utf8') as cf:
-        parsed_csvfile = cf.read()
+        error_msg = "\nSolar information\nnot found\n\nPress " + \
+                    "second\nbutton and \nrefer to \nset-up" + \
+                    " instructions"
+        return error_msg
+    with open('/home/pi/dencam/solar.csv', newline='',
+              encoding='utf8') as solar:
+        parsed_csvfile = solar.read()
         parsed_csvfile = parsed_csvfile.replace('\x00', '')
         reader = csv.DictReader(StringIO(parsed_csvfile))
         for row in reader:
@@ -39,22 +47,27 @@ def get_solardisplay_info():
     solar_text += '\nAh Charge: ' + last_row['Ah_Charge']
     solar_text += '\nAh Load: ' + last_row['Ah_Load']
     solar_text += '\nAlarm: ' + last_row['Alarm']
-    solar_text += '\nMPPT_Error: ' + last_row['MPPT_Error']
+    usb_error = last_row['MPPT_Error']
+    if usb_error == "USB PORT ERROR":
+        solar_text = "\nCheck USB connection\nfrom solar charge\n" + \
+                     "controller to Pi\n and press second\nbutton"
     return solar_text
 
 
 def float_to_string(value):
-    return "{:.1f}".format(value)
+    """Turn numerical input to string for display"""
+    return f"{value:.1f}"
 
 
 def log_solar_info():
+    """Read solar data from the SunSaver and write it to a CSV file"""
     usb_error = False
     solar_list = ['init']
     now = datetime.now()
     date_string = now.strftime("%Y-%m-%d")
     time_string = now.strftime('%Hh%Mm%Ss')
     try:
-        SunSaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
+        sunsaver = minimalmodbus.Instrument('/dev/ttyUSB0', 1)
     except SerialException:
         usb_error = True
         solar_list = [date_string, time_string,
@@ -63,20 +76,20 @@ def log_solar_info():
                       'N/A', 'N/A', 'N/A',
                       'USB PORT ERROR']
     if not usb_error:
-        SunSaver.serial.baudrate = 9600
-        SunSaver.serial.stopbits = 2
+        sunsaver.serial.baudrate = 9600
+        sunsaver.serial.stopbits = 2
         try:
-            volt_batt = SunSaver.read_register(8) * 100 * 2**-(15)
-            volt_arr = SunSaver.read_register(9) * 100 * 2**-(15)
-            volt_ld = SunSaver.read_register(10) * 100 * 2**-(15)
-            curr_chrg = SunSaver.read_register(11) * 79.16 * 2**-(15)
-            curr_ld = SunSaver.read_register(12) * 79.16 * 2**-(15)
-            temp_amb = SunSaver.read_register(15)
-            temp_rts = SunSaver.read_register(16)
-            charge_state = SunSaver.read_register(17)
-            ah_charge = SunSaver.read_register(45) * 0.1
-            ah_load = SunSaver.read_register(46) * 0.1
-            alarm = SunSaver.read_register(50)
+            volt_batt = sunsaver.read_register(8) * 100 * 2**-(15)
+            volt_arr = sunsaver.read_register(9) * 100 * 2**-(15)
+            volt_ld = sunsaver.read_register(10) * 100 * 2**-(15)
+            curr_chrg = sunsaver.read_register(11) * 79.16 * 2**-(15)
+            curr_ld = sunsaver.read_register(12) * 79.16 * 2**-(15)
+            temp_amb = sunsaver.read_register(15)
+            temp_rts = sunsaver.read_register(16)
+            charge_state = sunsaver.read_register(17)
+            ah_charge = sunsaver.read_register(45) * 0.1
+            ah_load = sunsaver.read_register(46) * 0.1
+            alarm = sunsaver.read_register(50)
             solar_list = [date_string,
                           time_string,
                           float_to_string(volt_batt),
@@ -98,13 +111,15 @@ def log_solar_info():
                           'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
                           'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
                           'NO CONNECTION TO  SUNSAVER']
-        SunSaver.serial.close()
+        sunsaver.serial.close()
 
     if not os.path.exists('/home/pi/dencam/solar.csv'):
-        with open('/home/pi/dencam/solar.csv', 'w', newline='') as csvfile:
+        with open('/home/pi/dencam/solar.csv', 'w', newline='',
+                  encoding='utf8') as csvfile:
             csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
             csvwriter.writeheader()
-    with open('/home/pi/dencam/solar.csv', 'a', newline='') as csv_file:
+    with open('/home/pi/dencam/solar.csv', 'a', newline='',
+              encoding='utf8') as csv_file:
         csvwriter = csv.DictWriter(csv_file, fieldnames=field_names)
         csvwriter.writerow({'Date': solar_list[0],
                             'Time': solar_list[1],
