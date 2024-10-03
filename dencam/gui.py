@@ -344,7 +344,7 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=200, x=440, y=310)
+        self.page_label.place(height=50, width=230, x=410, y=310)
 
 
 class NetworkPage(tk.Frame):
@@ -386,7 +386,7 @@ class NetworkPage(tk.Frame):
                                       font=fonts['smaller'],
                                       fg='yellow',
                                       bg='black')
-        self.version_label.pack(side=tk.BOTTOM, fill=tk.X)
+        self.version_label.place(height=70, x=0, y=360)
 
         self.page_label = tk.Label(self,
                                    text="Next Page",
@@ -402,7 +402,7 @@ class NetworkPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=180, x=460, y=310)
+        self.page_label.place(height=50, width=200, x=440, y=310)
 
 
 class BlankPage(tk.Frame):
@@ -433,7 +433,7 @@ class BlankPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=320, x=0, y=430)
+        self.page_label.place(height=50, width=370, x=0, y=430)
 
 
 class SolarPage(tk.Frame):
