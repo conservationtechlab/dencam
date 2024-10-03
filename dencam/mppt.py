@@ -8,7 +8,6 @@ from io import StringIO
 
 import minimalmodbus
 from serial import SerialException
-import yaml
 
 
 alarm_list = ["RTS open", "RTS shorted", "RTS disconnected",
@@ -28,15 +27,12 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 def get_solardisplay_info():
     """Read the solar data from CSV file and format it for display"""
-    with open("dencam/solar_path.yaml") as f:
-        path = yaml.load(f, Loader=yaml.SafeLoader)
-    solar_path = path['PATH']
-    if not os.path.exists(solar_path):
+    if not os.path.exists("./solar.csv"):
         error_msg = "\nSolar information\nnot found\n\nPress " + \
                     "second\nbutton and \nrefer to \nset-up" + \
                     " instructions"
         return error_msg
-    with open(solar_path, newline='',
+    with open("./solar.csv", newline='',
               encoding='utf8') as solar:
         parsed_csvfile = solar.read()
         parsed_csvfile = parsed_csvfile.replace('\x00', '')
@@ -117,16 +113,12 @@ def log_solar_info():
                           'NO CONNECTION TO  SUNSAVER']
         sunsaver.serial.close()
 
-    with open("dencam/solar_path.yaml") as f:
-        path = yaml.load(f, Loader=yaml.SafeLoader)
-    solar_path = path['PATH']
-
     if not os.path.exists(solar_path):
-        with open(solar_path, 'w', newline='',
+        with open("./solar.csv", 'w', newline='',
                   encoding='utf8') as csvfile:
             csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
             csvwriter.writeheader()
-    with open(solar_path, 'a', newline='',
+    with open("./solar.csv", 'a', newline='',
               encoding='utf8') as csv_file:
         csvwriter = csv.DictWriter(csv_file, fieldnames=field_names)
         csvwriter.writerow({'Date': solar_list[0],
