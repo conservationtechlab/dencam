@@ -24,7 +24,7 @@ def get_network_info():
 
     """
     interfaces = ni.interfaces()
-    text = (socket.gethostname() + '\n')
+    text = ("Hostname: " + socket.gethostname() + '\n')
     for interface in interfaces:
         if interface == 'lo':
             continue
