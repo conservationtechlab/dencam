@@ -28,8 +28,8 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 def get_solardisplay_info():
     """Read the solar data from CSV file and format it for display"""
     if not os.path.exists('/home/pi/dencam/solar.csv'):
-        error_msg = "Solar information\nnot found\nPress " + \
-                    "second\nbutton and \nrefer to \nset-up" + \
+        error_msg = "Solar information\nnot found.\nPress " + \
+                    "second\nbutton and refer to \nset-up" + \
                     " instructions"
         return error_msg
     with open('/home/pi/dencam/solar.csv', newline='',
