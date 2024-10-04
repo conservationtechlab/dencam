@@ -68,19 +68,21 @@ class CamView:
         self.running = False
         cv2.destroyAllWindows()
         print("inside cambiew class in ptz_control, should have stopped stream function and closed windows")
-        time.sleep(1)
+        time.sleep(.1)
 
 class PS4Controller(Controller):
     """Class to manage PTZ control via PS4 controller."""
     
-    def __init__(self, ptz, stop_flag, *args, **kwargs):
+    def __init__(self, ptz, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ptz = ptz
         self.fine_movement = False
         self.toggleOn = False
-        self.stop_flag = stop_flag
+        self.focusMode = False
+        self.yJoystickReleased = False
+        self.joystick_ignore = 10000
         self.t = time.time()  # Initialize time tracking for command delays
-        self.timeout = 0.5  # Delay between commands
+        self.timeout = 0.25  # Delay between commands
         self.Y_DELTA = .05
         self.X_DELTA = .05
         self.Z_DELTA = .07
@@ -88,93 +90,94 @@ class PS4Controller(Controller):
         self.Y_DELTA_FINE = self.Y_DELTA/3
         self.Z_DELTA_FINE = self.Z_DELTA/3
 
-    def ready_for_next(self):
-        """Check if enough time has passed to issue the next command."""
-        return (time.time() - self.t) > self.timeout
+        pin = 27
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
     def send_command(self, x_delta, y_delta, z_delta):
-        """Send movement commands to the PTZ camera only if there is a change."""
+        cmds = {}
         pan, tilt, zoom = self.ptz.get_position()
-
-        # Calculate new positions
-        cmds = {
-            'pan': pan + x_delta,
-            'tilt': tilt + y_delta,
-            'zoom': zoom + z_delta
-        }
-
-        # Send the new pan, tilt, and zoom commands to the PTZ camera
+        cmds['pan'] = pan + x_delta
+        cmds['tilt'] = tilt + y_delta
+        cmds['zoom'] = zoom + z_delta
         self.drive_ptz(cmds)
+        return cmds
 
-        # Update the time for the next command
-        self.t = time.time()
+    def display_status(self, cmds):
+        print(f'Pan: {cmds["pan"]} | Tilt: {cmds["tilt"]} | Zoom: {cmds["zoom"]}')
 
     def scale_joystick_value(self, v):
-        """Scale joystick value to be within the 0-1 range."""
-        return v / 35000
+        # scales joystick value to be within 0-1 range
+        return v/35000
 
-    # Arrow buttons - handle movement commands with time check and fine movement
-    def on_right_arrow_press(self):
-        if self.ready_for_next():
-            x_delta = -self.X_DELTA_FINE if self.fine_movement else -self.X_DELTA
-            self.send_command(x_delta, 0, 0)
+    def ready_for_next(self):
+        # checks timeout time to send new command
+        return (time.time() - self.t > self.timeout)
 
+    # Arrow Buttons - step pan/tilt
+    # TODO: scale fine movement by zoom amount
     def on_left_arrow_press(self):
         if self.ready_for_next():
-            x_delta = self.X_DELTA_FINE if self.fine_movement else self.X_DELTA
-            self.send_command(x_delta, 0, 0)
+            if self.fine_movement:
+                commands = self.send_command(self.X_DELTA_FINE, 0 , 0)
+            else:
+                commands = self.send_command(self.X_DELTA, 0, 0)
+            self.t = time.time()
+
+    def on_right_arrow_press(self):
+        if self.ready_for_next():
+            if self.fine_movement:
+                commands = self.send_command(-self.X_DELTA_FINE, 0, 0)
+            else:
+                commands = self.send_command(-self.X_DELTA, 0, 0)
+            self.t = time.time()
 
     def on_up_arrow_press(self):
         if self.ready_for_next():
-            y_delta = -self.Y_DELTA_FINE if self.fine_movement else -self.Y_DELTA
-            self.send_command(0, y_delta, 0)
+            if self.fine_movement:
+                commands = self.send_command(0, -self.Y_DELTA_FINE, 0)
+            else:
+                commands = self.send_command(0, -self.Y_DELTA, 0)
+            self.t = time.time()
 
     def on_down_arrow_press(self):
         if self.ready_for_next():
-            y_delta = self.Y_DELTA_FINE if self.fine_movement else self.Y_DELTA
-            self.send_command(0, y_delta, 0)
+            if self.fine_movement:
+                commands = self.send_command(0, self.Y_DELTA_FINE, 0)
+                self.t = time.time()
+            else:
+                commands = self.send_command(0, self.Y_DELTA, 0)
+                self.t = time.time()
 
     def on_left_right_arrow_release(self):
         pass
-
     def on_up_down_arrow_release(self):
         pass
 
-    # Left Joystick - continuous motion for pan/tilt
+    # Disable Joysticks
     def on_L3_up(self, value):
-        if self.ready_for_next():
-            v = max(-1, self.scale_joystick_value(value))
-            self.send_command(0, v, 0)
+        pass
 
     def on_L3_down(self, value):
-        if self.ready_for_next():
-            v = min(1, self.scale_joystick_value(value))
-            self.send_command(0, v, 0)
+        pass
 
     def on_L3_right(self, value):
-        if self.ready_for_next():
-            v = max(-1, self.scale_joystick_value(value))
-            self.send_command(-v, 0, 0)
+        pass
 
     def on_L3_left(self, value):
-        if self.ready_for_next():
-            v = min(1, self.scale_joystick_value(value))
-            self.send_command(-v, 0, 0)
+        pass
 
     def on_L3_x_at_rest(self):
-        self.ptz.stop()
+        pass
 
     def on_L3_y_at_rest(self):
-        self.ptz.stop()
+        pass
 
-    # Right Joystick - continuous zoom
     def on_R3_up(self, value):
-        if self.ready_for_next():
-            self.ptz.move_w_zoom(0, 0, self.scale_joystick_value(value))
+        pass
 
     def on_R3_down(self, value):
-        if self.ready_for_next():
-            self.ptz.move_w_zoom(0, 0, self.scale_joystick_value(-value))
+        pass
 
     def on_R3_right(self, value):
         pass
@@ -183,9 +186,9 @@ class PS4Controller(Controller):
         pass
 
     def on_R3_y_at_rest(self):
-        self.ptz.stop()
+        pass
 
-    # Fine Movement Toggle (L1 button press)
+    # Fine Movement Toggle
     def on_L1_press(self):
         self.fine_movement = True
 
@@ -199,24 +202,42 @@ class PS4Controller(Controller):
     def on_R1_release(self):
         self.toggleOn = False
 
-    # Zoom in
     def on_triangle_press(self):
-        self.send_command(0, 0, self.Z_DELTA)
+        # zoom in
+        if self.ready_for_next():
+            if self.toggleOn:
+                ptz.zoom_in_full()
+            else:
+                commands = self.send_command(0, 0, self.Z_DELTA)
+            self.t = time.time()
 
-    # Zoom out fully
+    def on_triangle_release(self):
+        pass
+
     def on_square_press(self):
-        self.ptz.zoom_in_full()
+        pass
 
-    # Zoom in fully
+    def on_square_release(self):
+        pass
+
     def on_circle_press(self):
-        self.ptz.zoom_out_full()
+        pass
 
-    # Set exposure or zoom out
+    def on_circle_press(self):
+        pass
+
     def on_x_press(self):
-        if self.toggleOn:
-            self.ptz.set_exposure_to_auto()
-        else:
-            self.send_command(0, 0, -self.Z_DELTA)
+        # zoom out
+        if self.ready_for_next():
+            if self.toggleOn:
+                ptz.zoom_out_full()
+            else:
+                commands = self.send_command(0, 0, -self.Z_DELTA)
+            self.t = time.time()
+
+    def on_x_release(self):
+        pass
+
 
     def drive_ptz(self, cmds):
         """Prep and send actual pan, tilt, zoom commands to camera
@@ -256,29 +277,25 @@ class PS4Controller(Controller):
                            cmds['tilt'],
                            cmds['zoom'])
 
-    def custom_listen(self):
-        while not self.stop_flag.is_set():
-            try:
-                events = self.read_input()
-                for event in events:
-                    self.process_event(event)
-            except Exception as e:
-                print(f"error while listening: {e}")
-                break
+    def check_button_press(self):
+        current_state = GPIO.input(27)
+        current_time = time.time()
 
-    def read_input(self):
-        return super().read()
+        if current_state == GPIO.LOW and self.last_button_state == GPIO.HIGH and (current_time - self.last_press_time) >0.2:
+            self.last_press_time = current_time
+            self.last_button_state = current_state
+            return True
 
-    def process_event(self, event):
-        super().handle_event(event)
+        self.last_button_state = current_state
+        return False
 
     
 class PTZControlSystem:
     """Class to manage the overall PTZ control system."""
 
     def __init__(self, configs, stream_override=None):
-#         with open(config_file, 'r', encoding='utf-8') as f:
-  #          configs = yaml.load(f, Loader=yaml.SafeLoader)
+        #with open(config_file, 'r', encoding='utf-8') as f:
+            #configs = yaml.load(f, Loader=yaml.SafeLoader)
         self.cam_view = None
         self.ptz = PtzCam(configs['IP'], configs['PORT'], configs['USER'], configs['PASS'])
         self.controller = None
@@ -299,15 +316,22 @@ class PTZControlSystem:
             self.headless)
 
     def start_system(self):
+        #self.controller = PS4Controller(self.ptz, interface='/dev/input/js0', connecting_using_ds4drv=False)
+        #while self.controller.check_button_press()==False:
+         #   self.controller.listen()
+        #self.controller = None
+
         self.cam_view.start_stream()
         print("4. started stream")
 
 
     def start_control(self):
-        self.controller = PS4Controller(self.ptz, stop_flag=self.stop_flag, interface='/dev/input/js0', connecting_using_ds4drv=False)
+        self.controller = PS4Controller(self.ptz, interface='/dev/input/js0', connecting_using_ds4drv=False)
 
-    def _run_controller(self):
-        self.controller.custom_listen()
+    def run_controller(self):
+        while self.controller.check_button_press()==False:
+            self.controller.listen()
+        self.controller = None
 
     def stop_system(self):
         print("attempting to call stop_stream function in camview class inside ptz_control")
@@ -331,23 +355,23 @@ if __name__ == "__main__":
 
     # Start streaming and controller
     ptz_system.start_system()
-    ptz_system.cam_view.display_stream()
   #  print("started display and control, waiting 5 seconds before starting controls")
     # Example usage: disable control after 10 seconds
     time.sleep(5)
-#    ptz_system.start_control()
+    ptz_system.start_control()
+    ptz_system.run_controller()
  #   print("control started, waiting 10 seconds before disabling control")
    # time.sleep(10)
     #ptz_system.stop_control()
    # print("stopped control, waiting 5 seconds to disable screen")
     # Stop system after 20 seconds
    # time.sleep(5)
-    print("stopping stream, waiting 5 seconds to reenable stream")
-    ptz_system.stop_stream()
-    time.sleep(5)
-    ptz_system.start_system()
-    ptz_system.cam_view.display_stream()
-    time.sleep(5)
-    print("screen should be reinitialized")
+    #print("stopping stream, waiting 5 seconds to reenable stream")
+    #ptz_system.stop_stream()
+    #time.sleep(5)
+    #ptz_system.start_system()
+    #ptz_system.cam_view.display_stream()
+    #time.sleep(5)
+    #print("screen should be reinitialized")
 
 
