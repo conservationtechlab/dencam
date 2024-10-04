@@ -316,11 +316,6 @@ class PTZControlSystem:
             self.headless)
 
     def start_system(self):
-        #self.controller = PS4Controller(self.ptz, interface='/dev/input/js0', connecting_using_ds4drv=False)
-        #while self.controller.check_button_press()==False:
-         #   self.controller.listen()
-        #self.controller = None
-
         self.cam_view.start_stream()
         print("4. started stream")
 
@@ -329,9 +324,7 @@ class PTZControlSystem:
         self.controller = PS4Controller(self.ptz, interface='/dev/input/js0', connecting_using_ds4drv=False)
 
     def run_controller(self):
-        while self.controller.check_button_press()==False:
-            self.controller.listen()
-        self.controller = None
+        self.controller.listen()
 
     def stop_system(self):
         print("attempting to call stop_stream function in camview class inside ptz_control")
@@ -339,12 +332,7 @@ class PTZControlSystem:
         print("should have stopped system inside ptz_control, stopped stream")
 
     def stop_control(self):
-        if self.controller_thread and self.controller_thread.is_alive():
-            self.stop_flag.set()
-            self.controller_thread.join()
         self.controller = None
-        self.controller_thread = None
-        self.stop_flag.clear()
 
 # Main script
 if __name__ == "__main__":
