@@ -300,7 +300,7 @@ class RecordingPage(tk.Frame):
                                         font=fonts['smaller'],
                                         fg='yellow',
                                         bg='black')
-        self.vid_count_label.place(height=50, x=0, y=140)
+        self.vid_count_label.place(height=20, x=0, y=80)
 
 
         self.device_label = tk.Label(self,
@@ -308,7 +308,7 @@ class RecordingPage(tk.Frame):
                                      font=fonts['smaller'],
                                      fg='yellow',
                                      bg='black')
-        self.device_label.place(height=50, x=0, y=190)
+        self.device_label.place(height=20, x=0, y=100)
 
 
         self.storage_label = tk.Label(self,
@@ -316,7 +316,7 @@ class RecordingPage(tk.Frame):
                                       font=fonts['smaller'],
                                       fg='yellow',
                                       bg='black')
-        self.storage_label.place(height=50, x=0, y=240)
+        self.storage_label.place(height=20, x=0, y=120)
 
 
         self.time_label = tk.Label(self,
@@ -325,7 +325,7 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    justify="left")
-        self.time_label.place(height=50, x=0, y=290)
+        self.time_label.place(height=20, x=0, y=140)
 
         self.error_label = tk.Label(self,
                                     textvariable=controller.error_text,
@@ -340,7 +340,7 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50,width=145,x=495,y=430)
+        self.page_label.place(height=25,width=80,x=240,y=215)
 
         self.page_label = tk.Label(self,
                                    text="Toggle Recording",
@@ -348,7 +348,7 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=260, x=380, y=310)
+        self.page_label.place(height=25, width=135, x=185, y=155)
 
 
 class NetworkPage(tk.Frame):
@@ -385,13 +385,13 @@ class NetworkPage(tk.Frame):
                                  fg='yellow',
                                  bg='black',
                                  justify="left")
-        self.ip_label.place(x=0,y=50)
+        self.ip_label.place(x=0,y=30)
         self.version_label = tk.Label(self,
                                       text=("v" + __version__),
                                       font=fonts['smaller'],
                                       fg='yellow',
                                       bg='black')
-        self.version_label.place(height=70, x=0, y=430)
+        self.version_label.place(height=70, x=0, y=200)
 
         self.page_label = tk.Label(self,
                                    text="Next Page",
@@ -399,7 +399,7 @@ class NetworkPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50,width=145,x=495,y=430)
+        self.page_label.place(height=25,width=80,x=240,y=215)
 
         self.page_label = tk.Label(self,
                                    text="Airplane Mode",
@@ -407,7 +407,7 @@ class NetworkPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=215, x=425, y=310)
+        self.page_label.place(height=25, width=110, x=210, y=155)
 
 
 class BlankPage(tk.Frame):
@@ -419,12 +419,12 @@ class BlankPage(tk.Frame):
         self.configure(bg='black')
         fonts = controller.fonts
 
-        self.page_label = tk.Label(self,
+        '''self.page_label = tk.Label(self,
                                    text="Camera Preview",
                                    font=fonts['smaller'],
                                    fg='yellow',
                                    bg='blue4')
-        self.page_label.pack(side=tk.TOP, fill=tk.X)
+        self.page_label.pack(side=tk.TOP, fill=tk.X)'''
         self.page_label = tk.Label(self,
                                    text="Next Page",
                                    font=fonts['buttons'],
@@ -467,7 +467,7 @@ class SolarPage(tk.Frame):
                                     fg='yellow',
                                     bg='black',
                                     justify="left")
-        self.solar_label.place(x=0,y=50)
+        self.solar_label.place(x=0,y=30)
 
         self.page_label = tk.Label(self,
                                    text="Next Page",
@@ -475,7 +475,7 @@ class SolarPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50,width=145,x=495,y=430)
+        self.page_label.place(height=25,width=80,x=240,y=215)
 
         self.page_label = tk.Label(self,
                                    text="Update Data",
@@ -483,7 +483,7 @@ class SolarPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50, width=180, x=460, y=310)
+        self.page_label.place(height=25, width=95, x=225, y=155)
 
 
 class ErrorScreen():
