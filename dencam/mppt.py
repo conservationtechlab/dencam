@@ -27,15 +27,9 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 def get_solardisplay_info():
     """Read the solar data from CSV file and format it for display"""
-<<<<<<< HEAD
-    if not os.path.exists("./solar.csv"):
-        error_msg = "\nSolar information\nnot found\n\nPress " + \
-                    "second\nbutton and \nrefer to \nset-up" + \
-=======
-    if not os.path.exists('/home/pi/dencam/solar.csv'):
+    if not os.path.exists('./solar.csv'):
         error_msg = "Solar information\nnot found.\nPress " + \
                     "second\nbutton and refer to \nset-up" + \
->>>>>>> 75_button_interface
                     " instructions"
         return error_msg
     with open("./solar.csv", newline='',
@@ -119,7 +113,7 @@ def log_solar_info():
                           'NO CONNECTION TO  SUNSAVER']
         sunsaver.serial.close()
 
-    if not os.path.exists(solar_path):
+    if not os.path.exists("./solar.csv"):
         with open("./solar.csv", 'w', newline='',
                   encoding='utf8') as csvfile:
             csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)

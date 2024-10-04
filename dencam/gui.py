@@ -304,7 +304,8 @@ class RecordingPage(tk.Frame):
 
 
         self.device_label = tk.Label(self,
-                                     textvariable=controller.device_text,
+                                     text="To: /media/sdzwa/AB13-367E",
+                                     #textvariable=controller.device_text,
                                      font=fonts['smaller'],
                                      fg='yellow',
                                      bg='black')
