@@ -111,7 +111,7 @@ class BaseRecorder(ABC):
 
     def _video_path_selector(self):
         user = getpass.getuser()
-        log.debug("User is '{}'".format(user))
+        log.debug("User is '%s'", user)
         media_dir = os.path.join('/media', user)
 
         # this try block protects against the user not even having a folder in
@@ -126,20 +126,17 @@ class BaseRecorder(ABC):
         if media_devices:
             media_devices.sort()
             strg = ', '.join(media_devices)
-            log.info('Found media in /media: {}'.format(strg))
+            log.info("Found media in /media: %s", strg)
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
                 if free_space >= self.VID_FILE_SIZE:
-                    log.info('Using external media: '
-                             + '{}'.format(media_device))
-                    log.debug('Free space on device: '
-                              + '{:.2f} GB'.format(free_space))
+                    log.info("Using external media: %s", media_device)
+                    log.debug("Free space on device: %.2f", free_space)
                     break
                 else:
-                    log.info('Device {} is '.format(media_device)
-                             + 'full or unwritable. '
-                             + 'Advancing to next device.')
+                    log.info("Device %s is full or unwritable.", media_device)
+                    log.info("Advancing to next device.")
             else:
                 log.warning('No external device worked. '
                             + 'Checking home directory for free space.')
@@ -155,8 +152,7 @@ class BaseRecorder(ABC):
         free_space = self.get_free_space(media_path)
         if free_space >= (self.VID_FILE_SIZE + self.RESERVED_STORAGE):
             log.info('Using home directory.')
-            log.debug('Free space in home directory: '
-                      + '{:.2f} GB'.format(free_space))
+            log.debug("Free space in home directory: %.2f GB", free_space)
         else:
             log.info('Home directory is full or unwritable.')
             self.last_known_video_path = media_path
