@@ -126,9 +126,8 @@ class BaseRecorder(ABC):
                     log.info("Using external media: %s", media_device)
                     log.debug("Free space on device: %.2f", free_space)
                     break
-                else:
-                    log.info("Device %s is full or unwritable.", media_device)
-                    log.info("Advancing to next device.")
+                log.info("Device %s is full or unwritable.", media_device)
+                log.info("Advancing to next device.")
             else:
                 log.warning('No external device worked. '
                             + 'Checking home directory for free space.')
