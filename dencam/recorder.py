@@ -9,10 +9,10 @@ import logging
 import os
 import getpass
 import time
+from datetime import datetime
 from abc import ABC, abstractmethod
 
 import picamera
-from datetime import datetime
 from picamera import PiCamera
 
 
