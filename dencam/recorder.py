@@ -34,36 +34,28 @@ class BaseRecorder(ABC):
 
         self.record_start_time = time.time()  # also used in initial countdown
 
-        # PiTFT characteristics
-        self.DISPLAY_RESOLUTION = configs['DISPLAY_RESOLUTION']
-
-        # Camera settings
-        CAMERA_RESOLUTION = configs['CAMERA_RESOLUTION']
-        CAMERA_ROTATION = configs['CAMERA_ROTATION']
-        FRAME_RATE = configs['FRAME_RATE']
-
-        self.VIDEO_QUALITY = configs['VIDEO_QUALITY']
-
         log.info('Read recording configurations')
 
         self.initial_pause_complete = False
 
+        self.configs = configs
+
         # camera setup
-        self.camera = PiCamera(framerate=FRAME_RATE)
-        self.camera.rotation = CAMERA_ROTATION
-        self.camera.resolution = CAMERA_RESOLUTION
-        self.camera.annotate_text_size = int((1/20) * CAMERA_RESOLUTION[1])
+        self.camera = PiCamera(framerate=configs['FRAME_RATE'])
+        self.camera.rotation = configs['CAMERA_ROTATION']
+        self.camera.resolution = configs['CAMERA_RESOLUTION']
+        text_size = int((1/20) * configs['CAMERA_RESOLUTION'][1])
+        self.camera.annotate_text_size = text_size
         self.camera.annotate_foreground = picamera.color.Color('white')
         self.camera.annotate_background = picamera.color.Color('black')
 
         self.zoom_on = False
 
         # recording setup
-        self.SAFETY_FACTOR = configs['FILE_SIZE_SAFETY_FACTOR']
-        self.RESERVED_STORAGE = (configs['PI_RESERVED_STORAGE']
+        self.reserved_storage = (configs['PI_RESERVED_STORAGE']
                                  / 1000)  # in gigabytes
-        self.FILE_SIZE = configs['AVG_VIDEO_FILE_SIZE']/1000  # in gigabytes
-        self.VID_FILE_SIZE = self.FILE_SIZE * self.SAFETY_FACTOR
+        file_size = configs['AVG_VIDEO_FILE_SIZE']/1000  # in gigabytes
+        self.vid_file_size = file_size * configs['FILE_SIZE_SAFETY_FACTOR']
         self.recording = False
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
@@ -78,9 +70,9 @@ class BaseRecorder(ABC):
 
     def toggle_zoom(self):
         if not self.zoom_on:
-            width, height = self.camera.resolution
+            width, _ = self.camera.resolution
             # zoom_factor = 1/float(ZOOM_FACTOR)
-            zoom_factor = self.DISPLAY_RESOLUTION[0]/width
+            zoom_factor = self.configs['DISPLAY_RESOLUTION'][0]/width
             left = 0.5 - zoom_factor/2.
             top = 0.5 - zoom_factor/2.
             self.camera.zoom = (left, top, zoom_factor, zoom_factor)
@@ -130,7 +122,7 @@ class BaseRecorder(ABC):
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
-                if free_space >= self.VID_FILE_SIZE:
+                if free_space >= self.vid_file_size:
                     log.info("Using external media: %s", media_device)
                     log.debug("Free space on device: %.2f", free_space)
                     break
@@ -150,7 +142,7 @@ class BaseRecorder(ABC):
 
     def _check_home_storage_capacity(self, media_path):
         free_space = self.get_free_space(media_path)
-        if free_space >= (self.VID_FILE_SIZE + self.RESERVED_STORAGE):
+        if free_space >= (self.vid_file_size + self.reserved_storage):
             log.info('Using home directory.')
             log.debug("Free space in home directory: %.2f GB", free_space)
         else:
@@ -224,7 +216,8 @@ class Recorder(BaseRecorder):
                 os.makedirs(todays_dir)
             date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
             filename = os.path.join(todays_dir, date_time_string + '.h264')
-            self.camera.start_recording(filename, quality=self.VIDEO_QUALITY)
+            self.camera.start_recording(filename,
+                                        quality=self.configs['VIDEO_QUALITY'])
             self.record_start_time = time.time()
 
     def stop_recording(self):
