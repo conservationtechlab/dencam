@@ -62,13 +62,25 @@ class BaseRecorder(ABC):
 
     @abstractmethod
     def stop_recording(self):
+        """Abstract method: used by derived class for recording stop logic
+
+        """
         return
 
     @abstractmethod
     def start_recording(self):
+        """Abstract method: used by derived class for recording start logic
+
+        """
         return
 
     def toggle_zoom(self):
+        """Toggle whether display is digitally zoomed
+
+        This functionality allows user to look at a smaller patch of
+        video during deployment to aid in focusing the lens.
+
+        """
         if not self.zoom_on:
             width, _ = self.camera.resolution
             # zoom_factor = 1/float(ZOOM_FACTOR)
@@ -81,12 +93,18 @@ class BaseRecorder(ABC):
         self.zoom_on = not self.zoom_on
 
     def toggle_recording(self):
+        """Toggle whether system is recording
+
+        """
         if self.recording:
             self.stop_recording()
         else:
             self.start_recording()
 
     def toggle_preview(self):
+        """Toggle whether displaying video or not
+
+        """
         if not self.preview_on:
             self.camera.start_preview()
         else:
@@ -94,10 +112,16 @@ class BaseRecorder(ABC):
         self.preview_on = not self.preview_on
 
     def start_preview(self):
+        """Start display of video on screen
+
+        """
         self.camera.start_preview()
         self.preview_on = True
 
     def stop_preview(self):
+        """Stop display of video on screen
+
+        """
         self.camera.stop_preview()
         self.preview_on = False
 
@@ -170,6 +194,9 @@ class BaseRecorder(ABC):
             return 0
 
     def update_timestamp(self):
+        """Update timestamp string on camera capture
+
+        """
         date_string = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.camera.annotate_text = date_string
 
