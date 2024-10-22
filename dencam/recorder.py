@@ -28,6 +28,7 @@ class BaseRecorder(ABC):
     recordings.
 
     """
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, configs):
         self.configs = configs
