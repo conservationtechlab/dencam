@@ -30,17 +30,19 @@ class BaseRecorder(ABC):
     """
 
     def __init__(self, configs):
+        self.configs = configs
+
+        # state: could be combined into a dict but accesses directly
+        # by other code so would have to update in those places
         self.preview_on = False
+        self.initial_pause_complete = False
+        self.zoom_on = False
+        self.recording = False
 
         self.record_start_time = time.time()  # also used in initial countdown
 
-        log.info('Read recording configurations')
-
-        self.initial_pause_complete = False
-
-        self.configs = configs
-
         # camera setup
+        log.info('Set up recording configurations')
         self.camera = PiCamera(framerate=configs['FRAME_RATE'])
         self.camera.rotation = configs['CAMERA_ROTATION']
         self.camera.resolution = configs['CAMERA_RESOLUTION']
@@ -49,14 +51,11 @@ class BaseRecorder(ABC):
         self.camera.annotate_foreground = picamera.color.Color('white')
         self.camera.annotate_background = picamera.color.Color('black')
 
-        self.zoom_on = False
-
-        # recording setup
+        # storage setup
         self.reserved_storage = (configs['PI_RESERVED_STORAGE']
                                  / 1000)  # in gigabytes
         file_size = configs['AVG_VIDEO_FILE_SIZE']/1000  # in gigabytes
         self.vid_file_size = file_size * configs['FILE_SIZE_SAFETY_FACTOR']
-        self.recording = False
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
