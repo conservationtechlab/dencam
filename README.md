@@ -256,7 +256,7 @@ for rebooting the dencam every day at 1am use:
 
 The cronjob that logs SunSaver data every hour uses:
 
-    0 * * * * /home/pi/.virtualenvs/dencam/bin/python3 /home/pi/dencam/dencam/sunsaver_log.py
+    0 * * * * /home/pi/.virtualenvs/dencam/bin/python3 /home/pi/dencam/dencam/sunsaver_log.py /home/pi/dencam/cfgs/example_config.yaml
      
 where 'pi' can be interchanged with the active username on the Pi.
 If there is a need to adjust logging intervals the format of the cronjob timing 
