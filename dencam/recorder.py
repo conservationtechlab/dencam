@@ -4,17 +4,12 @@ This module contains code associated with controlling the recording of
 video captured from the picamera.
 
 """
-
 import logging
 import os
 import getpass
 import time
 from datetime import datetime
 from abc import ABC, abstractmethod
-
-import picamera
-from picamera import PiCamera
-
 
 log = logging.getLogger(__name__)
 
@@ -42,15 +37,8 @@ class BaseRecorder(ABC):
 
         self.record_start_time = time.time()  # also used in initial countdown
 
-        # camera setup
-        log.info('Set up recording configurations')
-        self.camera = PiCamera(framerate=configs['FRAME_RATE'])
-        self.camera.rotation = configs['CAMERA_ROTATION']
-        self.camera.resolution = configs['CAMERA_RESOLUTION']
-        text_size = int((1/20) * configs['CAMERA_RESOLUTION'][1])
-        self.camera.annotate_text_size = text_size
-        self.camera.annotate_foreground = picamera.color.Color('white')
-        self.camera.annotate_background = picamera.color.Color('black')
+        # self.camera should be initialized in derived classes
+        self.camera = None
 
         # storage setup
         self.reserved_storage = (configs['PI_RESERVED_STORAGE']
@@ -59,6 +47,17 @@ class BaseRecorder(ABC):
         self.vid_file_size = file_size * configs['FILE_SIZE_SAFETY_FACTOR']
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
+
+    def finish_setup(self):
+        """Complete set up in derived class constructurs
+
+        Used in derived classes to do steps required to set up camera
+        configuration that must occur after the camera object is
+        initialized.
+
+        """
+        self.camera.rotation = self.configs['CAMERA_ROTATION']
+        self.camera.resolution = self.configs['CAMERA_RESOLUTION']
 
     @abstractmethod
     def stop_recording(self):

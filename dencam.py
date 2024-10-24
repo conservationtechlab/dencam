@@ -21,7 +21,7 @@ from picamera.exc import PiCameraMMALError
 
 from dencam import logs, __version__
 from dencam.buttons import ButtonHandler
-from dencam.recorder import Recorder
+from dencam.recorder_picamera import PicameraRecorder
 from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
 
@@ -55,7 +55,7 @@ def main():
         error_screen = None
         while checking_camera:
             try:
-                recorder = Recorder(configs)
+                recorder = PicameraRecorder(configs)
                 checking_camera = False
             except PiCameraMMALError as cam_error:
                 log.warning(cam_error)
