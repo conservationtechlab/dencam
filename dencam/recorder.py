@@ -102,7 +102,7 @@ class BaseRecorder(ABC):
     def toggle_preview(self):
         if not self.preview_on:
             self.camera.stop_preview()
-            self.camera.start_preview(Preview.QT)
+            self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
         else:
             self.camera.stop_preview()
             self.camera.start_preview(Preview.NULL)
@@ -110,7 +110,7 @@ class BaseRecorder(ABC):
 
     def start_preview(self):
         self.camera.stop_preview()
-        self.camera.start_preview(Preview.QT)
+        self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
         self.preview_on = True
 
     def stop_preview(self):
