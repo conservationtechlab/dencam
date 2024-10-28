@@ -31,8 +31,8 @@ def get_solardisplay_info():
     """Read the solar data from CSV file and format it for display"""
     path = get_file_path()
     if not os.path.exists(path + "solar.csv"):
-        error_msg = "\nSolar information\nnot found\n\nPress " + \
-                    "second\nbutton and \nrefer to \nset-up" + \
+        error_msg = "Solar information\nnot found.\nPress " + \
+                    "second\nbutton and refer to \nset-up" + \
                     " instructions"
         return error_msg
     with open(path + "solar.csv", newline='',
@@ -52,8 +52,8 @@ def get_solardisplay_info():
     solar_text += '\nAlarm: ' + last_row['Alarm']
     usb_error = last_row['MPPT_Error']
     if usb_error == "USB PORT ERROR":
-        solar_text = "\nCheck USB connection\nfrom solar charge\n" + \
-                     "controller to Pi\n and press second\nbutton"
+        solar_text = "Check USB connection\nfrom solar charge\n" + \
+                     "controller to Pi\nand press second\nbutton"
     return solar_text
 
 
