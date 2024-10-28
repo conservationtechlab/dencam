@@ -11,9 +11,10 @@ import getpass
 import time
 from abc import ABC, abstractmethod
 
-import picamera
+from picamera2 import Picamera2, Preview
+from picamera2.encoders import H264Encoder
 from datetime import datetime
-from picamera import PiCamera
+#from picamera import PiCamera
 
 
 log = logging.getLogger(__name__)
@@ -49,13 +50,17 @@ class BaseRecorder(ABC):
         self.initial_pause_complete = False
 
         # camera setup
-        self.camera = PiCamera(framerate=FRAME_RATE)
-        self.camera.rotation = CAMERA_ROTATION
-        self.camera.resolution = CAMERA_RESOLUTION
-        self.camera.annotate_text_size = int((1/20) * CAMERA_RESOLUTION[1])
-        self.camera.annotate_foreground = picamera.color.Color('white')
-        self.camera.annotate_background = picamera.color.Color('black')
-
+        self.camera = Picamera2()
+        self.camera.preview_configuration.enable_lores()
+        self.camera.preview_configuration.lores.size = (320, 240)
+        self.camera.configure("preview")
+        self.camera.start_preview(Preview.NULL)
+        self.camera.start()
+        #self.camera.rotation = CAMERA_ROTATION
+        #self.camera.resolution = CAMERA_RESOLUTION
+        #self.camera.annotate_text_size = int((1/20) * CAMERA_RESOLUTION[1])
+        #self.camera.annotate_foreground = picamera.color.Color('white')
+        #self.camera.annotate_background = picamera.color.Color('black')
         self.zoom_on = False
 
         # recording setup
@@ -96,17 +101,22 @@ class BaseRecorder(ABC):
 
     def toggle_preview(self):
         if not self.preview_on:
-            self.camera.start_preview()
+            self.camera.stop_preview()
+            self.camera.start_preview(Preview.QT)
         else:
             self.camera.stop_preview()
+            self.camera.start_preview(Preview.NULL)
         self.preview_on = not self.preview_on
 
     def start_preview(self):
-        self.camera.start_preview()
+        self.camera.stop_preview()
+        self.camera.start_preview(Preview.QT)
         self.preview_on = True
 
     def stop_preview(self):
         self.camera.stop_preview()
+        self.camera.start_preview(Preview.NULL)
+
         self.preview_on = False
 
     def _video_path_selector(self):
@@ -228,7 +238,8 @@ class Recorder(BaseRecorder):
                 os.makedirs(todays_dir)
             date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
             filename = os.path.join(todays_dir, date_time_string + '.h264')
-            self.camera.start_recording(filename, quality=self.VIDEO_QUALITY)
+            encoder = H264Encoder()
+            self.camera.start_recording(encoder, filename)
             self.record_start_time = time.time()
 
     def stop_recording(self):
