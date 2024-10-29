@@ -29,6 +29,9 @@ log = setup_logger(logging.INFO)
 
 
 def main():
+    """Run main DenCam program
+
+    """
     log.info('*** MINIDENCAM v%s STARTING UP ***', __version__)
     # clearly below line only reports for debug and info levels
     log.info("Logging level is %s",
