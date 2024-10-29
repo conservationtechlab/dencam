@@ -25,24 +25,23 @@ from dencam.recorder_picamera import PicameraRecorder
 from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
 
-parser = argparse.ArgumentParser()
-parser.add_argument('config_file',
-                    help='Filename of a YAML Mini DenCam configuration file.')
-args = parser.parse_args()
-
-LOGGING_LEVEL = logging.INFO
-log = setup_logger(LOGGING_LEVEL)
-log.info('*** MINIDENCAM v%s STARTING UP ***', __version__)
-strg = logging.getLevelName(log.getEffectiveLevel())
-# clearly below line only reports for debug and info levels
-log.info("Logging level is %s", strg)
-
-with open(args.config_file, 'r', encoding='utf8') as config_file:
-    configs = yaml.load(config_file, Loader=yaml.SafeLoader)
-log.info('Read in configuration settings')
+log = setup_logger(logging.INFO)
 
 
 def main():
+    log.info('*** MINIDENCAM v%s STARTING UP ***', __version__)
+    # clearly below line only reports for debug and info levels
+    log.info("Logging level is %s",
+             logging.getLevelName(log.getEffectiveLevel()))
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config_file',
+                        help='DenCam configuration file (YAML)')
+    args = parser.parse_args()
+    with open(args.config_file, 'r', encoding='utf8') as config_file:
+        configs = yaml.load(config_file, Loader=yaml.SafeLoader)
+    log.info('Ingested configuration settings')
+
     flags = {'stop_buttons_flag': False}
     state_list = ['OffPage',
                   'NetworkPage',
