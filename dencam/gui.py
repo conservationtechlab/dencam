@@ -164,7 +164,7 @@ class BaseController(Thread):
 
         # prep network text
         network_info = networking.get_network_info()
-        airplane_text = "\nAirplane Mode: "
+        airplane_text = "Airplane Mode: "
         if self.airplane_mode.enabled:
             airplane_text += "On"
         else:
@@ -192,6 +192,8 @@ class BaseController(Thread):
                                           size=-int(scrn_height/12))
         self.fonts['big'] = tkFont.Font(family='Courier New',
                                         size=-int(scrn_height/5))
+        self.fonts['buttons'] = tkFont.Font(family='Courier New',
+                                            size=-int(scrn_height/18))
 
 
 class Controller(BaseController):
@@ -258,8 +260,8 @@ class State():
         self.value += 1
         if self.value >= self.num_states:
             self.value = 0
-
-
+            
+            
 class RecordingPage(tk.Frame):
     """UI Page that displays information related to DenCam recording.
 
@@ -281,48 +283,72 @@ class RecordingPage(tk.Frame):
         fonts = controller.fonts
 
         self.configure(bg='black')
-
-        self.vid_count_label = tk.Label(self,
-                                        textvariable=controller.vid_count_text,
-                                        font=fonts['small'],
-                                        fg='blue',
-                                        bg='black')
-        self.vid_count_label.pack(fill=tk.X)
-
-        self.device_label = tk.Label(self,
-                                     textvariable=controller.device_text,
-                                     font=fonts['smaller'],
-                                     fg='blue',
-                                     bg='black')
-        self.device_label.pack(fill=tk.X)
-
-        self.storage_label = tk.Label(self,
-                                      textvariable=controller.storage_text,
-                                      font=fonts['small'],
-                                      fg='blue',
-                                      bg='black')
-        self.storage_label.pack(fill=tk.X)
-
-        self.time_label = tk.Label(self,
-                                   textvariable=controller.time_text,
-                                   font=fonts['small'],
-                                   fg='blue',
-                                   bg='black')
-        self.time_label.pack(fill=tk.X)
+        self.page_label = tk.Label(self, text="Recording Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow', bg='DodgerBlue4')
+        self.page_label.pack(fill=tk.X)
 
         self.recording_label = tk.Label(self,
                                         textvariable=controller.recording_text,
                                         font=fonts['big'],
-                                        fg='blue',
+                                        fg='yellow',
                                         bg='black')
         self.recording_label.pack(fill=tk.X)
+
+        self.vid_count_label = tk.Label(self,
+                                        textvariable=controller.vid_count_text,
+                                        font=fonts['smaller'],
+                                        fg='yellow',
+                                        bg='black')
+        self.vid_count_label.place(height=50, x=0, y=140)
+
+
+        self.device_label = tk.Label(self,
+                                     textvariable=controller.device_text,
+                                     font=fonts['smaller'],
+                                     fg='yellow',
+                                     bg='black')
+        self.device_label.place(height=50, x=0, y=190)
+
+
+        self.storage_label = tk.Label(self,
+                                      textvariable=controller.storage_text,
+                                      font=fonts['smaller'],
+                                      fg='yellow',
+                                      bg='black')
+        self.storage_label.place(height=50, x=0, y=240)
+
+
+        self.time_label = tk.Label(self,
+                                   textvariable=controller.time_text,
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='black',
+                                   justify="left")
+        self.time_label.place(height=50, x=0, y=290)
 
         self.error_label = tk.Label(self,
                                     textvariable=controller.error_text,
                                     font=fonts['error'],
                                     fg='red',
                                     bg='black')
-        self.error_label.pack(fill=tk.X)
+        self.error_label.place(height=100,width=280,x=0,y=430)
+
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50,width=145,x=495,y=430)
+
+        self.page_label = tk.Label(self,
+                                   text="Toggle Recording",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50, width=260, x=380, y=310)
 
 
 class NetworkPage(tk.Frame):
@@ -346,19 +372,42 @@ class NetworkPage(tk.Frame):
         fonts = controller.fonts
 
         self.configure(bg='black')
+        self.page_label = tk.Label(self,
+                                   text="Network Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='midnight blue')
+        self.page_label.pack(fill=tk.X)
 
         self.ip_label = tk.Label(self,
                                  textvariable=controller.ip_text,
                                  font=fonts['smaller'],
-                                 fg='red',
-                                 bg='black')
-        self.ip_label.pack(fill=tk.X)
+                                 fg='yellow',
+                                 bg='black',
+                                 justify="left")
+        self.ip_label.place(x=0,y=50)
         self.version_label = tk.Label(self,
-                                      text=("DenCam Firmware v" + __version__),
+                                      text=("v" + __version__),
                                       font=fonts['smaller'],
-                                      fg='red',
+                                      fg='yellow',
                                       bg='black')
-        self.version_label.pack(side=tk.BOTTOM, fill=tk.X)
+        self.version_label.place(height=70, x=0, y=430)
+
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50,width=145,x=495,y=430)
+
+        self.page_label = tk.Label(self,
+                                   text="Airplane Mode",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50, width=215, x=425, y=310)
 
 
 class BlankPage(tk.Frame):
@@ -368,6 +417,29 @@ class BlankPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
+        fonts = controller.fonts
+
+        self.page_label = tk.Label(self,
+                                   text="Camera Preview",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='blue4')
+        self.page_label.pack(side=tk.TOP, fill=tk.X)
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50,width=145,x=495,y=430)
+
+        self.page_label = tk.Label(self,
+                                   text="Upper Button>Toggle Inspect",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50, width=440, x=0, y=430)
 
 
 class SolarPage(tk.Frame):
@@ -383,12 +455,35 @@ class SolarPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         fonts = controller.fonts
         self.configure(bg='black')
+        self.page_label = tk.Label(self,
+                                   text="Solar Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='SlateBlue4')
+        self.page_label.pack(fill=tk.X)
         self.solar_label = tk.Label(self,
                                     textvariable=controller.solar_text,
-                                    font=fonts['smallerer'],
+                                    font=fonts['smaller'],
                                     fg='yellow',
-                                    bg='black')
-        self.solar_label.pack(fill=tk.X)
+                                    bg='black',
+                                    justify="left")
+        self.solar_label.place(x=0,y=50)
+
+        self.page_label = tk.Label(self,
+                                   text="Next Page",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50,width=145,x=495,y=430)
+
+        self.page_label = tk.Label(self,
+                                   text="Update Data",
+                                   font=fonts['buttons'],
+                                   fg='yellow',
+                                   bg='black',
+                                   highlightthickness=2)
+        self.page_label.place(height=50, width=180, x=460, y=310)
 
 
 class ErrorScreen():
