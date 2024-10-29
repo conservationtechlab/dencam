@@ -18,6 +18,7 @@ import time
 import yaml
 from picamera.exc import PiCameraMMALError
 
+# pylint: disable=import-self
 from dencam import __version__
 from dencam.logs import setup_logger
 from dencam.buttons import ButtonHandler
