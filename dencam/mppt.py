@@ -5,6 +5,8 @@ import csv
 import os
 from datetime import datetime
 from io import StringIO
+import argparse
+import yaml
 
 import minimalmodbus
 from serial import SerialException
@@ -27,12 +29,14 @@ field_names = ['Date', 'Time', 'Battery_Voltage', 'Array_Voltage',
 
 def get_solardisplay_info():
     """Read the solar data from CSV file and format it for display"""
-    if not os.path.exists('/home/pi/dencam/solar.csv'):
+    path = get_file_path()
+    solar_log = os.path.join(path, "solar.csv")
+    if not os.path.exists(solar_log):
         error_msg = "Solar information\nnot found.\nPress " + \
                     "second\nbutton and refer to \nset-up" + \
                     " instructions"
         return error_msg
-    with open('/home/pi/dencam/solar.csv', newline='',
+    with open(solar_log, newline='',
               encoding='utf8') as solar:
         parsed_csvfile = solar.read()
         parsed_csvfile = parsed_csvfile.replace('\x00', '')
@@ -112,13 +116,14 @@ def log_solar_info():
                           'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
                           'NO CONNECTION TO  SUNSAVER']
         sunsaver.serial.close()
-
-    if not os.path.exists('/home/pi/dencam/solar.csv'):
-        with open('/home/pi/dencam/solar.csv', 'w', newline='',
+    path = get_file_path()
+    solar_log = os.path.join(path, "solar.csv")
+    if not os.path.exists(solar_log):
+        with open(solar_log, 'w', newline='',
                   encoding='utf8') as csvfile:
             csvwriter = csv.DictWriter(csvfile, fieldnames=field_names)
             csvwriter.writeheader()
-    with open('/home/pi/dencam/solar.csv', 'a', newline='',
+    with open(solar_log, 'a', newline='',
               encoding='utf8') as csv_file:
         csvwriter = csv.DictWriter(csv_file, fieldnames=field_names)
         csvwriter.writerow({'Date': solar_list[0],
@@ -135,3 +140,19 @@ def log_solar_info():
                             'Ah_Load': solar_list[11],
                             'Alarm': solar_list[12],
                             'MPPT_Error': solar_list[13]})
+
+
+def get_file_path():
+    '''Function to read config file and obtain directory
+    for solar log
+
+    Returns: string containing file path of solar directory
+    '''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('config_file',
+                        help='Filename of configuration file')
+    args = parser.parse_args()
+    with open(args.config_file, encoding='utf-8') as config:
+        configs = yaml.load(config, Loader=yaml.SafeLoader)
+    path_to_dir = configs['SOLAR_DIR']
+    return path_to_dir

@@ -1,6 +1,9 @@
 # length of videos to record in seconds
 RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
 
+# directory for solar log (default hostname is pi)
+SOLAR_DIR: /home/USER/
+
 FILE_SIZE_SAFETY_FACTOR: 2  # between 2 and 10
 PI_RESERVED_STORAGE: 2000  # in megabytes
 AVG_VIDEO_FILE_SIZE: 1500  # in megabytes (1 gigabyte = 1000 megabytes)
