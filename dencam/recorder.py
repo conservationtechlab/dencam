@@ -11,10 +11,7 @@ import getpass
 import time
 from abc import ABC, abstractmethod
 
-from picamera2 import Picamera2, Preview
-from picamera2.encoders import H264Encoder
 from datetime import datetime
-#from picamera import PiCamera
 
 
 log = logging.getLogger(__name__)
@@ -50,17 +47,7 @@ class BaseRecorder(ABC):
         self.initial_pause_complete = False
 
         # camera setup
-        self.camera = Picamera2()
-        self.camera.preview_configuration.enable_lores()
-        self.camera.preview_configuration.lores.size = (320, 240)
-        self.camera.configure("preview")
-        self.camera.start_preview(Preview.NULL)
-        self.camera.start()
-        #self.camera.rotation = CAMERA_ROTATION
-        #self.camera.resolution = CAMERA_RESOLUTION
-        #self.camera.annotate_text_size = int((1/20) * CAMERA_RESOLUTION[1])
-        #self.camera.annotate_foreground = picamera.color.Color('white')
-        #self.camera.annotate_background = picamera.color.Color('black')
+        self.camera = None
         self.zoom_on = False
 
         # recording setup
@@ -100,23 +87,27 @@ class BaseRecorder(ABC):
             self.start_recording()
 
     def toggle_preview(self):
+        """Toggle whether displaying video or not
+
+        """
         if not self.preview_on:
-            self.camera.stop_preview()
-            self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
+            self.camera.start_preview()
         else:
             self.camera.stop_preview()
-            self.camera.start_preview(Preview.NULL)
         self.preview_on = not self.preview_on
 
     def start_preview(self):
-        self.camera.stop_preview()
-        self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
+        """Start display of video on screen
+
+        """
+        self.camera.start_preview()
         self.preview_on = True
 
     def stop_preview(self):
-        self.camera.stop_preview()
-        self.camera.start_preview(Preview.NULL)
+        """Stop display of video on screen
 
+        """
+        self.camera.stop_preview()
         self.preview_on = False
 
     def _video_path_selector(self):

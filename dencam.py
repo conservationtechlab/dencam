@@ -17,13 +17,14 @@ import argparse
 import time
 
 import yaml
-from picamera.exc import PiCameraMMALError
+#from picamera.exc import PiCameraMMALError
 
 from dencam import logs, __version__
 from dencam.buttons import ButtonHandler
 from dencam.recorder import Recorder
 from dencam.gui import ErrorScreen, Controller, State
 from dencam.networking import AirplaneMode
+from dencam.recorder_picamera2 import Picamera2Recorder
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_file',
@@ -40,7 +41,7 @@ log.info('Logging level is {}'.format(strg))
 with open(args.config_file) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 log.info('Read in configuration settings')
-
+camera_type = configs['CAMERA_TYPE']
 
 def main():
     flags = {'stop_buttons_flag': False}
@@ -53,17 +54,34 @@ def main():
     try:
         checking_camera = True
         error_screen = None
-        while checking_camera:
-            try:
-                recorder = Recorder(configs)
-                checking_camera = False
-            except PiCameraMMALError as cam_error:
-                log.warning(cam_error)
-                if error_screen is None:
-                    error_screen = ErrorScreen()
-                time.sleep(.5)
-        if error_screen is not None:
-            error_screen.hide()
+        if(camera_type == "picamera"):
+            from picamera.exc import PiCameraMMALError
+            while checking_camera:
+                try:
+                    recorder = Recorder(configs)
+                    checking_camera = False
+                except PiCameraMMALError as cam_error:
+                    log.warning(cam_error)
+                    if error_screen is None:
+                        error_screen = ErrorScreen()
+                    time.sleep(.5)
+            if error_screen is not None:
+                error_screen.hide()
+        elif(camera_type == "picamera2"):
+            while checking_camera:
+                try:
+                    recorder = Picamera2Recorder(configs)
+                    checking_camera = False
+                except RuntimeError as cam_error:
+                    log.warning(cam_error)
+                    if error_screen is None:
+                        error_screen = ErrorScreen()
+                    time.sleep(.5)
+            if error_screen is not None:
+                error_screen.hide()
+        else:
+            log.error("Unsupported camera defined in config file")
+            
 
         number_of_states = len(STATE_LIST)
         state = State(number_of_states)
