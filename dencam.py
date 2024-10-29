@@ -49,10 +49,6 @@ def main():
                   "SolarPage",
                   "BlankPage"]
 
-    def cleanup(flags):
-        flags['stop_buttons_flag'] = True
-        time.sleep(.1)
-
     try:
         checking_camera = True
         error_screen = None
@@ -88,8 +84,9 @@ def main():
             time.sleep(.1)
 
     except KeyboardInterrupt:
-        log.debug('Keyboard interrupt received.')
-        cleanup(flags)
+        log.info('Keyboard interrupt received.')
+        flags['stop_buttons_flag'] = True
+        time.sleep(.1)
 
 
 if __name__ == "__main__":
