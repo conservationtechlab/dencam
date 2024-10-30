@@ -1,6 +1,7 @@
 """Recorder class and related for PTZ camera
 
-The classes that 
+The classes needed for interfacing with a PTZ network surveillance
+camera as the recording device for a dencam.
 
 """
 import logging
