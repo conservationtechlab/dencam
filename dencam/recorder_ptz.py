@@ -38,7 +38,7 @@ class CyclopsCamera:
 
         self.stop_display_event = mp.Event()
 
-    def display(self, event):
+    def _display(self, event):
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 1)
         cv2.setWindowProperty(self.window_name,
@@ -56,7 +56,7 @@ class CyclopsCamera:
         
     def start_preview(self):
         self.stop_display_event.clear()
-        worker = mp.Process(target=self.display,
+        worker = mp.Process(target=self._display,
                             args=(self.stop_display_event,))
         worker.start()
 
