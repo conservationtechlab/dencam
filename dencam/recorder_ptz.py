@@ -26,7 +26,7 @@ class CyclopsCamera:
     """
     def __init__(self, configs):
         self.configs = configs
-        
+
         self.rotation = 0  # TODO: doesn't control anything yet
         self.resolution = 1  # TODO: doesn't control anything yet
         self.zoom = (0, 0, 1.0, 1.0)  # TODO: doesn't control anything yet
@@ -41,7 +41,7 @@ class CyclopsCamera:
                      user=configs['CAMERA_USER'],
                      passwd=configs['CAMERA_PASS'],
                      stream=configs['CAMERA_STREAM'])
-        
+
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 1)
         cv2.setWindowProperty(self.window_name,
@@ -56,7 +56,7 @@ class CyclopsCamera:
                 cv2.imshow(self.window_name, frame)
                 cv2.waitKey(33)
         cv2.destroyAllWindows()
-        
+
     def start_preview(self):
         self.stop_display_event.clear()
         worker = mp.Process(target=self._display,
@@ -82,7 +82,7 @@ class CyclopsCamera:
         writer.write(frame)
         while not event.is_set():
             # TODO: there are definitely problems in the frame timing
-            time.sleep(0.03333333333)  
+            time.sleep(0.03333333333)
             frame = cam.get_frame()
             if frame is None:
                 log.warning("Frame was None")
@@ -91,14 +91,14 @@ class CyclopsCamera:
 
     def start_recording(self, filename, quality=None):
         # TODO: what to with the quality argument?
-        
+
         # first strip off and replace the .h264 extension that current
         # recorder is providing
         # TODO: maybe make base Recorder object not assume the .h264
         # extension?
         base = os.path.splitext(filename)[0]
         filename = f"{base}.avi"
-        
+
         self.stop_record_event.clear()
         worker = mp.Process(target=self._record,
                             args=(filename,
