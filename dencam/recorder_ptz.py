@@ -4,6 +4,8 @@ The classes needed for interfacing with a PTZ network surveillance
 camera as the recording device for a dencam.
 
 """
+import os
+import time
 import logging
 import multiprocessing as mp
 
@@ -32,6 +34,7 @@ class CyclopsCamera:
         self.window_name = "DenCam View"
 
         self.stop_display_event = mp.Event()
+        self.stop_record_event = mp.Event()
 
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
@@ -57,21 +60,58 @@ class CyclopsCamera:
     def start_preview(self):
         self.stop_display_event.clear()
         worker = mp.Process(target=self._display,
-                            args=(self.stop_display_event,))
+                            args=(self.configs, self.stop_display_event))
         worker.start()
 
     def stop_preview(self):
         self.stop_display_event.set()
 
-    def annotate_text(self):
-        raise NotImplemented
+    def _record(self, filename, configs, event):
+        cam = Camera(ip=configs['CAMERA_IP'],
+                     user=configs['CAMERA_USER'],
+                     passwd=configs['CAMERA_PASS'],
+                     stream=configs['CAMERA_STREAM'])
 
-    def start_recording(self):
-        raise NotImplemented
+        frame = cam.get_frame()
+        resolution = (frame.shape[1], frame.shape[0])
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
+        writer = cv2.VideoWriter(filename,
+                                 fourcc,
+                                 30.0,
+                                 resolution)
+        writer.write(frame)
+        while not event.is_set():
+            # TODO: there are definitely problems in the frame timing
+            time.sleep(0.03333333333)  
+            frame = cam.get_frame()
+            if frame is None:
+                log.warning("Frame was None")
+            else:
+                writer.write(frame)
+
+    def start_recording(self, filename, quality=None):
+        # TODO: what to with the quality argument?
+        
+        # first strip off and replace the .h264 extension that current
+        # recorder is providing
+        # TODO: maybe make base Recorder object not assume the .h264
+        # extension?
+        base = os.path.splitext(filename)[0]
+        filename = f"{base}.avi"
+        
+        self.stop_record_event.clear()
+        worker = mp.Process(target=self._record,
+                            args=(filename,
+                                  self.configs,
+                                  self.stop_record_event))
+        worker.start()
 
     def stop_recording(self):
-        raise NotImplemented
-        
+        self.stop_record_event.set()
+
+    def annotate_text(self):
+        raise NotImplementedError
+
 
 class PTZRecorder(Recorder):
     """Recorder that uses a pan-tilt-zoom network surveillance camera
