@@ -58,12 +58,18 @@ class CyclopsCamera:
         cv2.destroyAllWindows()
 
     def start_preview(self):
+        """Start display of camera stream to screen
+
+        """
         self.stop_display_event.clear()
         worker = mp.Process(target=self._display,
                             args=(self.configs, self.stop_display_event))
         worker.start()
 
     def stop_preview(self):
+        """Stop display of cam stream
+
+        """
         self.stop_display_event.set()
 
     def _record(self, filename, configs, event):
@@ -90,6 +96,9 @@ class CyclopsCamera:
                 writer.write(frame)
 
     def start_recording(self, filename, quality=None):
+        """Start recording camera stream to video
+
+        """
         # TODO: what to with the quality argument?
 
         # first strip off and replace the .h264 extension that current
@@ -107,9 +116,19 @@ class CyclopsCamera:
         worker.start()
 
     def stop_recording(self):
+        """Stop recording of camera video
+
+        """
         self.stop_record_event.set()
 
     def annotate_text(self):
+        """Draw onto display and recording
+
+        Was necessary for drawing timestamp in picamera version.  Not
+        really necessary here because network camera has own
+        capability to draw that timestamp built in.
+
+        """
         raise NotImplementedError
 
 
