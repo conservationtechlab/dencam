@@ -22,14 +22,8 @@ class CyclopsCamera:
 
     """
     def __init__(self, configs):
-        self.cam = Camera(ip=configs['CAMERA_IP'],
-                          user=configs['CAMERA_USER'],
-                          passwd=configs['CAMERA_PASS'],
-                          stream=configs['CAMERA_STREAM'])
-        frame = self.cam.get_frame()
-        if frame is None:
-            log.warning("In CyclopsCamera init got no frame after cam setup.")
-
+        self.configs = configs
+        
         self.rotation = 0  # TODO: doesn't control anything yet
         self.resolution = 1  # TODO: doesn't control anything yet
         self.zoom = (0, 0, 1.0, 1.0)  # TODO: doesn't control anything yet
@@ -38,7 +32,12 @@ class CyclopsCamera:
 
         self.stop_display_event = mp.Event()
 
-    def _display(self, event):
+    def _display(self, configs, event):
+        cam = Camera(ip=configs['CAMERA_IP'],
+                     user=configs['CAMERA_USER'],
+                     passwd=configs['CAMERA_PASS'],
+                     stream=configs['CAMERA_STREAM'])
+        
         cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
         cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 1)
         cv2.setWindowProperty(self.window_name,
@@ -48,7 +47,7 @@ class CyclopsCamera:
         cv2.resizeWindow(self.window_name, 320, 240)
 
         while not event.is_set():
-            frame = self.cam.get_frame()
+            frame = cam.get_frame()
             if frame is not None:
                 cv2.imshow(self.window_name, frame)
                 cv2.waitKey(33)
