@@ -4,15 +4,12 @@ This module contains code associated with controlling the recording of
 video captured from the picamera.
 
 """
-
 import logging
 import os
 import getpass
 import time
-from abc import ABC, abstractmethod
-
 from datetime import datetime
-
+from abc import ABC, abstractmethod
 
 log = logging.getLogger(__name__)
 
@@ -26,53 +23,67 @@ class BaseRecorder(ABC):
     recordings.
 
     """
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, configs):
+        self.configs = configs
+
+        # state: could be combined into a dict but accesses directly
+        # by other code so would have to update in those places
         self.preview_on = False
+        self.initial_pause_complete = False
+        self.zoom_on = False
+        self.recording = False
 
         self.record_start_time = time.time()  # also used in initial countdown
 
-        # PiTFT characteristics
-        self.DISPLAY_RESOLUTION = configs['DISPLAY_RESOLUTION']
-
-        # Camera settings
-        CAMERA_RESOLUTION = configs['CAMERA_RESOLUTION']
-        CAMERA_ROTATION = configs['CAMERA_ROTATION']
-        FRAME_RATE = configs['FRAME_RATE']
-
-        self.VIDEO_QUALITY = configs['VIDEO_QUALITY']
-
-        log.info('Read recording configurations')
-
-        self.initial_pause_complete = False
-
-        # camera setup
+        # self.camera should be initialized in derived classes
         self.camera = None
-        self.zoom_on = False
 
-        # recording setup
-        self.SAFETY_FACTOR = configs['FILE_SIZE_SAFETY_FACTOR']
-        self.RESERVED_STORAGE = (configs['PI_RESERVED_STORAGE']
+        # storage setup
+        self.reserved_storage = (configs['PI_RESERVED_STORAGE']
                                  / 1000)  # in gigabytes
-        self.FILE_SIZE = configs['AVG_VIDEO_FILE_SIZE']/1000  # in gigabytes
-        self.VID_FILE_SIZE = self.FILE_SIZE * self.SAFETY_FACTOR
-        self.recording = False
+        file_size = configs['AVG_VIDEO_FILE_SIZE']/1000  # in gigabytes
+        self.vid_file_size = file_size * configs['FILE_SIZE_SAFETY_FACTOR']
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
+    def finish_setup(self):
+        """Complete set up in derived class constructurs
+
+        Used in derived classes to do steps required to set up camera
+        configuration that must occur after the camera object is
+        initialized.
+
+        """
+        self.camera.rotation = self.configs['CAMERA_ROTATION']
+        self.camera.resolution = self.configs['CAMERA_RESOLUTION']
+
     @abstractmethod
     def stop_recording(self):
+        """Abstract method: used by derived class for recording stop logic
+
+        """
         return
 
     @abstractmethod
     def start_recording(self):
+        """Abstract method: used by derived class for recording start logic
+
+        """
         return
 
     def toggle_zoom(self):
+        """Toggle whether display is digitally zoomed
+
+        This functionality allows user to look at a smaller patch of
+        video during deployment to aid in focusing the lens.
+
+        """
         if not self.zoom_on:
-            width, height = self.camera.resolution
+            width, _ = self.camera.resolution
             # zoom_factor = 1/float(ZOOM_FACTOR)
-            zoom_factor = self.DISPLAY_RESOLUTION[0]/width
+            zoom_factor = self.configs['DISPLAY_RESOLUTION'][0]/width
             left = 0.5 - zoom_factor/2.
             top = 0.5 - zoom_factor/2.
             self.camera.zoom = (left, top, zoom_factor, zoom_factor)
@@ -81,6 +92,9 @@ class BaseRecorder(ABC):
         self.zoom_on = not self.zoom_on
 
     def toggle_recording(self):
+        """Toggle whether system is recording
+
+        """
         if self.recording:
             self.stop_recording()
         else:
@@ -112,7 +126,7 @@ class BaseRecorder(ABC):
 
     def _video_path_selector(self):
         user = getpass.getuser()
-        log.debug("User is '{}'".format(user))
+        log.debug("User is '%s'", user)
         media_dir = os.path.join('/media', user)
 
         # this try block protects against the user not even having a folder in
@@ -127,20 +141,16 @@ class BaseRecorder(ABC):
         if media_devices:
             media_devices.sort()
             strg = ', '.join(media_devices)
-            log.info('Found media in /media: {}'.format(strg))
+            log.info("Found media in /media: %s", strg)
             for media_device in media_devices:
                 media_path = os.path.join(media_dir, media_device)
                 free_space = self.get_free_space(media_path)
-                if free_space >= self.VID_FILE_SIZE:
-                    log.info('Using external media: '
-                             + '{}'.format(media_device))
-                    log.debug('Free space on device: '
-                              + '{:.2f} GB'.format(free_space))
+                if free_space >= self.vid_file_size:
+                    log.info("Using external media: %s", media_device)
+                    log.debug("Free space on device: %.2f", free_space)
                     break
-                else:
-                    log.info('Device {} is '.format(media_device)
-                             + 'full or unwritable. '
-                             + 'Advancing to next device.')
+                log.info("Device %s is full or unwritable.", media_device)
+                log.info("Advancing to next device.")
             else:
                 log.warning('No external device worked. '
                             + 'Checking home directory for free space.')
@@ -154,10 +164,9 @@ class BaseRecorder(ABC):
 
     def _check_home_storage_capacity(self, media_path):
         free_space = self.get_free_space(media_path)
-        if free_space >= (self.VID_FILE_SIZE + self.RESERVED_STORAGE):
+        if free_space >= (self.vid_file_size + self.reserved_storage):
             log.info('Using home directory.')
-            log.debug('Free space in home directory: '
-                      + '{:.2f} GB'.format(free_space))
+            log.debug("Free space in home directory: %.2f GB", free_space)
         else:
             log.info('Home directory is full or unwritable.')
             self.last_known_video_path = media_path
@@ -184,6 +193,9 @@ class BaseRecorder(ABC):
             return 0
 
     def update_timestamp(self):
+        """Update timestamp string on camera capture
+
+        """
         date_string = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.camera.annotate_text = date_string
 
