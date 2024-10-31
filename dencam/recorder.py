@@ -229,8 +229,8 @@ class Recorder(BaseRecorder):
                 os.makedirs(todays_dir)
             date_time_string = now.strftime("%Y-%m-%d_%Hh%Mm%Ss")
             filename = os.path.join(todays_dir, date_time_string + '.h264')
-            encoder = H264Encoder()
-            self.camera.start_recording(encoder, filename)
+            self.camera.start_recording(filename,
+                                        quality=self.configs['VIDEO_QUALITY'])
             self.record_start_time = time.time()
 
     def stop_recording(self):

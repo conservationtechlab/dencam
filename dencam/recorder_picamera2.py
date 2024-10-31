@@ -8,13 +8,11 @@ from dencam.recorder import Recorder
 
 log = logging.getLogger(__name__)
 
-class Picamera2Recorder(Recorder):
-    """Recorder that uses picamera2
-    
-    """
+
+class Picam2:
     def __init__(self, configs):
-        super().__init__(configs)
-        log.info('Set up camera per configurations')
+        self.configs = configs
+        self.encoder = H264Encoder()
         
         self.camera = Picamera2()
         self.camera.preview_configuration.enable_lores()
@@ -22,29 +20,35 @@ class Picamera2Recorder(Recorder):
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
-        
-        
-    def toggle_preview(self):
-        if not self.preview_on:
-            self.camera.stop_preview()
-            self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
-        else:
-            self.camera.stop_preview()
-            self.camera.start_preview(Preview.NULL)
-        self.preview_on = not self.preview_on
 
     def start_preview(self):
         self.camera.stop_preview()
         self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
-        self.preview_on = True
+        log.info('Started Preview')
 
     def stop_preview(self):
         self.camera.stop_preview()
         self.camera.start_preview(Preview.NULL)
+        log.info('Stopped Preview')
 
-        self.preview_on = False
-        
-    def start_recording(self):
+
+    def start_recording(self, filename, quality=None):
+        self.camera.start_recording(self.encoder, filename)
+
+    def stop_recording(self):
+        self.camera.stop_recording()
+
+class Picamera2Recorder(Recorder):
+    """Recorder that uses picamera2
+
+    """
+    def __init__(self, configs):
+        super().__init__(configs)
+        log.info('Set up camera per configurations')
+        self.camera = Picam2(configs)
+        self.configs = configs
+
+    '''def start_recording(self):
         """Prepares for and starts a new recording
 
         """
@@ -56,7 +60,7 @@ class Picamera2Recorder(Recorder):
             self.recording = True
             self.vid_count += 1
 
-          
+
             now = datetime.now()
             date_string = now.strftime("%Y-%m-%d")
 
@@ -76,4 +80,4 @@ class Picamera2Recorder(Recorder):
             filename = os.path.join(todays_dir, date_time_string + '.h264')
             encoder = H264Encoder()
             self.camera.start_recording(encoder, filename)
-            self.record_start_time = time.time()
+            self.record_start_time = time.time()'''
