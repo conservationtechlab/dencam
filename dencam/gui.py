@@ -10,7 +10,6 @@ import time
 import tkinter as tk
 import tkinter.font as tkFont
 from threading import Thread
-import platform
 
 from dencam.gui_pixel import BusterConfig, BookwormConfig
 from dencam import __version__
@@ -38,7 +37,7 @@ class BaseController(Thread):
                     if "VERSION_CODENAME" in line:
                         os_version = line.strip().split("=")[1].lower()
         except FileNotFoundError:
-            raise Exception("Cannot determine OS version: /etc/os-release not found")
+            raise Exception("Cannot determine OS version")
         if "buster" in os_version.lower():
             self.placement_config = BusterConfig()
         elif "bookworm" in os_version.lower():
@@ -318,7 +317,9 @@ class RecordingPage(tk.Frame):
                                         font=fonts['smaller'],
                                         fg='yellow',
                                         bg='black')
-        self.vid_count_label.place(height=vid_count_placement[0], x=vid_count_placement[1], y=vid_count_placement[2])
+        self.vid_count_label.place(height=vid_count_placement[0],
+                                   x=vid_count_placement[1],
+                                   y=vid_count_placement[2])
 
         device_placement = placements.values['recorder_device_label']
 
@@ -327,7 +328,9 @@ class RecordingPage(tk.Frame):
                                      font=fonts['smaller'],
                                      fg='yellow',
                                      bg='black')
-        self.device_label.place(height=device_placement[0], x=device_placement[1], y=device_placement[2])
+        self.device_label.place(height=device_placement[0],
+                                x=device_placement[1],
+                                y=device_placement[2])
 
         storage_placement = placements.values['recorder_storage_label']
 
@@ -336,7 +339,9 @@ class RecordingPage(tk.Frame):
                                       font=fonts['smaller'],
                                       fg='yellow',
                                       bg='black')
-        self.storage_label.place(height=storage_placement[0], x=storage_placement[1], y=storage_placement[2])
+        self.storage_label.place(height=storage_placement[0],
+                                 x=storage_placement[1],
+                                 y=storage_placement[2])
 
         time_placement = placements.values['recorder_time_label']
 
@@ -346,16 +351,18 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    justify="left")
-        self.time_label.place(height=time_placement[0], x=time_placement[1], y=time_placement[2])
+        self.time_label.place(height=time_placement[0],
+                              x=time_placement[1],
+                              y=time_placement[2])
 
-        #todo: add the pixel values for error label
+        # todo: add the pixel values for error label
 
         self.error_label = tk.Label(self,
                                     textvariable=controller.error_text,
                                     font=fonts['error'],
                                     fg='red',
                                     bg='black')
-        self.error_label.place(height=100,width=280,x=0,y=430)
+        self.error_label.place(height=100, width=280, x=0, y=430)
 
         next_page_placement = placements.values['recorder_next_page']
 
@@ -365,7 +372,10 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=next_page_placement[0],width=next_page_placement[1],x=next_page_placement[2],y=next_page_placement[3])
+        self.page_label.place(height=next_page_placement[0],
+                              width=next_page_placement[1],
+                              x=next_page_placement[2],
+                              y=next_page_placement[3])
 
         toggle_placement = placements.values['recorder_toggle_recording']
 
@@ -375,7 +385,10 @@ class RecordingPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=toggle_placement[0], width=toggle_placement[1], x=toggle_placement[2], y=toggle_placement[3])
+        self.page_label.place(height=toggle_placement[0],
+                              width=toggle_placement[1],
+                              x=toggle_placement[2],
+                              y=toggle_placement[3])
 
 
 class NetworkPage(tk.Frame):
@@ -414,7 +427,8 @@ class NetworkPage(tk.Frame):
                                  fg='yellow',
                                  bg='black',
                                  justify="left")
-        self.ip_label.place(x=ip_placement[0],y=ip_placement[1])
+        self.ip_label.place(x=ip_placement[0],
+                            y=ip_placement[1])
 
         version_placement = placements.values['network_version_label']
 
@@ -423,7 +437,9 @@ class NetworkPage(tk.Frame):
                                       font=fonts['smaller'],
                                       fg='yellow',
                                       bg='black')
-        self.version_label.place(height=version_placement[0], x=version_placement[1], y=version_placement[2])
+        self.version_label.place(height=version_placement[0],
+                                 x=version_placement[1],
+                                 y=version_placement[2])
 
         next_page_placement = placements.values['network_next_page']
 
@@ -433,7 +449,10 @@ class NetworkPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=next_page_placement[0],width=next_page_placement[1],x=next_page_placement[2],y=next_page_placement[3])
+        self.page_label.place(height=next_page_placement[0],
+                              width=next_page_placement[1],
+                              x=next_page_placement[2],
+                              y=next_page_placement[3])
 
         airplane_placement = placements.values['network_airplane_mode']
 
@@ -443,7 +462,10 @@ class NetworkPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=airplane_placement[0], width=airplane_placement[1], x=airplane_placement[2], y=airplane_placement[3])
+        self.page_label.place(height=airplane_placement[0],
+                              width=airplane_placement[1],
+                              x=airplane_placement[2],
+                              y=airplane_placement[3])
 
 
 class BlankPage(tk.Frame):
@@ -454,7 +476,6 @@ class BlankPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
         fonts = controller.fonts
-        placements = controller.placement_config
         self.page_label = tk.Label(self,
                                    text="Camera Preview",
                                    font=fonts['smaller'],
@@ -462,7 +483,7 @@ class BlankPage(tk.Frame):
                                    bg='blue4')
         self.page_label.pack(side=tk.TOP, fill=tk.X)
 
-        #todo: get gui values for bookworm version, kinda unneeded atm
+        # values set for buster, unneeded for now to be bookworm
 
         self.page_label = tk.Label(self,
                                    text="Next Page",
@@ -470,7 +491,7 @@ class BlankPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=50,width=145,x=495,y=430)
+        self.page_label.place(height=50, width=145, x=495, y=430)
 
         self.page_label = tk.Label(self,
                                    text="Upper Button>Toggle Inspect",
@@ -510,7 +531,8 @@ class SolarPage(tk.Frame):
                                     fg='yellow',
                                     bg='black',
                                     justify="left")
-        self.solar_label.place(x=label_placement[0],y=label_placement[1])
+        self.solar_label.place(x=label_placement[0],
+                               y=label_placement[1])
 
         next_page_placement = placements.values['solar_next_page']
 
@@ -520,7 +542,10 @@ class SolarPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=next_page_placement[0],width=next_page_placement[1],x=next_page_placement[2],y=next_page_placement[3])
+        self.page_label.place(height=next_page_placement[0],
+                              width=next_page_placement[1],
+                              x=next_page_placement[2],
+                              y=next_page_placement[3])
 
         update_placement = placements.values['solar_update_data']
 
@@ -530,7 +555,10 @@ class SolarPage(tk.Frame):
                                    fg='yellow',
                                    bg='black',
                                    highlightthickness=2)
-        self.page_label.place(height=update_placement[0], width=update_placement[1], x=update_placement[2], y=update_placement[3])
+        self.page_label.place(height=update_placement[0],
+                              width=update_placement[1],
+                              x=update_placement[2],
+                              y=update_placement[3])
 
 
 class ErrorScreen():
