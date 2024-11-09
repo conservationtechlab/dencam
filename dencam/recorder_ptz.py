@@ -58,6 +58,7 @@ class MimirCamera:
     def orient_frame(self, frame, rotation):
         if rotation == 180:
             frame = cv2.rotate(frame, cv2.ROTATE_180)
+        return frame
 
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
@@ -82,7 +83,8 @@ class MimirCamera:
                 width = int(width_norm * frame.shape[1])
                 height = int(height_norm * frame.shape[0])
                 cropped_region = frame[y:y + height, x:x + width]
-                self.orient_frame(cropped_region, self.rotation)
+                cropped_region = self.orient_frame(cropped_region,
+                                                   self.rotation)
                 cv2.imshow(self.window_name, cropped_region)
                 cv2.waitKey(33)
         cv2.destroyAllWindows()
@@ -117,7 +119,7 @@ class MimirCamera:
                                  30.0,
                                  resolution)
 
-        self.orient_frame(frame, self.rotation)
+        frame = self.orient_frame(frame, self.rotation)
         writer.write(frame)
 
         while not event.is_set():
@@ -127,7 +129,7 @@ class MimirCamera:
             if frame is None:
                 log.warning("Frame was None")
             else:
-                self.orient_frame(frame, self.rotation)
+                frame = self.orient_frame(frame, self.rotation)
                 writer.write(frame)
 
     def start_recording(self, filename, quality=None):
