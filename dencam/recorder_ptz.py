@@ -16,6 +16,8 @@ from dencam.recorder import Recorder
 
 log = logging.getLogger(__name__)
 
+WINDOW_NAME = "DenCam Mimir View"
+
 
 class MimirCamera:
     """High-level PTZ camera class
@@ -37,25 +39,26 @@ class MimirCamera:
         # built in.  We will keep it to match Fenrir attributes
         self.annotate_text = None
 
-        self.window_name = "DenCam Mimir View"
-
         self.stop_display_event = mp.Event()
         self.stop_record_event = mp.Event()
 
     @property
     def zoom(self):
+        """Getter for crop box tuple
+
+        """
         return self._crop
 
     @zoom.setter
     def zoom(self, value):
         self._crop = value
-        self.on_zoom_change()
+        self._on_zoom_change()
 
-    def on_zoom_change(self):
+    def _on_zoom_change(self):
         self.stop_preview()
         self.start_preview()
 
-    def orient_frame(self, frame, rotation):
+    def _orient_frame(self, frame, rotation):
         if rotation == 180:
             frame = cv2.rotate(frame, cv2.ROTATE_180)
         return frame
@@ -66,26 +69,27 @@ class MimirCamera:
                      passwd=configs['CAMERA_PASS'],
                      stream=configs['CAMERA_STREAM'])
 
-        cv2.namedWindow(self.window_name, cv2.WINDOW_NORMAL)
-        cv2.setWindowProperty(self.window_name, cv2.WND_PROP_TOPMOST, 1)
-        cv2.setWindowProperty(self.window_name,
+        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
+        cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_TOPMOST, 1)
+        cv2.setWindowProperty(WINDOW_NAME,
                               cv2.WND_PROP_FULLSCREEN,
                               cv2.WINDOW_FULLSCREEN)
-        cv2.moveWindow(self.window_name, 0, -30)
-        cv2.resizeWindow(self.window_name, 320, 240)
+        cv2.moveWindow(WINDOW_NAME, 0, -30)
+        cv2.resizeWindow(WINDOW_NAME, 320, 240)
 
         while not event.is_set():
             frame = cam.get_frame()
             if frame is not None:
                 x_norm, y_norm, width_norm, height_norm = self._crop
-                x = int(x_norm * frame.shape[1])
-                y = int(y_norm * frame.shape[0])
-                width = int(width_norm * frame.shape[1])
-                height = int(height_norm * frame.shape[0])
-                cropped_region = frame[y:y + height, x:x + width]
-                cropped_region = self.orient_frame(cropped_region,
-                                                   self.rotation)
-                cv2.imshow(self.window_name, cropped_region)
+                x_pixels = int(x_norm * frame.shape[1])
+                y_pixels = int(y_norm * frame.shape[0])
+                width_pixels = int(width_norm * frame.shape[1])
+                height_pixels = int(height_norm * frame.shape[0])
+                cropped_region = frame[y_pixels:y_pixels + height_pixels,
+                                       x_pixels:x_pixels + width_pixels]
+                cropped_region = self._orient_frame(cropped_region,
+                                                    self.rotation)
+                cv2.imshow(WINDOW_NAME, cropped_region)
                 cv2.waitKey(33)
         cv2.destroyAllWindows()
         cam.release()
@@ -119,7 +123,7 @@ class MimirCamera:
                                  30.0,
                                  resolution)
 
-        frame = self.orient_frame(frame, self.rotation)
+        frame = self._orient_frame(frame, self.rotation)
         writer.write(frame)
 
         while not event.is_set():
@@ -129,7 +133,7 @@ class MimirCamera:
             if frame is None:
                 log.warning("Frame was None")
             else:
-                frame = self.orient_frame(frame, self.rotation)
+                frame = self._orient_frame(frame, self.rotation)
                 writer.write(frame)
 
     def start_recording(self, filename, quality=None):
