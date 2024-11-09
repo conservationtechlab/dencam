@@ -31,6 +31,12 @@ class MimirCamera:
         self.resolution = 1  # TODO: doesn't control anything yet
         self._crop = (0, 0, 1.0, 1.0)
 
+        # This next attribute was necessary for drawing timestamp in
+        # picamera version.  Not really necessary for Mimir because
+        # the network camera has own capability to draw that timestamp
+        # built in.  We will keep it to match Fenrir attributes
+        self.annotate_text = None
+        
         self.window_name = "DenCam Mimir View"
 
         self.stop_display_event = mp.Event()
@@ -140,16 +146,6 @@ class MimirCamera:
 
         """
         self.stop_record_event.set()
-
-    def annotate_text(self):
-        """Draw onto display and recording
-
-        Was necessary for drawing timestamp in picamera version.  Not
-        really necessary here because network camera has own
-        capability to draw that timestamp built in.
-
-        """
-        raise NotImplementedError
 
 
 class PTZRecorder(Recorder):
