@@ -17,7 +17,7 @@ from dencam.recorder import Recorder
 log = logging.getLogger(__name__)
 
 
-class CyclopsCamera:
+class MimirCamera:
     """High-level PTZ camera class
 
     Wraps a ptzipcam.camera.Camera to match API expected by rest of
@@ -142,7 +142,7 @@ class PTZRecorder(Recorder):
         # camera setup
         log.info('Set up camera per configurations')
 
-        self.camera = CyclopsCamera(configs)
+        self.camera = MimirCamera(configs)
         # self.camera = PiCamera(framerate=configs['FRAME_RATE'])
         # text_size = int((1/20) * configs['CAMERA_RESOLUTION'][1])
         # self.camera.annotate_text_size = text_size
