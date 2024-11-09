@@ -27,7 +27,7 @@ class MimirCamera:
     def __init__(self, configs):
         self.configs = configs
 
-        self.rotation = 0  # TODO: doesn't control anything yet
+        self.rotation = 0
         self.resolution = 1  # TODO: doesn't control anything yet
         self._crop = (0, 0, 1.0, 1.0)
 
@@ -36,7 +36,7 @@ class MimirCamera:
         # the network camera has own capability to draw that timestamp
         # built in.  We will keep it to match Fenrir attributes
         self.annotate_text = None
-        
+
         self.window_name = "DenCam Mimir View"
 
         self.stop_display_event = mp.Event()
@@ -54,7 +54,11 @@ class MimirCamera:
     def on_zoom_change(self):
         self.stop_preview()
         self.start_preview()
-        
+
+    def orient_frame(self, frame, rotation):
+        if rotation == 180:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
                      user=configs['CAMERA_USER'],
@@ -78,6 +82,7 @@ class MimirCamera:
                 width = int(width_norm * frame.shape[1])
                 height = int(height_norm * frame.shape[0])
                 cropped_region = frame[y:y + height, x:x + width]
+                self.orient_frame(cropped_region, self.rotation)
                 cv2.imshow(self.window_name, cropped_region)
                 cv2.waitKey(33)
         cv2.destroyAllWindows()
@@ -111,7 +116,10 @@ class MimirCamera:
                                  fourcc,
                                  30.0,
                                  resolution)
+
+        self.orient_frame(frame, self.rotation)
         writer.write(frame)
+
         while not event.is_set():
             # TODO: there are definitely problems in the frame timing
             time.sleep(0.03333333333)
@@ -119,6 +127,7 @@ class MimirCamera:
             if frame is None:
                 log.warning("Frame was None")
             else:
+                self.orient_frame(frame, self.rotation)
                 writer.write(frame)
 
     def start_recording(self, filename, quality=None):
