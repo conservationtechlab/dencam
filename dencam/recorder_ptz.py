@@ -29,7 +29,7 @@ class MimirCamera:
 
         self.rotation = 0  # TODO: doesn't control anything yet
         self.resolution = 1  # TODO: doesn't control anything yet
-        self._zoom = (0, 0, 1.0, 1.0)
+        self._crop = (0, 0, 1.0, 1.0)
 
         self.window_name = "DenCam Mimir View"
 
@@ -38,11 +38,11 @@ class MimirCamera:
 
     @property
     def zoom(self):
-        return self._zoom
+        return self._crop
 
     @zoom.setter
     def zoom(self, value):
-        self._zoom = value
+        self._crop = value
         self.on_zoom_change()
 
     def on_zoom_change(self):
@@ -66,7 +66,7 @@ class MimirCamera:
         while not event.is_set():
             frame = cam.get_frame()
             if frame is not None:
-                x_norm, y_norm, width_norm, height_norm = self._zoom
+                x_norm, y_norm, width_norm, height_norm = self._crop
                 x = int(x_norm * frame.shape[1])
                 y = int(y_norm * frame.shape[0])
                 width = int(width_norm * frame.shape[1])
