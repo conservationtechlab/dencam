@@ -29,13 +29,26 @@ class MimirCamera:
 
         self.rotation = 0  # TODO: doesn't control anything yet
         self.resolution = 1  # TODO: doesn't control anything yet
-        self.zoom = (0, 0, 1.0, 1.0)  # TODO: doesn't control anything yet
+        self._zoom = (0, 0, 1.0, 1.0)
 
-        self.window_name = "DenCam View"
+        self.window_name = "DenCam Mimir View"
 
         self.stop_display_event = mp.Event()
         self.stop_record_event = mp.Event()
 
+    @property
+    def zoom(self):
+        return self._zoom
+
+    @zoom.setter
+    def zoom(self, value):
+        self._zoom = value
+        self.on_zoom_change()
+
+    def on_zoom_change(self):
+        self.stop_preview()
+        self.start_preview()
+        
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
                      user=configs['CAMERA_USER'],
@@ -53,9 +66,16 @@ class MimirCamera:
         while not event.is_set():
             frame = cam.get_frame()
             if frame is not None:
-                cv2.imshow(self.window_name, frame)
+                x_norm, y_norm, width_norm, height_norm = self._zoom
+                x = int(x_norm * frame.shape[1])
+                y = int(y_norm * frame.shape[0])
+                width = int(width_norm * frame.shape[1])
+                height = int(height_norm * frame.shape[0])
+                cropped_region = frame[y:y + height, x:x + width]
+                cv2.imshow(self.window_name, cropped_region)
                 cv2.waitKey(33)
         cv2.destroyAllWindows()
+        cam.release()
 
     def start_preview(self):
         """Start display of camera stream to screen
