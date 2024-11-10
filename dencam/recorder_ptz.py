@@ -30,7 +30,7 @@ class MimirCamera:
         self.configs = configs
 
         self.rotation = 0
-        self.resolution = 1  # TODO: doesn't control anything yet
+        self.resolution = None
         self._crop = (0, 0, 1.0, 1.0)
 
         # This next attribute was necessary for drawing timestamp in
@@ -109,6 +109,25 @@ class MimirCamera:
         """
         self.stop_display_event.set()
 
+    def _check_resolution(self, resolution):
+        """Warn if a resolution doesn't match self.resolution
+
+        Unlike with Fenrir, as of now, we are not using the resolution
+        configuration parameter to set the camera stream
+        resolution. It is possible to do this over ONVIF but, for the
+        time being at least, we configure this directly on the camera
+        using its web interface as we don't tend to change the value
+        that often.
+
+        However, this check issues a warning if the setting in the
+        config file doesn't match what the camera is actual set to.
+
+        """
+        log.info("Camera Resolution: %s", resolution)
+        if not self.resolution == list(resolution):
+            log.warning("Camera stream not set to expected resolution")
+            log.warning("Config Resolution Setting: %s", self.resolution)
+
     def _record(self, filename, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
                      user=configs['CAMERA_USER'],
@@ -117,6 +136,7 @@ class MimirCamera:
 
         frame = cam.get_frame()
         resolution = (frame.shape[1], frame.shape[0])
+        self._check_resolution(resolution)
         fourcc = cv2.VideoWriter_fourcc(*'XVID')
         writer = cv2.VideoWriter(filename,
                                  fourcc,
