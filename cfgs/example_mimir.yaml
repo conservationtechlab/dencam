@@ -1,0 +1,34 @@
+# length of videos to record in seconds
+RECORD_LENGTH: 300  # 60 * 5 = 300 for 5 minutes
+
+# directory for solar log (default hostname is pi)
+SOLAR_DIR: /home/USER/
+
+FILE_SIZE_SAFETY_FACTOR: 2  # between 2 and 10
+PI_RESERVED_STORAGE: 2000  # in megabytes
+AVG_VIDEO_FILE_SIZE: 1500  # in megabytes (1 gigabyte = 1000 megabytes)
+
+# PiTFT SCREEN CHARACTERISTICS
+DISPLAY_RESOLUTION: [640, 480]
+
+# number of seconds after program starts to init first video recording
+# (in seconds)
+PAUSE_BEFORE_RECORD: 90  # 90 for current spec
+
+# number of seconds shutdown button held down to turn off pi
+OFF_BUTTON_DELAY: 5
+
+CAMERA_IP: 0.0.0.0
+CAMERA_USER: USER_NAME
+CAMERA_PASS: PASS
+CAMERA_STREAM: 1
+
+CAMERA_RESOLUTION: [1920, 1080]
+VIDEO_QUALITY: 20  # between 1 and 40, 1 is highest, 40 lowest
+FRAME_RATE: 25
+
+# 0, 90, 180, 270. have not checked whether 90 and 270 crop image or what
+CAMERA_ROTATION: 180 
+
+# airplane mode variable True for on, False for off
+AIRPLANE_MODE: False
