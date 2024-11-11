@@ -1,12 +1,14 @@
 import time
+import logging
 
-from ptzipcam.ptz_camera import PtzCam
 from pyPS4Controller.controller import Controller
+
+log = logging.getLogger(__name__)
 
 
 class PS4Controller(Controller):
     """Class to manage PTZ control via PS4 controller."""
-    
+
     def __init__(self, ptz, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.ptz = ptz
@@ -31,10 +33,13 @@ class PS4Controller(Controller):
         cmds['tilt'] = tilt + y_delta
         cmds['zoom'] = zoom + z_delta
         self.drive_ptz(cmds)
-        return cmds
+        self.display_status(cmds)
 
     def display_status(self, cmds):
-        log.info(f'Pan: {cmds["pan"]} | Tilt: {cmds["tilt"]} | Zoom: {cmds["zoom"]}')
+        log.info("Pan: %0.2f | Tilt: %0.2f | Zoom: %0.2f",
+                 cmds['pan'],
+                 cmds['tilt'],
+                 cmds['zoom'])
 
     def scale_joystick_value(self, v):
         # scales joystick value to be within 0-1 range
@@ -49,38 +54,39 @@ class PS4Controller(Controller):
     def on_left_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                commands = self.send_command(self.X_DELTA_FINE, 0 , 0)
+                self.send_command(self.X_DELTA_FINE, 0, 0)
             else:
-                commands = self.send_command(self.X_DELTA, 0, 0)
+                self.send_command(self.X_DELTA, 0, 0)
             self.t = time.time()
 
     def on_right_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                commands = self.send_command(-self.X_DELTA_FINE, 0, 0)
+                self.send_command(-self.X_DELTA_FINE, 0, 0)
             else:
-                commands = self.send_command(-self.X_DELTA, 0, 0)
+                self.send_command(-self.X_DELTA, 0, 0)
             self.t = time.time()
 
     def on_up_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                commands = self.send_command(0, -self.Y_DELTA_FINE, 0)
+                self.send_command(0, -self.Y_DELTA_FINE, 0)
             else:
-                commands = self.send_command(0, -self.Y_DELTA, 0)
+                self.send_command(0, -self.Y_DELTA, 0)
             self.t = time.time()
 
     def on_down_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                commands = self.send_command(0, self.Y_DELTA_FINE, 0)
+                self.send_command(0, self.Y_DELTA_FINE, 0)
                 self.t = time.time()
             else:
-                commands = self.send_command(0, self.Y_DELTA, 0)
+                self.send_command(0, self.Y_DELTA, 0)
                 self.t = time.time()
 
     def on_left_right_arrow_release(self):
         pass
+
     def on_up_down_arrow_release(self):
         pass
 
@@ -138,7 +144,7 @@ class PS4Controller(Controller):
             if self.toggleOn:
                 self.ptz.zoom_in_full()
             else:
-                commands = self.send_command(0, 0, self.Z_DELTA)
+                self.send_command(0, 0, self.Z_DELTA)
             self.t = time.time()
 
     def on_triangle_release(self):
@@ -147,11 +153,8 @@ class PS4Controller(Controller):
     def on_square_press(self):
         # self.stop = True
         pass
-    
-    def on_square_release(self):
-        pass
 
-    def on_circle_press(self):
+    def on_square_release(self):
         pass
 
     def on_circle_press(self):
@@ -163,12 +166,11 @@ class PS4Controller(Controller):
             if self.toggleOn:
                 self.ptz.zoom_out_full()
             else:
-                commands = self.send_command(0, 0, -self.Z_DELTA)
+                self.send_command(0, 0, -self.Z_DELTA)
             self.t = time.time()
 
     def on_x_release(self):
         pass
-
 
     def drive_ptz(self, cmds):
         """Prep and send actual pan, tilt, zoom commands to camera
@@ -205,5 +207,5 @@ class PS4Controller(Controller):
 #    print(f'prepped zoom command - {cmds["zoom"]}')
 
         self.ptz.absmove_w_zoom(cmds['pan'],
-                           cmds['tilt'],
-                           cmds['zoom'])
+                                cmds['tilt'],
+                                cmds['zoom'])
