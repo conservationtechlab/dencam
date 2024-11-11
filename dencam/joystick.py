@@ -15,10 +15,10 @@ class PTZController:
 
     """
     def __init__(self, configs):
-        self.ptz = PtzCam(configs['IP'],
-                          configs['PORT'],
-                          configs['USER'],
-                          configs['PASS'])
+        self.ptz = PtzCam(configs['CAMERA_IP'],
+                          80,
+                          configs['CAMERA_USER'],
+                          configs['CAMERA_PASS'])
         self.joystick = None
 
     def run_joystick(self):
