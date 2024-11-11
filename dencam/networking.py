@@ -24,7 +24,7 @@ def get_network_info():
 
     """
     interfaces = ni.interfaces()
-    text = (socket.gethostname() + '\n')
+    text = ("Hostname: " + socket.gethostname() + '\n')
     for interface in interfaces:
         if interface == 'lo':
             continue
@@ -38,6 +38,7 @@ def get_network_info():
         text += ('{}: {}\n'.format(interface, ip))
         if interface == 'wlan0':
             ssid = subprocess.check_output(['iwgetid'])
+            text += "SSID: "
             text += (ssid.decode('utf-8').split('ESSID:')[-1].replace('"', ''))
 
     return text
