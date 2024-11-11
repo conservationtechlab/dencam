@@ -6,7 +6,7 @@ from pyPS4Controller.controller import Controller
 log = logging.getLogger(__name__)
 
 
-class PS4Controller(Controller):
+class Joystick(Controller):
     """Class to manage PTZ control via PS4 controller."""
 
     def __init__(self, ptz, *args, **kwargs):
