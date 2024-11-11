@@ -1,3 +1,5 @@
+import time
+
 from ptzipcam.ptz_camera import PtzCam
 from pyPS4Controller.controller import Controller
 
@@ -21,10 +23,6 @@ class PS4Controller(Controller):
         self.X_DELTA_FINE = self.X_DELTA/3
         self.Y_DELTA_FINE = self.Y_DELTA/3
         self.Z_DELTA_FINE = self.Z_DELTA/3
-
-        pin = 27
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP) 
 
     def send_command(self, x_delta, y_delta, z_delta):
         cmds = {}
@@ -138,7 +136,7 @@ class PS4Controller(Controller):
         # zoom in
         if self.ready_for_next():
             if self.toggleOn:
-                ptz.zoom_in_full()
+                self.ptz.zoom_in_full()
             else:
                 commands = self.send_command(0, 0, self.Z_DELTA)
             self.t = time.time()
@@ -147,8 +145,9 @@ class PS4Controller(Controller):
         pass
 
     def on_square_press(self):
-        self.stop = True
-
+        # self.stop = True
+        pass
+    
     def on_square_release(self):
         pass
 
@@ -162,7 +161,7 @@ class PS4Controller(Controller):
         # zoom out
         if self.ready_for_next():
             if self.toggleOn:
-                ptz.zoom_out_full()
+                self.ptz.zoom_out_full()
             else:
                 commands = self.send_command(0, 0, -self.Z_DELTA)
             self.t = time.time()
@@ -208,15 +207,3 @@ class PS4Controller(Controller):
         self.ptz.absmove_w_zoom(cmds['pan'],
                            cmds['tilt'],
                            cmds['zoom'])
-
-    def check_button_press(self):
-        current_state = GPIO.input(27)
-        current_time = time.time()
-
-        if current_state == GPIO.LOW and self.last_button_state == GPIO.HIGH and (current_time - self.last_press_time) >0.2:
-            self.last_press_time = current_time
-            self.last_button_state = current_state
-            return True
-
-        self.last_button_state = current_state
-        return False
