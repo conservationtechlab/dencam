@@ -8,8 +8,6 @@ FILE_SIZE_SAFETY_FACTOR: 2  # between 2 and 10
 PI_RESERVED_STORAGE: 2000  # in megabytes
 AVG_VIDEO_FILE_SIZE: 1500  # in megabytes (1 gigabyte = 1000 megabytes)
 
-CAMERA_TYPE: "picamera2"
-
 # PiTFT SCREEN CHARACTERISTICS
 DISPLAY_RESOLUTION: [640, 480]
 
