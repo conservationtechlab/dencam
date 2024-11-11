@@ -10,6 +10,15 @@ import logging
 import multiprocessing as mp
 
 import cv2
+# TODO: i think we should consider *not* using ptzipcam.camera.Camera
+# We should consider just using a cv2.VideoCapture object directly or
+# maybe even ffmpeg directly via subprocess. We do not need so many
+# layers, especially given ptzipcam.camera.Camera has its own thread
+# and a very thin amount of wrapping around cv2.VideoCapture.
+# Although, also might be worth considering adding a lightweight
+# ptzipcam.camera.LightweightCamera that still encapsulates all the
+# ptz-ish setup stuff in that package but doesn't run its own camera
+# checking thread.
 from ptzipcam.camera import Camera
 
 from dencam.recorder import Recorder
@@ -182,6 +191,14 @@ class MimirCamera:
         """
         self.stop_record_event.set()
 
+    def release(self):
+        """Clean up any running processes
+
+        """
+        log.info("MimirCamera releasing mp processes")
+        self.stop_preview()
+        self.stop_recording()
+
 
 class PTZRecorder(Recorder):
     """Recorder that uses a pan-tilt-zoom network surveillance camera
@@ -200,4 +217,7 @@ class PTZRecorder(Recorder):
         # self.camera.annotate_foreground = picamera.color.Color('white')
         # self.camera.annotate_background = picamera.color.Color('black')
 
-        # super().finish_setup()
+        super().finish_setup()
+
+    def release(self):
+        self.camera.release()
