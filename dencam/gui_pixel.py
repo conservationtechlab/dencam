@@ -1,4 +1,13 @@
+"""Classes for different gui pixel values
+
+Fenrir needs BusterConfig gui pixel values, and
+Lesehest and Mimir need BookwormConfig pixel values.
+
+"""
 class BusterConfig:
+    """Pixel values for Buster OS
+
+    """
     values = {
         "recorder_vid_count_label": [50, 0, 140],
         "recorder_device_label": [50, 0, 190],
@@ -18,7 +27,11 @@ class BusterConfig:
         "solar_update_data": [50, 180, 460, 310],
     }
 
+
 class BookwormConfig:
+    """Pixel values for Bookworm OS
+
+    """
     values = {
         "recorder_vid_count_label": [20, 0, 80],
         "recorder_device_label": [20, 0, 100],
