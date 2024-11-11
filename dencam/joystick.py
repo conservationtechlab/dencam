@@ -1,13 +1,39 @@
 import time
 import logging
 
+from ptzipcam.ptz_camera import PtzCam
 from pyPS4Controller.controller import Controller
 
 log = logging.getLogger(__name__)
 
 
+class PTZController:
+    """Metaclass around Joystick class
+
+    Handles setup of PTZ camera in prep for giving that over to the
+    Joystick class.
+
+    """
+    def __init__(self, configs):
+        self.ptz = PtzCam(configs['IP'],
+                          configs['PORT'],
+                          configs['USER'],
+                          configs['PASS'])
+        self.joystick = None
+
+    def run_joystick(self):
+        log.info("Initiating PS4 Controller.")
+        self.joystick = Joystick(self.ptz,
+                                 interface='/dev/input/js0',
+                                 connecting_using_ds4drv=False)
+        log.info("Initiate listening on PS4 Controller.")
+        self.joystick.listen()
+
+
 class Joystick(Controller):
-    """Class to manage PTZ control via PS4 controller."""
+    """Manages PTZ camera control via PS4 controller.
+
+    """
 
     def __init__(self, ptz, *args, **kwargs):
         super().__init__(*args, **kwargs)
