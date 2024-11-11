@@ -573,7 +573,7 @@ class ErrorScreen():
         self.screen.attributes('-fullscreen', True)
         self.screen.configure(background='black')
         label = tk.Label(self.screen,
-                         text="Camera error\ncheck wiring to camera",
+                         text="Camera error\ncheck wiring\n to camera",
                          fg="white", bg="black", font=("Helvetica", 28))
         label.pack(expand=True)
         self.screen.update()
