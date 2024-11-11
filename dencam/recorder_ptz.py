@@ -22,6 +22,7 @@ import cv2
 from ptzipcam.camera import Camera
 
 from dencam.recorder import Recorder
+from dencam.joystick import PTZController
 
 log = logging.getLogger(__name__)
 
@@ -50,6 +51,7 @@ class MimirCamera:
 
         self.stop_display_event = mp.Event()
         self.stop_record_event = mp.Event()
+        self.stop_joystick_event = mp.Event()
 
     @property
     def zoom(self):
@@ -72,6 +74,11 @@ class MimirCamera:
             frame = cv2.rotate(frame, cv2.ROTATE_180)
         return frame
 
+    def _joystick(self, configs, event):
+        ptz_controller = PTZController(configs)
+        while not event.is_set():
+            ptz_controller.run_joystick()
+    
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
                      user=configs['CAMERA_USER'],
@@ -85,7 +92,7 @@ class MimirCamera:
                               cv2.WINDOW_FULLSCREEN)
         cv2.moveWindow(WINDOW_NAME, 0, -30)
         cv2.resizeWindow(WINDOW_NAME, 320, 240)
-
+        
         while not event.is_set():
             frame = cam.get_frame()
             if frame is not None:
@@ -108,15 +115,21 @@ class MimirCamera:
 
         """
         self.stop_display_event.clear()
-        worker = mp.Process(target=self._display,
-                            args=(self.configs, self.stop_display_event))
-        worker.start()
+        display_worker = mp.Process(target=self._display,
+                                    args=(self.configs, self.stop_display_event))
+        display_worker.start()
+
+        self.stop_joystick_event.clear()
+        joystick_worker = mp.Process(target=self._joystick,
+                            args=(self.configs, self.stop_joystick_event))
+        joystick_worker.start()
 
     def stop_preview(self):
         """Stop display of cam stream
 
         """
         self.stop_display_event.set()
+        self.stop_joystick_event.set()
 
     def _check_resolution(self, resolution):
         """Warn if a resolution doesn't match self.resolution
