@@ -23,7 +23,7 @@ class Picam2:
 
     def start_preview(self):
         self.camera.stop_preview()
-        self.camera.start_preview(Preview.QT, x=-2, y=-28, width=320, height=240)
+        self.camera.start_preview(Preview.QT, x=-4, y=-25, width=324, height=245)
         log.info('Started Preview')
 
     def stop_preview(self):
@@ -49,3 +49,5 @@ class Picamera2Recorder(Recorder):
         log.info('Set up camera per configurations')
         self.camera = Picam2(configs)
         self.configs = configs
+
+        super().finish_setup()
