@@ -29,6 +29,9 @@ class PTZController:
         log.info("Initiate listening on PS4 Controller.")
         self.joystick.listen()
 
+    def release_joystick(self):
+        self.joystick.stop = True
+
 
 class Joystick(Controller):
     """Manages PTZ camera control via PS4 controller.
