@@ -55,6 +55,10 @@ class Joystick(Controller):
         self.Y_DELTA_FINE = self.Y_DELTA/3
         self.Z_DELTA_FINE = self.Z_DELTA/3
 
+    def _pan_ratio(self):
+        zoom = self.ptz.get_position()[2]
+        return 1 / (1 + zoom * 5)
+        
     def send_command(self, x_delta, y_delta, z_delta):
         cmds = {}
         pan, tilt, zoom = self.ptz.get_position()
@@ -83,17 +87,17 @@ class Joystick(Controller):
     def on_left_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                self.send_command(self.X_DELTA_FINE, 0, 0)
+                self.send_command(self.X_DELTA_FINE * self._pan_ratio(), 0, 0)
             else:
-                self.send_command(self.X_DELTA, 0, 0)
+                self.send_command(self.X_DELTA * self._pan_ratio(), 0, 0)
             self.t = time.time()
 
     def on_right_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                self.send_command(-self.X_DELTA_FINE, 0, 0)
+                self.send_command(-self.X_DELTA_FINE * self._pan_ratio(), 0, 0)
             else:
-                self.send_command(-self.X_DELTA, 0, 0)
+                self.send_command(-self.X_DELTA * self._pan_ratio(), 0, 0)
             self.t = time.time()
 
     def on_up_arrow_press(self):
@@ -151,6 +155,9 @@ class Joystick(Controller):
         pass
 
     def on_R3_y_at_rest(self):
+        pass
+    
+    def on_R3_x_at_rest(self):
         pass
 
     # Fine Movement Toggle
