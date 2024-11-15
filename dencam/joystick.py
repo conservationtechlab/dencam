@@ -19,13 +19,12 @@ class PTZController:
                           80,
                           configs['CAMERA_USER'],
                           configs['CAMERA_PASS'])
-        self.joystick = None
-
-    def run_joystick(self):
         log.info("Initiating PS4 Controller.")
         self.joystick = Joystick(self.ptz,
                                  interface='/dev/input/js0',
                                  connecting_using_ds4drv=False)
+
+    def run_joystick(self):
         log.info("Initiate listening on PS4 Controller.")
         self.joystick.listen()
 
