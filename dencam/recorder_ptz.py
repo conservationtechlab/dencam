@@ -175,7 +175,9 @@ class MimirCamera:
         url = f"rtsp://{usr}:{passw}@{camip}:554/Streaming/Channels/10{stream}"
         cmd = ["ffmpeg", "-i", url, "-acodec", "copy",
                "-vcodec", "copy", filename, "-nostdin"]
-        process = subprocess.Popen(cmd)
+        process = subprocess.Popen(cmd,
+                                   stdout=subprocess.DEVNULL,
+                                   stderr=subprocess.DEVNULL)
 
         while not event.is_set():
             time.sleep(.01)
