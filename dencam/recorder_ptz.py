@@ -7,6 +7,7 @@ camera as the recording device for a dencam.
 import os
 import time
 import logging
+import subprocess
 import multiprocessing as mp
 
 import cv2
@@ -153,32 +154,30 @@ class MimirCamera:
             log.warning("Config Resolution Setting: %s", self.resolution)
 
     def _record(self, filename, configs, event):
-        cam = Camera(ip=configs['CAMERA_IP'],
-                     user=configs['CAMERA_USER'],
-                     passwd=configs['CAMERA_PASS'],
-                     stream=configs['CAMERA_STREAM'])
 
-        frame = cam.get_frame()
-        resolution = (frame.shape[1], frame.shape[0])
-        self._check_resolution(resolution)
-        fourcc = cv2.VideoWriter_fourcc(*'XVID')
-        writer = cv2.VideoWriter(filename,
-                                 fourcc,
-                                 30.0,
-                                 resolution)
+        # TODO: no longer using `self._check_resolution here or
+        # anywhere. Should we try to get the resolution from the
+        # ffmpeg process and check on that.  Alternatively, we use
+        # ONVIF to write the desired resolution to the camera ala how
+        # it used to work with the picamera.
 
-        frame = self._orient_frame(frame, self.rotation)
-        writer.write(frame)
+        # TODO: not using frame rotation config to re-orient the frame
+        # anymore since switch to ffmpeg
+
+        camip = configs['CAMERA_IP'],
+        usr = configs['CAMERA_USER'],
+        passw = configs['CAMERA_PASS'],
+        stream = configs['CAMERA_STREAM']
+
+        url = f"rtsp://{usr}:{passw}@{camip}:554/Streaming/Channels/10{stream}"
+        cmd = ["ffmpeg", "-i", url, "-acodec", "copy",
+               "-vcodec", "copy", filename, "-nostdin"]
+        process = subprocess.Popen(cmd)
 
         while not event.is_set():
-            # TODO: there are definitely problems in the frame timing
-            time.sleep(0.03333333333)
-            frame = cam.get_frame()
-            if frame is None:
-                log.warning("Frame was None")
-            else:
-                frame = self._orient_frame(frame, self.rotation)
-                writer.write(frame)
+            time.sleep(.01)
+
+        process.terminate()
 
     def start_recording(self, filename, quality=None):
         """Start recording camera stream to video
@@ -191,7 +190,7 @@ class MimirCamera:
         # TODO: maybe make base Recorder object not assume the .h264
         # extension?
         base = os.path.splitext(filename)[0]
-        filename = f"{base}.avi"
+        filename = f"{base}.mp4"
 
         self.stop_record_event.clear()
         worker = mp.Process(target=self._record,
