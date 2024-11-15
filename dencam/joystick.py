@@ -6,6 +6,21 @@ from pyPS4Controller.controller import Controller
 
 log = logging.getLogger(__name__)
 
+Y_DELTA = .05
+X_DELTA = .05
+Z_DELTA = .07
+X_DELTA_FINE = X_DELTA/3
+Y_DELTA_FINE = Y_DELTA/3
+Z_DELTA_FINE = Z_DELTA/3
+
+INFINITE_PAN = True
+CAM_PAN_MAX = 1.0
+CAM_PAN_MIN = -1.0
+CAM_TILT_MAX = 1.0
+CAM_TILT_MIN = -1.0
+CAM_ZOOM_MAX = 1.0
+CAM_ZOOM_MIN = 0
+
 
 class PTZController:
     """Metaclass around Joystick class
@@ -47,17 +62,11 @@ class Joystick(Controller):
         self.joystick_ignore = 10000
         self.t = time.time()  # Initialize time tracking for command delays
         self.timeout = 0.25  # Delay between commands
-        self.Y_DELTA = .05
-        self.X_DELTA = .05
-        self.Z_DELTA = .07
-        self.X_DELTA_FINE = self.X_DELTA/3
-        self.Y_DELTA_FINE = self.Y_DELTA/3
-        self.Z_DELTA_FINE = self.Z_DELTA/3
 
     def _pan_ratio(self):
         zoom = self.ptz.get_position()[2]
         return 1 / (1 + zoom * 5)
-        
+
     def send_command(self, x_delta, y_delta, z_delta):
         cmds = {}
         pan, tilt, zoom = self.ptz.get_position()
@@ -79,41 +88,41 @@ class Joystick(Controller):
 
     def ready_for_next(self):
         # checks timeout time to send new command
-        return (time.time() - self.t > self.timeout)
+        return time.time() - self.t > self.timeout
 
     # Arrow Buttons - step pan/tilt
     # TODO: scale fine movement by zoom amount
     def on_left_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                self.send_command(self.X_DELTA_FINE * self._pan_ratio(), 0, 0)
+                self.send_command(X_DELTA_FINE * self._pan_ratio(), 0, 0)
             else:
-                self.send_command(self.X_DELTA * self._pan_ratio(), 0, 0)
+                self.send_command(X_DELTA * self._pan_ratio(), 0, 0)
             self.t = time.time()
 
     def on_right_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                self.send_command(-self.X_DELTA_FINE * self._pan_ratio(), 0, 0)
+                self.send_command(-X_DELTA_FINE * self._pan_ratio(), 0, 0)
             else:
-                self.send_command(-self.X_DELTA * self._pan_ratio(), 0, 0)
+                self.send_command(-X_DELTA * self._pan_ratio(), 0, 0)
             self.t = time.time()
 
     def on_up_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                self.send_command(0, -self.Y_DELTA_FINE, 0)
+                self.send_command(0, -Y_DELTA_FINE, 0)
             else:
-                self.send_command(0, -self.Y_DELTA, 0)
+                self.send_command(0, -Y_DELTA, 0)
             self.t = time.time()
 
     def on_down_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
-                self.send_command(0, self.Y_DELTA_FINE, 0)
+                self.send_command(0, Y_DELTA_FINE, 0)
                 self.t = time.time()
             else:
-                self.send_command(0, self.Y_DELTA, 0)
+                self.send_command(0, Y_DELTA, 0)
                 self.t = time.time()
 
     def on_left_right_arrow_release(self):
@@ -155,7 +164,7 @@ class Joystick(Controller):
 
     def on_R3_y_at_rest(self):
         pass
-    
+
     def on_R3_x_at_rest(self):
         pass
 
@@ -179,7 +188,7 @@ class Joystick(Controller):
             if self.toggleOn:
                 self.ptz.zoom_in_full()
             else:
-                self.send_command(0, 0, self.Z_DELTA)
+                self.send_command(0, 0, Z_DELTA)
             self.t = time.time()
 
     def on_triangle_release(self):
@@ -201,7 +210,7 @@ class Joystick(Controller):
             if self.toggleOn:
                 self.ptz.zoom_out_full()
             else:
-                self.send_command(0, 0, -self.Z_DELTA)
+                self.send_command(0, 0, -Z_DELTA)
             self.t = time.time()
 
     def on_x_release(self):
@@ -224,13 +233,6 @@ class Joystick(Controller):
             elif command >= maxx:
                 command = minn - maxx + command
             return command
-        INFINITE_PAN = True
-        CAM_PAN_MAX = 1.0
-        CAM_PAN_MIN = -1.0
-        CAM_TILT_MAX = 1.0
-        CAM_TILT_MIN = -1.0
-        CAM_ZOOM_MAX = 1.0
-        CAM_ZOOM_MIN = 0
 
         if INFINITE_PAN:
             cmds['pan'] = wrap_pan(cmds['pan'], CAM_PAN_MIN, CAM_PAN_MAX)
