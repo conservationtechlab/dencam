@@ -12,11 +12,12 @@ import multiprocessing as mp
 
 import cv2
 # TODO: i think we should consider *not* using ptzipcam.camera.Camera
-# We should consider just using a cv2.VideoCapture object directly or
-# maybe even ffmpeg directly via subprocess. We do not need so many
-# layers, especially given ptzipcam.camera.Camera has its own thread
-# and a very thin amount of wrapping around cv2.VideoCapture.
-# Although, also might be worth considering adding a lightweight
+# We should consider just using a cv2.VideoCapture object directly for
+# the display. We now use ffmpeg directly via subprocess for the
+# recording. We do not need so many layers, even for the display,
+# especially given ptzipcam.camera.Camera has its own thread and a
+# very thin amount of wrapping around cv2.VideoCapture.  Although,
+# also might be worth considering adding a lightweight
 # ptzipcam.camera.LightweightCamera that still encapsulates all the
 # ptz-ish setup stuff in that package but doesn't run its own camera
 # checking thread.
@@ -81,7 +82,7 @@ class MimirCamera:
             ptz_controller.run_joystick()
 
         ptz_controller.release_joystick()
-            
+
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
                      user=configs['CAMERA_USER'],
@@ -95,7 +96,7 @@ class MimirCamera:
                               cv2.WINDOW_FULLSCREEN)
         cv2.moveWindow(WINDOW_NAME, 0, -30)
         cv2.resizeWindow(WINDOW_NAME, 320, 240)
-        
+
         while not event.is_set():
             frame = cam.get_frame()
             if frame is not None:
@@ -119,12 +120,14 @@ class MimirCamera:
         """
         self.stop_display_event.clear()
         display_worker = mp.Process(target=self._display,
-                                    args=(self.configs, self.stop_display_event))
+                                    args=(self.configs,
+                                          self.stop_display_event))
         display_worker.start()
 
         self.stop_joystick_event.clear()
         joystick_worker = mp.Process(target=self._joystick,
-                            args=(self.configs, self.stop_joystick_event))
+                                     args=(self.configs,
+                                           self.stop_joystick_event))
         joystick_worker.start()
 
     def stop_preview(self):
@@ -164,9 +167,9 @@ class MimirCamera:
         # TODO: not using frame rotation config to re-orient the frame
         # anymore since switch to ffmpeg
 
-        camip = configs['CAMERA_IP'],
-        usr = configs['CAMERA_USER'],
-        passw = configs['CAMERA_PASS'],
+        camip = configs['CAMERA_IP']
+        usr = configs['CAMERA_USER']
+        passw = configs['CAMERA_PASS']
         stream = configs['CAMERA_STREAM']
 
         url = f"rtsp://{usr}:{passw}@{camip}:554/Streaming/Channels/10{stream}"
@@ -234,4 +237,7 @@ class PTZRecorder(Recorder):
         super().finish_setup()
 
     def release(self):
+        """Release the MimirCamera object
+
+        """
         self.camera.release()
