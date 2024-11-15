@@ -78,7 +78,9 @@ class MimirCamera:
         ptz_controller = PTZController(configs)
         while not event.is_set():
             ptz_controller.run_joystick()
-    
+
+        ptz_controller.release_joystick()
+            
     def _display(self, configs, event):
         cam = Camera(ip=configs['CAMERA_IP'],
                      user=configs['CAMERA_USER'],
