@@ -122,27 +122,26 @@ script will do the following:
 
 ## Set up environment activation
 
-'''
-echo -e "\n# Virtual environment setup" >> ~/.bashrc 
-echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc 
-echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc 
-echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc 
-source ~/.bashrc 
-'''
+    echo -e "\n# Virtual environment setup" >> ~/.bashrc 
+    echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc 
+    echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc 
+    echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc 
+    source ~/.bashrc 
+
 ## Create environment
-'''
-mkvirtualenv dencam -p python3 --system-site-packages 
-workon dencam
-'''
+
+    mkvirtualenv dencam -p python3 --system-site-packages 
+    workon dencam
+
 ## Install screen tools
-'''
-cd ~ 
-sudo apt-get update 
-sudo apt-get install -y git python3-pip 
-pip3 install --upgrade adafruit-python-shell click 
-git clone https://github.com/adafruit/Raspberry-Pi-Installer-Scripts.git 
-cd Raspberry-Pi-Installer-Scripts
-'''
+
+    cd ~ 
+    sudo apt-get update 
+    sudo apt-get install -y git python3-pip 
+    pip3 install --upgrade adafruit-python-shell click 
+    git clone https://github.com/adafruit/Raspberry-Pi-Installer-Scripts.git 
+    cd Raspberry-Pi-Installer-Scripts
+
 ## Configure Screen
 
     sudo -E env PATH=$PATH python3 adafruit-pitft.py --display=28r --rotation=270 --install-type=mirror 
