@@ -193,7 +193,7 @@ To run lesehest:
 
     python lesehest.py cfgs/example_config.yaml 
 
-## Common issues
+## Possible bugs and how to fix
 ### Screen is flipped 180* from button imagery to actual buttons
 
     sudo nano /boot/firmware/config.txt
@@ -205,7 +205,14 @@ Rerun lesehest and the screen should be in the correct orientation.
 
     nano /home/USER/dencam/dencam/gui.py
 
-Change line 44 from 'self.placement_config = BookwormConfig()' to 'self.placement_config = BusterConfig()' Cntrl + X, Y, enter. Rerun lesehest and the pixels should be aligned properly. 
+Change line 44 from 'self.placement_config = BookwormConfig()' to 'self.placement_config = BusterConfig()' Cntrl + X, Y, enter.
+
+    nano /home/USER/dencam/dencam/recorder_picamera2.py
+
+Change line 23 from (320, 240) to (640, 480)
+Change line 36 from width=320 -> width=640 and line 37 from height=240 -> height=480. Cntrl + X, Y, enter. 
+
+Rerun lesehest and the pixels should be aligned properly. 
 
 # Usage
 
