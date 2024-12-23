@@ -148,6 +148,16 @@ script will do the following:
 
 You will be prompted to reboot after this step, say yes and wait for the device to turn back on. You will see the desktop on the PiTFT screen now.
 
+## Disable taskbar
+
+    nano ~/.config/lxpanel/LXDE-pi/panels/panel
+
+In the global configs, line 14 sets 'autohide=0' set it to autohide=1 instead. Cntrl + X, Y, enter. 
+
+    lxpanelctl restart
+
+The taskbar on the screen should now be hidden.
+
 ## Downloading the repo
 If you would like to download the most stable version, simply run:
 
