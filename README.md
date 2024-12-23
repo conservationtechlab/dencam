@@ -172,6 +172,31 @@ Copy the entire output and paste it into 'SSH and GPG keys" in your github setti
 
     pip install .
 
+## Usage 
+Change the config setting SOLAR_DIR: to reflect the username of the pi you are using. While you are sshed in, always run:
+
+    export DISPLAY=:0
+    workon dencam
+    cd dencam
+    
+To run lesehest:
+
+    python lesehest.py cfgs/example_config.yaml 
+
+## Common issues
+### Screen is flipped 180* from button imagery to actual buttons
+
+    sudo nano /boot/firmware/config.txt
+
+On the last line, you will see a value of 'rotation=90' or 'rotation=270'. Depending which one you see, swap it with the other. If it says 'rotation=90' change it to 'rotation=270' and save the file. Cntrl + X, Y, enter. Reboot the pi.
+Rerun lesehest and the screen should be in the correct orientation.
+
+### Screen gui has things out of placed, smooshed, blocking, and buttons are in the center of the screen
+
+    nano /home/USER/dencam/dencam/gui.py
+
+Change line 44 from 'self.placement_config = BookwormConfig()' to 'self.placement_config = BusterConfig()' Cntrl + X, Y, enter. Rerun lesehest and the pixels should be aligned properly. 
+
 # Usage
 
 ## On Raspberry Pi 
