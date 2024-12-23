@@ -29,11 +29,14 @@ been encountered with Bullseye (specifically with interfacing with the
 picamera). Buster must be 32 bit and not 64 bit otherwise there is an issue
 with the libmmal.so library
 
-# Install from PyPI
+# Installation
+## Fenrir
+
+## Install from PyPI
 
     pip3 install dencam
 
-# Install from GitHub repository
+## Install from GitHub repository
 
 ## Install virtualenvwrapper
 
@@ -110,6 +113,65 @@ script will do the following:
 
 * Disable screen saver
 * Setup PiTFT screen
+
+## Lesehest
+
+## Install environment libraries
+
+    sudo apt install python3-virtualenv python3-virtualenvwrapper
+
+## Set up environment activation
+
+'''
+echo -e "\n# Virtual environment setup" >> ~/.bashrc 
+echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc 
+echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc 
+echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc 
+source ~/.bashrc 
+'''
+## Create environment
+'''
+mkvirtualenv dencam -p python3 --system-site-packages 
+workon dencam
+'''
+## Install screen tools
+'''
+cd ~ 
+sudo apt-get update 
+sudo apt-get install -y git python3-pip 
+pip3 install --upgrade adafruit-python-shell click 
+git clone https://github.com/adafruit/Raspberry-Pi-Installer-Scripts.git 
+cd Raspberry-Pi-Installer-Scripts
+'''
+## Configure Screen
+
+    sudo -E env PATH=$PATH python3 adafruit-pitft.py --display=28r --rotation=270 --install-type=mirror 
+
+You will be prompted to reboot after this step, say yes and wait for the device to turn back on. You will see the desktop on the PiTFT screen now.
+
+## Downloading the repo
+If you would like to download the most stable version, simply run:
+
+    workon dencam
+    git clone https://github.com/conservationtechlab/dencam.git
+
+If you would like to download the dev repo, where you can make changes and quickly update new changes, first link this pi to your github account by creating an SSH key and sharing it with your github settings, run:
+
+    ssh-keygen -t ed25519 -C "your_email@example.com"
+
+Press enter for all the prompts until its finished, then run:
+
+    cat ~/.ssh/id_ed25519.pub 
+
+Copy the entire output and paste it into 'SSH and GPG keys" in your github settings. Label it as the hostname of your pi. Then run:
+
+    git clone git@github.com:conservationtechlab/dencam.git 
+
+## Finish installation
+
+    cd dencam
+
+    pip install .
 
 # Usage
 
