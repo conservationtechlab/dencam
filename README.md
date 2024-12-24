@@ -115,6 +115,7 @@ script will do the following:
 * Setup PiTFT screen
 
 ## Lesehest
+Ensure you have Bookworm 64-bit and are sshed into the pi from your computer.
 
 ## Install environment libraries
 
