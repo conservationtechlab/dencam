@@ -134,6 +134,14 @@ Ensure you have Bookworm 64-bit and are sshed into the pi from your computer.
     mkvirtualenv dencam -p python3 --system-site-packages 
     workon dencam
 
+## Disable screen blanking/screensaver
+
+    sudo tee -a /etc/xdg/lxsession/LXDE-pi/autostart > /dev/null << EOF
+    @xset s off
+    @xset -dpms
+    @xset s noblank
+    EOF
+
 ## Install screen tools
 
     cd ~ 
