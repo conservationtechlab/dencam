@@ -81,14 +81,9 @@ class BaseRecorder(ABC):
 
         """
         if not self.zoom_on:
-            width, _ = self.camera.resolution
-            # zoom_factor = 1/float(ZOOM_FACTOR)
-            zoom_factor = self.configs['DISPLAY_RESOLUTION'][0]/width
-            left = 0.5 - zoom_factor/2.
-            top = 0.5 - zoom_factor/2.
-            self.camera.zoom = (left, top, zoom_factor, zoom_factor)
+            self.camera.toggle_zoom(self.zoom_on)
         else:
-            self.camera.zoom = (0, 0, 1.0, 1.0)
+            self.camera.toggle_zoom(self.zoom_on)
         self.zoom_on = not self.zoom_on
 
     def toggle_recording(self):

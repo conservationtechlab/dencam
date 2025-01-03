@@ -4,6 +4,7 @@
 import logging
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2, Preview
+from libcamera import controls
 
 from dencam.recorder import Recorder
 
@@ -20,11 +21,12 @@ class Picam2:
 
         self.camera = Picamera2()
         self.camera.preview_configuration.enable_lores()
-        self.camera.preview_configuration.lores.size = (320, 240)
+        self.camera.preview_configuration.lores.size = (640, 480)
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
-
+        metadata = self.camera.capture_metadata()
+        print("metadata: " + str(metadata))
     def start_preview(self):
         """Stop null preview, start QT preview and log
 
@@ -32,9 +34,9 @@ class Picam2:
         self.camera.stop_preview()
         self.camera.start_preview(Preview.QT,
                                   x=-4,
-                                  y=-25,
-                                  width=324,
-                                  height=245)
+                                  y=-30,
+                                  width=640,
+                                  height=480)
         log.info('Started Preview')
 
     def stop_preview(self):
@@ -59,6 +61,33 @@ class Picam2:
         """
         self.camera.stop_recording()
         log.info('Stopped Recording"')
+
+    def toggle_zoom(self, zoom_on):
+        """Toggle zoom
+
+        """
+        if not zoom_on:
+            size = self.camera.capture_metadata()['ScalerCrop'][2:]
+
+            full_res = self.camera.camera_properties['PixelArraySize']
+
+            for _ in range(20):
+                self.camera.capture_metadata()
+
+                size = [int(s * 0.95) for s in size]
+                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
+                self.camera.set_controls({"ScalerCrop": offset + size})
+        else:
+            size = self.camera.capture_metadata()['ScalerCrop'][2:]
+            full_res = self.camera.camera_properties['PixelArraySize']
+
+            for _ in range(20):
+                self.camera.capture_metadata()
+                size = [int(s * 1.05) for s in size]
+                size = [min(s, r) for s, r in zip(size, full_res)]
+                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
+                self.camera.set_controls({"ScalerCrop": offset + size})
+            self.camera.set_controls({"ScalerCrop": [0, 0] + list(full_res)})
 
 
 class Picamera2Recorder(Recorder):
