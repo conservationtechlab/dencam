@@ -26,3 +26,16 @@ class PicameraRecorder(Recorder):
         self.camera.annotate_background = picamera.color.Color('black')
 
         super().finish_setup()
+
+    def toggle_zoom(self, zoom_on):
+        """Toggle zoom in and out
+
+        """
+        if not zoom_on:
+            width, _ = self.camera.resolution
+            zoom_factor = self.configs['DISPLAY_RESOLUTION'][0]/width
+            left = 0.5 - zoom_factor/2.
+            top = 0.5 - zoom_factor/2.
+            self.camera.zoom = (left, top, zoom_factor, zoom_factor)
+        else:
+            self.camera.zoom = (0, 0, 1.0, 1.0)
