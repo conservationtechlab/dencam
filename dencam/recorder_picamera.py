@@ -27,7 +27,7 @@ class PicameraRecorder(Recorder):
 
         super().finish_setup()
 
-    def toggle_zoom(self, zoom_on):
+    def toggle_zoom(self, zoom_on, zoom_factor):
         """Toggle zoom in and out
 
         """

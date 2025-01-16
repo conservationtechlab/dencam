@@ -4,7 +4,6 @@
 import logging
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2, Preview
-from libcamera import controls
 
 from dencam.recorder import Recorder
 
@@ -27,6 +26,7 @@ class Picam2:
         self.camera.start()
         metadata = self.camera.capture_metadata()
         print("metadata: " + str(metadata))
+
     def start_preview(self):
         """Stop null preview, start QT preview and log
 
@@ -62,7 +62,7 @@ class Picam2:
         self.camera.stop_recording()
         log.info('Stopped Recording"')
 
-    def toggle_zoom(self, zoom_on):
+    def toggle_zoom(self, zoom_on, zoom_factor):
         """Toggle zoom
 
         """
@@ -71,7 +71,7 @@ class Picam2:
 
             full_res = self.camera.camera_properties['PixelArraySize']
 
-            for _ in range(20):
+            for _ in range(zoom_factor):
                 self.camera.capture_metadata()
 
                 size = [int(s * 0.95) for s in size]
@@ -81,7 +81,7 @@ class Picam2:
             size = self.camera.capture_metadata()['ScalerCrop'][2:]
             full_res = self.camera.camera_properties['PixelArraySize']
 
-            for _ in range(20):
+            for _ in range(zoom_factor):
                 self.camera.capture_metadata()
                 size = [int(s * 1.05) for s in size]
                 size = [min(s, r) for s, r in zip(size, full_res)]
