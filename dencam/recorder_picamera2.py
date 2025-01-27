@@ -62,33 +62,6 @@ class Picam2:
         self.camera.stop_recording()
         log.info('Stopped Recording"')
 
-    def zoom_toggle(self, zoom_on):
-        """Toggle zoom
-
-        """
-        if not zoom_on:
-            size = self.camera.capture_metadata()['ScalerCrop'][2:]
-
-            full_res = self.camera.camera_properties['PixelArraySize']
-
-            for _ in range(25):
-                self.camera.capture_metadata()
-
-                size = [int(s * 0.95) for s in size]
-                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
-                self.camera.set_controls({"ScalerCrop": offset + size})
-        else:
-            size = self.camera.capture_metadata()['ScalerCrop'][2:]
-            full_res = self.camera.camera_properties['PixelArraySize']
-
-            for _ in range(25):
-                self.camera.capture_metadata()
-                size = [int(s * 1.05) for s in size]
-                size = [min(s, r) for s, r in zip(size, full_res)]
-                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
-                self.camera.set_controls({"ScalerCrop": offset + size})
-            self.camera.set_controls({"ScalerCrop": [0, 0] + list(full_res)})
-
 
 class Picamera2Recorder(Recorder):
     """Recorder that uses picamera2
@@ -101,3 +74,31 @@ class Picamera2Recorder(Recorder):
         self.configs = configs
 
         super().finish_setup()
+
+
+    def zoom_toggle(self, zoom_on):
+        """Toggle zoom
+
+        """
+        if not zoom_on:
+            size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
+
+            full_res = self.camera.camera.camera_properties['PixelArraySize']
+
+            for _ in range(25):
+                self.camera.camera.capture_metadata()
+
+                size = [int(s * 0.95) for s in size]
+                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
+                self.camera.camera.set_controls({"ScalerCrop": offset + size})
+        else:
+            size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
+            full_res = self.camera.camera.camera_properties['PixelArraySize']
+
+            for _ in range(25):
+                self.camera.camera.capture_metadata()
+                size = [int(s * 1.05) for s in size]
+                size = [min(s, r) for s, r in zip(size, full_res)]
+                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
+                self.camera.camera.set_controls({"ScalerCrop": offset + size})
+            self.camera.camera.set_controls({"ScalerCrop": [0, 0] + list(full_res)})
