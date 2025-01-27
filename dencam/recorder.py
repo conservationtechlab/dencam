@@ -48,7 +48,6 @@ class BaseRecorder(ABC):
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
-        self.zoom_factor = configs['ZOOM_FACTOR']
 
     def finish_setup(self):
         """Complete set up in derived class constructurs
@@ -83,9 +82,9 @@ class BaseRecorder(ABC):
 
         """
         if not self.zoom_on:
-            self.camera.toggle_zoom(self.zoom_on, self.zoom_factor)
+            self.zoom_toggle(self.zoom_on)
         else:
-            self.camera.toggle_zoom(self.zoom_on, self.zoom_factor)
+            self.zoom_toggle(self.zoom_on)
         self.zoom_on = not self.zoom_on
 
     def toggle_recording(self):

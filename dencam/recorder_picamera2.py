@@ -62,7 +62,7 @@ class Picam2:
         self.camera.stop_recording()
         log.info('Stopped Recording"')
 
-    def toggle_zoom(self, zoom_on, zoom_factor):
+    def zoom_toggle(self, zoom_on):
         """Toggle zoom
 
         """
@@ -71,7 +71,7 @@ class Picam2:
 
             full_res = self.camera.camera_properties['PixelArraySize']
 
-            for _ in range(zoom_factor):
+            for _ in range(25):
                 self.camera.capture_metadata()
 
                 size = [int(s * 0.95) for s in size]
@@ -81,7 +81,7 @@ class Picam2:
             size = self.camera.capture_metadata()['ScalerCrop'][2:]
             full_res = self.camera.camera_properties['PixelArraySize']
 
-            for _ in range(zoom_factor):
+            for _ in range(25):
                 self.camera.capture_metadata()
                 size = [int(s * 1.05) for s in size]
                 size = [min(s, r) for s, r in zip(size, full_res)]
