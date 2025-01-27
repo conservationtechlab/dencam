@@ -19,8 +19,6 @@ class Picam2:
         self.encoder = H264Encoder()
 
         self.camera = Picamera2()
-        self.camera.preview_configuration.enable_lores()
-        self.camera.preview_configuration.lores.size = (640, 480)
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
@@ -51,6 +49,7 @@ class Picam2:
         """Start recording and log
 
         """
+        # pylint: disable=unused-argument
         self.camera.start_recording(self.encoder, filename)
         log_message = 'Started Recording: ' + str(filename)
         log.info(log_message)
@@ -74,7 +73,6 @@ class Picamera2Recorder(Recorder):
         self.configs = configs
 
         super().finish_setup()
-
 
     def zoom_toggle(self, zoom_on):
         """Toggle zoom
@@ -101,4 +99,5 @@ class Picamera2Recorder(Recorder):
                 size = [min(s, r) for s, r in zip(size, full_res)]
                 offset = [(r - s) // 2 for r, s in zip(full_res, size)]
                 self.camera.camera.set_controls({"ScalerCrop": offset + size})
-            self.camera.camera.set_controls({"ScalerCrop": [0, 0] + list(full_res)})
+            self.camera.camera.set_controls(
+                {"ScalerCrop": [0, 0] + list(full_res)})
