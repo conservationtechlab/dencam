@@ -367,6 +367,40 @@ When date reads correctly run
     sudo hwclock -w
     sudo hwclock -r
     sudo reboot
+## Setting up Systemd Services
+
+Dencam (Cyclops ONLY) uses a systemd service to turn on/off the PTZ 
+camera based on time of day. The camera is turned on for daytime and 
+astronomical twilight and turned off during nighttime. This script is
+is located at `dencam/utilities/camera_relay.py.`
+
+To set up this script to run as a systemd service, navigate to: 
+
+    cd /etc/systemd/system
+
+Create a new file: 
+
+    sudo nano camera_relay.service
+
+Insert the following: 
+
+    [Unit]
+    Description=Camera Relay
+
+    [Service]
+    Type=exec
+    ExecStart=/home/<User>/.virtualenvs/dencam/bin/python3 -u /home/<User>/dencam/utilities/camera_relay.py
+
+    [Install]
+    Wantedby=multi-user.target
+
+After saving the file, run:
+
+    sudo systemctl start camera_relay.service
+
+If the service needs to be stopped, run:
+
+    sudo systemctl stop camera_relay.service
 
 # Dencam Pages
 
