@@ -31,7 +31,7 @@ class Picam2:
         """
         self.camera.stop_preview()
         self.camera.start_preview(Preview.QT,
-                                  x=-4,
+                                  x=0,
                                   y=-30,
                                   width=640,
                                   height=480)
