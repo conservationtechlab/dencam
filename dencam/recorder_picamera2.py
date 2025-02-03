@@ -18,6 +18,7 @@ class Picam2:
         self.configs = configs
         self.encoder = H264Encoder()
 
+
         self.camera = Picamera2()
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
@@ -33,8 +34,8 @@ class Picam2:
         self.camera.start_preview(Preview.QT,
                                   x=0,
                                   y=-30,
-                                  width=640,
-                                  height=480)
+                                  width=320,
+                                  height=240)
         log.info('Started Preview')
 
     def stop_preview(self):
