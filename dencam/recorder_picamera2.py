@@ -18,7 +18,6 @@ class Picam2:
         self.configs = configs
         self.encoder = H264Encoder()
 
-
         self.camera = Picamera2()
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
@@ -79,26 +78,24 @@ class Picamera2Recorder(Recorder):
         """Toggle zoom
 
         """
-        if not zoom_on:
-            size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
+        num_crop_steps = 25
 
-            full_res = self.camera.camera.camera_properties['PixelArraySize']
+        size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
+        full_res = self.camera.camera.camera_properties['PixelArraySize']
 
-            for _ in range(25):
-                self.camera.camera.capture_metadata()
+        for _ in range(num_crop_steps):
+            self.camera.camera.capture_metadata()
 
+            if not zoom_on:
                 size = [int(s * 0.95) for s in size]
-                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
-                self.camera.camera.set_controls({"ScalerCrop": offset + size})
-        else:
-            size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
-            full_res = self.camera.camera.camera_properties['PixelArraySize']
-
-            for _ in range(25):
-                self.camera.camera.capture_metadata()
+            else:
                 size = [int(s * 1.05) for s in size]
                 size = [min(s, r) for s, r in zip(size, full_res)]
-                offset = [(r - s) // 2 for r, s in zip(full_res, size)]
-                self.camera.camera.set_controls({"ScalerCrop": offset + size})
-            self.camera.camera.set_controls(
-                {"ScalerCrop": [0, 0] + list(full_res)})
+
+            offset = [(r - s) // 2 for r, s in zip(full_res, size)]
+            self.camera.camera.set_controls({"ScalerCrop": offset + size})
+
+        # make sure is fully zoomed out
+        if zoom_on:
+            bot_right = list(full_res)
+            self.camera.camera.set_controls({"ScalerCrop": [0, 0] + bot_right})
