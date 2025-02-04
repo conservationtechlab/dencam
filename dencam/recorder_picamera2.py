@@ -74,7 +74,7 @@ class Picamera2Recorder(Recorder):
 
         super().finish_setup()
 
-    def zoom_toggle(self, zoom_on):
+    def toggle_zoom(self):
         """Toggle zoom
 
         """
@@ -86,7 +86,7 @@ class Picamera2Recorder(Recorder):
         for _ in range(num_crop_steps):
             self.camera.camera.capture_metadata()
 
-            if not zoom_on:
+            if not self.zoom_on:
                 size = [int(s * 0.95) for s in size]
             else:
                 size = [int(s * 1.05) for s in size]
@@ -96,6 +96,8 @@ class Picamera2Recorder(Recorder):
             self.camera.camera.set_controls({"ScalerCrop": offset + size})
 
         # make sure is fully zoomed out
-        if zoom_on:
+        if self.zoom_on:
             bot_right = list(full_res)
             self.camera.camera.set_controls({"ScalerCrop": [0, 0] + bot_right})
+
+        self.zoom_on = not self.zoom_on
