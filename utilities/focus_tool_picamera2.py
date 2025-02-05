@@ -134,7 +134,11 @@ if __name__ == "__main__":
         camera_config = camera.create_preview_configuration({'size': resolution})
         camera.configure(camera_config)
         camera.set_controls({'FrameRate': 30})
-        camera.start_preview(Preview.QT)
+        camera.start_preview(Preview.QT,
+                             x=0,
+                             y=-30,
+                             width=320,
+                             height=240)
         camera.start()
 
         while True:
