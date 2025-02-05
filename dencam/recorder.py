@@ -48,13 +48,6 @@ class BaseRecorder(ABC):
         self.last_known_video_path = None
         self.video_path = self._video_path_selector()
 
-    @abstractmethod
-    def zoom_toggle(self, zoom_on):
-        """Abstract method: used by derived classes to toggle zoom.
-
-        """
-        return
-
     def finish_setup(self):
         """Complete set up in derived class constructurs
 
@@ -87,7 +80,15 @@ class BaseRecorder(ABC):
         video during deployment to aid in focusing the lens.
 
         """
-        self.zoom_toggle(self.zoom_on)
+        if not self.zoom_on:
+            width, _ = self.camera.resolution
+            # zoom_factor = 1/float(ZOOM_FACTOR)
+            zoom_factor = self.configs['DISPLAY_RESOLUTION'][0]/width
+            left = 0.5 - zoom_factor/2.
+            top = 0.5 - zoom_factor/2.
+            self.camera.zoom = (left, top, zoom_factor, zoom_factor)
+        else:
+            self.camera.zoom = (0, 0, 1.0, 1.0)
         self.zoom_on = not self.zoom_on
 
     def toggle_recording(self):
