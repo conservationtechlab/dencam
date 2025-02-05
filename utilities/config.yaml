@@ -1,4 +1,4 @@
 grid_size: 5         # Adjust this to change the grid size; choose an odd number to ensure the middle part has a full grid. 
 threshold: 150       # Sets the color change threshold for the grid. (currently disable)
 text_size: 50        # Adjusts the size of the displayed text.
-text_alpha: 50       # Adjusts the text transparency level [0-255], with smaller values indicating higher transparency.
+text_alpha: 128       # Adjusts the text transparency level [0-255], with smaller values indicating higher transparency.
