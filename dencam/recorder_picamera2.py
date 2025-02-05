@@ -23,7 +23,6 @@ class Picam2:
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
         metadata = self.camera.capture_metadata()
-        print("metadata: " + str(metadata))
 
     def start_preview(self):
         """Stop null preview, start QT preview and log
