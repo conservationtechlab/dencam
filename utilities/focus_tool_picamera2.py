@@ -92,7 +92,7 @@ def update_frame(camera, overlay, grid_size, threshold,
             x2_pos, y2_pos = x1_pos + block_width, y1_pos + block_height # bottom right corner
 
             color = (0, 0, 0)  # Change as needed for visible text
-            draw.rectangle([x1_pos, y1_pos, x2_pos, y2_pos], outline=color + (255,), width=1)
+            draw.rectangle([x1_pos, y1_pos, x2_pos - 1, y2_pos - 1], outline=color + (255,), width=1)
 
             text = f"{avg_variance}"
 
