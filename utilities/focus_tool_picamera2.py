@@ -43,7 +43,7 @@ def detect_blur(image_array):
     laplacian_result = laplace(image_array)
     return laplacian_result.var()
 
-
+ 
 def update_frame(camera, overlay, grid_size, threshold,
                  history_buffer, text_size, text_alpha):
     """
@@ -78,8 +78,6 @@ def update_frame(camera, overlay, grid_size, threshold,
         for j in range(grid_size):
             gray_array = np.array(gray_image)
             block = gray_array[i*block_height:(i+1)*block_height,
-                                    j*block_width:((j+1)*block_width)-1]
-            color_block = image_array[i*block_height:(i+1)*block_height,
                                     j*block_width:((j+1)*block_width)-1]
 
             variance = detect_blur(block)
