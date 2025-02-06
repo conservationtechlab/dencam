@@ -19,11 +19,10 @@ class Picam2:
         self.encoder = H264Encoder()
 
         self.camera = Picamera2()
-        self.camera.preview_configuration.enable_lores()
-        self.camera.preview_configuration.lores.size = (320, 240)
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
+        metadata = self.camera.capture_metadata()
 
     def start_preview(self):
         """Stop null preview, start QT preview and log
@@ -31,10 +30,10 @@ class Picam2:
         """
         self.camera.stop_preview()
         self.camera.start_preview(Preview.QT,
-                                  x=-4,
-                                  y=-25,
-                                  width=324,
-                                  height=245)
+                                  x=0,
+                                  y=-30,
+                                  width=320,
+                                  height=240)
         log.info('Started Preview')
 
     def stop_preview(self):
@@ -49,6 +48,7 @@ class Picam2:
         """Start recording and log
 
         """
+        # pylint: disable=unused-argument
         self.camera.start_recording(self.encoder, filename)
         log_message = 'Started Recording: ' + str(filename)
         log.info(log_message)
@@ -72,3 +72,31 @@ class Picamera2Recorder(Recorder):
         self.configs = configs
 
         super().finish_setup()
+
+    def toggle_zoom(self):
+        """Toggle zoom
+
+        """
+        num_crop_steps = 25
+
+        size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
+        full_res = self.camera.camera.camera_properties['PixelArraySize']
+
+        for _ in range(num_crop_steps):
+            self.camera.camera.capture_metadata()
+
+            if not self.zoom_on:
+                size = [int(s * 0.95) for s in size]
+            else:
+                size = [int(s * 1.05) for s in size]
+                size = [min(s, r) for s, r in zip(size, full_res)]
+
+            offset = [(r - s) // 2 for r, s in zip(full_res, size)]
+            self.camera.camera.set_controls({"ScalerCrop": offset + size})
+
+        # make sure is fully zoomed out
+        if self.zoom_on:
+            bot_right = list(full_res)
+            self.camera.camera.set_controls({"ScalerCrop": [0, 0] + bot_right})
+
+        self.zoom_on = not self.zoom_on
