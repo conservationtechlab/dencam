@@ -2,11 +2,11 @@
 
 """
 import logging
+import time
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2, Preview, MappedArray
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-import time
 
 from dencam.recorder import Recorder
 
@@ -25,7 +25,6 @@ class Picam2:
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
-        metadata = self.camera.capture_metadata()
 
     def start_preview(self):
         """Stop null preview, start QT preview and log
@@ -79,37 +78,57 @@ class Picamera2Recorder(Recorder):
         self.camera.camera.pre_callback = self._pre_callback_wrapper
 
     def _pre_callback_wrapper(self, request):
-        """ Wrapper function to call update_timestamp without needing to pass request
+        """ Wrapper function to call update_timestamp
+
+        Goal is to not need to change recorder.py, which doesn't
+        call the update_timestamp request with any parameters.
+
         """
         self.timestamp(request)
 
     def timestamp(self, request):
-        font_size = 35
+        """Update timestamp on video and preview
+
+        This method relies on the .pre_callback method
+        from picamera2 docs, which applies the overlay onto
+        all screens. This means the preview contains the same
+        overlay. The entire implementation would need to change
+        if only one stream was to have an overlay.
+
+        """
+        font_size = 30
         text_color = (255, 255, 255)
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+        font = ImageFont.truetype(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            font_size
+        )
         bg_color = (0, 0, 0)
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
-        with MappedArray(request, "main") as m:
-            image = Image.fromarray(m.array)
+        with MappedArray(request, "main") as streams:
+            image = Image.fromarray(streams.array)
             draw = ImageDraw.Draw(image)
 
             bbox = draw.textbbox((0, 0), timestamp, font=font)
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
 
-            img_width, img_height = image.size
+            padding = 10
+            img_width, _ = image.size
             text_x = (img_width - text_width) // 2
             text_y = 10
 
             draw.rectangle(
-                [text_x, text_y, text_x + text_width, text_y + text_height],
+                [text_x - padding // 2,
+                 text_y,
+                 text_x + text_width + padding // 2,
+                 text_y + text_height + padding],
                 fill=bg_color
             )
 
             draw.text((text_x, text_y), timestamp, fill=text_color, font=font)
 
-            m.array[:] = np.array(image)
+            streams.array[:] = np.array(image)
 
     def toggle_zoom(self):
         """Toggle zoom
