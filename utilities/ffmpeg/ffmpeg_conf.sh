@@ -24,3 +24,7 @@ video_output_framerate=15
 # move variables into script flags
 # which pass-through to ffmpeg command
 # -r = frame rate
+
+# add flag to force overwrite
+# for cases where previous conversion failed
+# but now a .mp4 file already exists

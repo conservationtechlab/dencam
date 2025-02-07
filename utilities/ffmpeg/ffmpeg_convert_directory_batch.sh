@@ -8,7 +8,6 @@
 ##
 ## Dependencies:
 ## *	[ffmpeg](https://www.ffmpeg.org/)
-## *	ffmpeg_convert_file.sh
 ##
 ## For a single batch from the command line:
 ## >    ffmpeg_convert_directory_batch.sh --dry-run -d /path/to/video/folder/YYYY-MM-DD/
@@ -29,9 +28,6 @@ video_output_framerate=25
 
 # load any settings unique to this machine
 source=ffmpeg_conf.sh
-
-# find script files beside this one
-ffmpeg_convert_file_script="$(dirname "$0")/ffmpeg_convert_file.sh"
 
 
 # Display script usage
@@ -142,28 +138,40 @@ fi
 ## ================
 ## CONVERT EACH FILE
 
-for filepath in $(find "${directory}" -type f -name "*.h264");
+for source_filepath in $(find "${directory}" -type f -name "*.h264");
 do
 
+	# Check that file exists
+	if [ ! -f "$source_filepath" ]
+	then
+		echo "This does not appear to be a file:"
+		echo ">   $source_filepath"
+		exit 1
+	fi
+
 	# extract names
-	f_dirname=$(dirname -- "$filepath")
-	f_basename=$(basename -- "$filepath")
-	f_shortname="${f_basename%.*}"
-	#f_extension="${f_basename##*.}"
+	source_dirname=$(dirname -- "$source_filepath")
+	source_basename=$(basename -- "$source_filepath")
+	source_shortname="${source_basename%.*}"
+	#source_extension="${source_basename##*.}"
 	
+	# form destination filepath
+	destination_filepath="${source_dirname}/${source_shortname}.mp4"
+
+
 	if( "$dryrun_mode" = true) then
 		echo "Data processing review:"
 		echo "    filepath    = ${filepath}"
-		echo "    f_dirname   = ${f_dirname}"
-		echo "    f_basename  = ${f_basename}"
-		echo "    f_shortname = ${f_shortname}"
-		#echo "    f_extension = ${f_extension}"
+		echo "    source_dirname   = ${source_dirname}"
+		echo "    source_basename  = ${source_basename}"
+		echo "    source_shortname = ${source_shortname}"
+		#echo "    source_extension = ${source_extension}"
 	fi
 
 	# if a matching mp4 already exists then skip file
-	if [ -f "${f_dirname}/${f_shortname}.mp4" ]
+	if [ -f "${destination_filepath}" ]
 	then
-		echo "SKIP - $f_shortname - mp4 file already exists";
+		echo "SKIP - $source_shortname - mp4 file already exists";
 		continue;
 	fi;
 
@@ -174,16 +182,41 @@ do
 	fi
 
 	if("$verbose_mode" == true) then
-		echo "READY - $f_shortname";
+		printf "READY - $source_shortname";
 	fi;
 
-	# run conversion
-	# todo check for script exit code for success/failure
-	"${ffmpeg_convert_file_script}" "$filepath"
+	# ================================
+	# CONVERT
+	#
+	# specify framerate of input with "-r" before "-i"
+	# specify framerate of output with "-r" after "-i"
+	# -an = no audio
+	# -f  = force format
+	# -y  = overwrite output
+	# -copyts = Copy timestamps from input to output
+	# -map_metadata
+	
+	# convert now
+	ffmpeg \
+		-r ${video_input_framerate} \
+		-i "${source_filepath}" \
+		-r ${video_output_framerate} \
+		-filter:v fps=fps=${video_output_framerate}:round=near \
+		-c:v libx264 \
+		-pass 1 \
+		-an \
+		-copyts \
+		-map_metadata 0 \
+		-y \
+		"${destination_filepath}"
+	
+	# copy metadata between files from source to destination
+	touch -r "${source_filepath}" "${destination_filepath}" 
+
+	echo "√ DONE";
 
 done;
 
-printf "BATCH COMPLETED";
-echo "";
+echo "BATCH COMPLETED";
 
 exit;

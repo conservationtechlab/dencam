@@ -12,12 +12,20 @@
 ## $1 string = /path/to/directory/video.h264
 ##
 
+# default variable values
+video_input_framerate=25
+video_output_framerate=25
+
+# load any settings unique to this machine
+source=ffmpeg_conf.sh
 
 # ================================
 # Review Data
 
+source_filepath=${1}
+
 # Check that file is specified
-if [ -z "$1" ]
+if [ -z "$source_filepath" ]
 then
 	echo "Specify the file to be converted:"
 	echo ">   ffmpeg_convert_file.sh /path/to/directory/video.h264"
@@ -25,22 +33,21 @@ then
 fi
 
 # Check that file exists
-if [ ! -f "$1" ]
+if [ ! -f "$source_filepath" ]
 then
 	echo "This does not appear to be a file:"
-	echo ">   $1"
+	echo ">   $source_filepath"
 	exit 1
 fi
 
-# interpret path
-source_filepath=${1}
+# extract names
 source_dirname=$(dirname -- "$source_filepath")
 source_basename=$(basename -- "$source_filepath")
 source_shortname="${source_basename%.*}"
 #source_extension="${source_basename##*.}"
 
-# form target destination
-target_filepath="${source_dirname}/${source_shortname}.mp4"
+# form destination filepath
+destination_filepath="${source_dirname}/${source_shortname}.mp4"
 
 # DEBUG
 # echo "  Data processing review:"
@@ -49,7 +56,14 @@ target_filepath="${source_dirname}/${source_shortname}.mp4"
 # echo "    source_basename  = ${source_basename}"
 # echo "    source_shortname = ${source_shortname}"
 # echo "    source_extension = ${source_extension}"
-# echo "    target_filepath = ${target_filepath}"
+# echo "    destination_filepath = ${destination_filepath}"
+
+# if a matching mp4 already exists then skip file
+if [ -f "${destination_filepath}" ]
+then
+	echo "SKIP - $source_shortname - mp4 file already exists";
+	exit;
+fi;
 
 
 # ================================
@@ -65,17 +79,19 @@ target_filepath="${source_dirname}/${source_shortname}.mp4"
 
 # convert now
 ffmpeg \
-	-r 15 \
+	-r ${video_input_framerate} \
 	-i "${source_filepath}" \
-	-r 15 \
-	-filter:v fps=fps=15:round=near \
+	-r ${video_output_framerate} \
+	-filter:v fps=fps=${video_output_framerate}:round=near \
 	-c:v libx264 \
 	-pass 1 \
 	-an \
 	-copyts \
 	-map_metadata 0 \
 	-y \
-	"${target_filepath}"
+	"${destination_filepath}"
 
-# copy metadata from original file
-touch -r "${source_filepath}" "${target_filepath}" 
+# copy metadata between files from source to destination
+touch -r "${source_filepath}" "${destination_filepath}" 
+
+echo "√ DONE";
