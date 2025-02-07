@@ -39,15 +39,15 @@ ffmpeg_convert_directory_batch="$(dirname "$0")/ffmpeg_convert_directory_batch.s
 ## For a prepared batch shell file use:
 ## >   "${ffmpeg_convert_directory_batch}" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/"
 ##
-##
+
+
 ## Use the related "ffprobe" if you need to analyze video files
-## 
-## ffprobe \
-## 	-v error \
-## 	-show_format \
-## 	-show_streams \
-## 	/path/to/media/folder/video.h264 \
-## 	> /path/to/media/folder/video-ffprobe.txt
+# ffprobe \
+# 	-v error \
+# 	-show_format \
+# 	-show_streams \
+# 	/path/to/media/folder/video.h264 \
+# 	> /path/to/media/folder/video-ffprobe.txt
 
 
 ## ================
@@ -58,3 +58,7 @@ ffmpeg_convert_directory_batch="$(dirname "$0")/ffmpeg_convert_directory_batch.s
 # "${ffmpeg_convert_directory_batch}" -d "/path/to/video/folder/2024-02-26/"
 # "${ffmpeg_convert_directory_batch}" -d "/path/to/video/folder/2024-02-27/"
 # "${ffmpeg_convert_directory_batch}" -d "/path/to/video/folder/2024-02-28/"
+
+## default framerate is currently 25 fps
+## to set a custom rate use --fpsi and --fpso flags
+# "${ffmpeg_convert_directory_batch}" --fpsi 15 --fpso 15 -d "/path/to/video/folder/2024-02-28/"

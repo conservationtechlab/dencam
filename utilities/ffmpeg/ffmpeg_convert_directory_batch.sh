@@ -27,7 +27,7 @@ video_input_framerate=25
 video_output_framerate=25
 
 # load any settings unique to this machine
-source=ffmpeg_conf.sh
+#source=ffmpeg_conf.sh
 
 
 # Display script usage
@@ -36,12 +36,15 @@ usage() {
 	echo "    ffmpeg_batch_convert_directory.sh [OPTIONS]"
 	echo "Options:"
 	echo "    -h, --help       Display this help message"
-	echo "    -d, --directory  All videos within will be batch converted."
+	echo "    -d, --directory  Folder containing all videos to be batch converted (required data)"
 	echo "                     Use /path/to/directory/ (including trailing slash, escape spaces)"
 	echo "    --dry-run        Enable dryrun_mode to check all files but exit before processing"
+	echo "    -fpsi            Input video frame rate (integer, ex. default 25)"
+	echo "    -fpso            Output video frame rate (integer, ex. default 25)"
 	echo "    -v, --verbose    Enable verbose mode"
 	echo "Outcome:"
-	echo "    Use ffmpeg will convert each video (filename.h264) to a new format (filename.mp4)"
+	echo "    ffmpeg will convert each video (filename.h264) to a new format (filename.mp4)"
+	echo "    New files are saved beside originals in the same directory"
 }
 
 has_argument() {
@@ -80,6 +83,18 @@ handle_options() {
 			--dry-run)
 				dryrun_mode=true
 				verbose_mode=true
+				;;
+
+			# define framerate for video input
+			--fpsi)
+				video_input_framerate=$(extract_argument "$@")
+				shift
+				;;
+
+			# define framerate for video output
+			--fpso)
+				video_output_framerate=$(extract_argument "$@")
+				shift
 				;;
 
 			# enable verbose comments

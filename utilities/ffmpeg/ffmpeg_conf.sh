@@ -21,10 +21,6 @@ video_output_framerate=15
 
 # handle directory symbolic links
 
-# move variables into script flags
-# which pass-through to ffmpeg command
-# -r = frame rate
-
 # add flag to force overwrite
 # for cases where previous conversion failed
 # but now a .mp4 file already exists
