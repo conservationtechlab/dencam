@@ -14,7 +14,7 @@
 ## >    ffmpeg_convert_directory_batch.sh --dry-run -d /path/to/video/folder/YYYY-MM-DD/
 ##
 ## For a prepared batch file use:
-## >    $( . "$ffmpeg_convert_directory_batch" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/" )
+## >    "${ffmpeg_convert_directory_batch}" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/"
 
 
 ## ================
@@ -40,13 +40,12 @@ usage() {
 	echo "    ffmpeg_batch_convert_directory.sh [OPTIONS]"
 	echo "Options:"
 	echo "    -h, --help       Display this help message"
-	echo "    -d, --directory  All videos within will be batch converted.
-                     Use /path/to/directory/ (including trailing slash, escape spaces)"
+	echo "    -d, --directory  All videos within will be batch converted."
+	echo "                     Use /path/to/directory/ (including trailing slash, escape spaces)"
 	echo "    --dry-run        Enable dryrun_mode to check all files but exit before processing"
 	echo "    -v, --verbose    Enable verbose mode"
 	echo "Outcome:"
 	echo "    Use ffmpeg will convert each video (filename.h264) to a new format (filename.mp4)"
-	
 }
 
 has_argument() {
@@ -126,8 +125,7 @@ else
 	fi
 fi
 
-# Check if domain directory exists
-# (NOTE: this does not have specific handling for symbolic links)
+# Check if directory exists
 if [ -d "${directory}" ]
 then
 	if("$verbose_mode" = true) then
@@ -181,10 +179,11 @@ do
 
 	# run conversion
 	# todo check for script exit code for success/failure
-	$( . "$ffmpeg_convert_file_script" "$filepath" )
+	"${ffmpeg_convert_file_script}" "$filepath"
 
 done;
 
 printf "BATCH COMPLETED";
+echo "";
 
 exit;
