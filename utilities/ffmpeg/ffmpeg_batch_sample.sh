@@ -22,21 +22,32 @@ ffmpeg_convert_directory_batch="$(dirname "$0")/ffmpeg_convert_directory_batch.s
 ## PREP COMMANDS
 
 ## Step 1 - Start with:
-#$( . "$ffmpeg_convert_directory_batch" --help)
+## >   $( . "$ffmpeg_convert_directory_batch" --help)
 
 ## Step 2 - Then test your folder structure:
 ## Call the batch command with the path to the directory
 ## which contains all of the media files
+##
 ## So, for:
-## >    /path/to/video/folder/YYYY-MM-DD/video001.h264
-## >    /path/to/video/folder/YYYY-MM-DD/video002.h264
-## >    /path/to/video/folder/YYYY-MM-DD/video003.h264
+## >   /path/to/video/folder/YYYY-MM-DD/video001.h264
+## >   /path/to/video/folder/YYYY-MM-DD/video002.h264
+## >   /path/to/video/folder/YYYY-MM-DD/video003.h264
 ##
 ## For a single batch from the command line:
-## >    ffmpeg_convert_directory_batch.sh --dry-run -d /path/to/video/folder/YYYY-MM-DD/
+## >   ffmpeg_convert_directory_batch.sh --dry-run -d /path/to/video/folder/YYYY-MM-DD/
 ##
-## For a prepared batch file use:
-## $( . "$ffmpeg_convert_directory_batch" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/" )
+## For a prepared batch shell file use:
+## >   $( . "$ffmpeg_convert_directory_batch" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/" )
+##
+##
+## Use the related "ffprobe" if you need to analyze video files
+## 
+## ffprobe \
+## 	-v error \
+## 	-show_format \
+## 	-show_streams \
+## 	/path/to/media/folder/video.h264 \
+## 	> /path/to/media/folder/video-ffprobe.txt
 
 
 ## ================
