@@ -15,10 +15,10 @@ from dencam import mppt
 log = logging.getLogger(__name__)
 
 # Button pin number mappings
-SCREEN_BUTTON = 27
-FUNCTION_BUTTON = 23
-RECORD_BUTTON = 22
-ZOOM_BUTTON = 17
+SCREEN_BUTTON = 17
+FUNCTION_BUTTON = 22
+RECORD_BUTTON = 23
+ZOOM_BUTTON = 27
 
 
 class ButtonHandler(Thread):
