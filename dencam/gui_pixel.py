@@ -45,7 +45,7 @@ class BookwormConfig:
         "network_airplane_mode": [25, 110, 0, 120],
         "blank_next_page": [50, 145, 495, 430],
         "blank_toggle": [50, 440, 0, 430],
-        "solar_solar_label": [0, 30],
-        "solar_next_page": [25, 80, 240, 215],
-        "solar_update_data": [25, 95, 225, 155],
+        "solar_solar_label": [0],
+        "solar_next_page": [25, 80, 0, 182],
+        "solar_update_data": [25, 95, 0, 120],
     }

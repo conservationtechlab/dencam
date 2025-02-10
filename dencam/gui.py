@@ -519,12 +519,6 @@ class SolarPage(tk.Frame):
         fonts = controller.fonts
         placements = controller.placement_config
         self.configure(bg='black')
-        self.page_label = tk.Label(self,
-                                   text="Solar Page",
-                                   font=fonts['smaller'],
-                                   fg='yellow',
-                                   bg='SlateBlue4')
-        self.page_label.pack(fill=tk.X)
 
         label_placement = placements.values['solar_solar_label']
 
@@ -533,9 +527,11 @@ class SolarPage(tk.Frame):
                                     font=fonts['smaller'],
                                     fg='yellow',
                                     bg='black',
-                                    justify="left")
-        self.solar_label.place(x=label_placement[0],
-                               y=label_placement[1])
+                                    justify="right",
+                                    anchor="e")
+        self.solar_label.place(relx=1.0,
+                               anchor="ne",
+                               y=label_placement[0])
 
         next_page_placement = placements.values['solar_next_page']
 
@@ -562,6 +558,14 @@ class SolarPage(tk.Frame):
                               width=update_placement[1],
                               x=update_placement[2],
                               y=update_placement[3])
+
+        self.page_label = tk.Label(self,
+                                   text="Solar Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='SlateBlue4')
+        self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
+
 
 
 class ErrorScreen():
