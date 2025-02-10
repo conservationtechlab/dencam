@@ -33,13 +33,13 @@ class BookwormConfig:
 
     """
     values = {
-        "recorder_vid_count_label": [20, 0, 80],
-        "recorder_device_label": [20, 0, 100],
-        "recorder_storage_label": [20, 0, 120],
-        "recorder_time_label": [20, 0, 140],
+        "recorder_vid_count_label": [20, 65],
+        "recorder_device_label": [20, 85],
+        "recorder_storage_label": [20, 105],
+        "recorder_time_label": [20, 125],
         "recorder_error_label": [100, 200, 0, 430],
-        "recorder_next_page": [25, 80, 240, 215],
-        "recorder_toggle_recording": [25, 135, 185, 155],
+        "recorder_next_page": [25, 80, 0, 182],
+        "recorder_toggle_recording": [25, 135, 0, 120],
         "network_version_label": [70, 245, 170],
         "network_next_page": [25, 80, 0, 182],
         "network_airplane_mode": [25, 110, 0, 120],

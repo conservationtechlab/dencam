@@ -296,12 +296,7 @@ class RecordingPage(tk.Frame):
 
         fonts = controller.fonts
         placements = controller.placement_config
-
         self.configure(bg='black')
-        self.page_label = tk.Label(self, text="Recording Page",
-                                   font=fonts['smaller'],
-                                   fg='yellow', bg='DodgerBlue4')
-        self.page_label.pack(fill=tk.X)
 
         self.recording_label = tk.Label(self,
                                         textvariable=controller.recording_text,
@@ -318,8 +313,9 @@ class RecordingPage(tk.Frame):
                                         fg='yellow',
                                         bg='black')
         self.vid_count_label.place(height=vid_count_placement[0],
-                                   x=vid_count_placement[1],
-                                   y=vid_count_placement[2])
+                                   relx=1.0,
+                                   anchor="e",
+                                   y=vid_count_placement[1])
 
         device_placement = placements.values['recorder_device_label']
 
@@ -329,8 +325,9 @@ class RecordingPage(tk.Frame):
                                      fg='yellow',
                                      bg='black')
         self.device_label.place(height=device_placement[0],
-                                x=device_placement[1],
-                                y=device_placement[2])
+                                relx=1.0,
+                                anchor="e",
+                                y=device_placement[1])
 
         storage_placement = placements.values['recorder_storage_label']
 
@@ -340,8 +337,9 @@ class RecordingPage(tk.Frame):
                                       fg='yellow',
                                       bg='black')
         self.storage_label.place(height=storage_placement[0],
-                                 x=storage_placement[1],
-                                 y=storage_placement[2])
+                                 relx=1.0,
+                                 anchor="e",
+                                 y=storage_placement[1])
 
         time_placement = placements.values['recorder_time_label']
 
@@ -352,8 +350,9 @@ class RecordingPage(tk.Frame):
                                    bg='black',
                                    justify="left")
         self.time_label.place(height=time_placement[0],
-                              x=time_placement[1],
-                              y=time_placement[2])
+                              relx=1.0,
+                              anchor="e",
+                              y=time_placement[1])
 
         # todo: add the pixel values for error label
 
@@ -389,6 +388,11 @@ class RecordingPage(tk.Frame):
                               width=toggle_placement[1],
                               x=toggle_placement[2],
                               y=toggle_placement[3])
+
+        self.page_label = tk.Label(self, text="Recording Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow', bg='DodgerBlue4')
+        self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
 
 
 class NetworkPage(tk.Frame):
