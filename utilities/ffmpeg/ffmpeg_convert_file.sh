@@ -2,15 +2,18 @@
 
 # ================================
 ## ffmpeg_convert_file.sh
-## 
+##
 ## Convert a single video file via ffmpeg
 ##
 ## Dependencies:
-## *	[ffmpeg](https://www.ffmpeg.org/)
+## *	[ffmpeg = 7.1](https://www.ffmpeg.org/)
 ##
 ## Parameters:
 ## $1 string = /path/to/directory/video.h264
 ##
+## Usage:
+## bash ffmpeg_convert_file.sh /path/to/video.h264
+
 
 # default variable values
 video_input_framerate=25

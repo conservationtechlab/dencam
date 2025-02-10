@@ -2,18 +2,18 @@
 
 ## ================
 ## ffmpeg_convert_directory_batch.sh
-## 
+##
 ## Batch convert a folder of Pi camera recordings
 ## from .h264 to .mp4
 ##
 ## Dependencies:
-## *	[ffmpeg](https://www.ffmpeg.org/)
+## *	[ffmpeg = 7.1](https://www.ffmpeg.org/)
 ##
 ## For a single batch from the command line:
-## >    ffmpeg_convert_directory_batch.sh --dry-run -d /path/to/video/folder/YYYY-MM-DD/
+## >    bash ffmpeg_convert_directory_batch.sh --dry-run -d /path/to/video/folder/YYYY-MM-DD/
 ##
 ## For a prepared batch file use:
-## >    "${ffmpeg_convert_directory_batch}" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/"
+## >    bash "${ffmpeg_convert_directory_batch}" --dry-run -d "/path/to/video/folder/YYYY-MM-DD/"
 
 
 ## ================
