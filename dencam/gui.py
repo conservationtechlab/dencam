@@ -412,14 +412,6 @@ class NetworkPage(tk.Frame):
         fonts = controller.fonts
         placements = controller.placement_config
         self.configure(bg='black')
-        self.page_label = tk.Label(self,
-                                   text="Network Page",
-                                   font=fonts['smaller'],
-                                   fg='yellow',
-                                   bg='midnight blue')
-        self.page_label.pack(fill=tk.X)
-
-        ip_placement = placements.values['network_ip_label']
 
         self.ip_label = tk.Label(self,
                                  textvariable=controller.ip_text,
@@ -427,8 +419,8 @@ class NetworkPage(tk.Frame):
                                  fg='yellow',
                                  bg='black',
                                  justify="left")
-        self.ip_label.place(x=ip_placement[0],
-                            y=ip_placement[1])
+        self.ip_label.place(relx=0.5,
+                            anchor="n")
 
         version_placement = placements.values['network_version_label']
 
@@ -466,6 +458,13 @@ class NetworkPage(tk.Frame):
                               width=airplane_placement[1],
                               x=airplane_placement[2],
                               y=airplane_placement[3])
+
+        self.page_label = tk.Label(self,
+                                   text="Network Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='midnight blue')
+        self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
 
 
 class BlankPage(tk.Frame):
