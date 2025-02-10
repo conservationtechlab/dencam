@@ -1,4 +1,4 @@
-"""Graphical User Interface for DenCam
+"""Graphical User Interface for DenCam.
 
 This module contains the classes associated with the DenCam GUI
 displayed on the PiTFT screen that is attached to the Raspberry Pi's
@@ -20,9 +20,8 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
-    """DenCam UI controller base class
+    """DenCam UI controller base class."""
 
-    """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__()
         self.recorder = recorder
@@ -51,9 +50,7 @@ class BaseController(Thread):
         self.window.mainloop()
 
     def _setup(self):
-        """Set up the Tkinter GUI
-
-        """
+        """Set up the Tkinter GUI."""
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
         self.window.title('DenCam Control')
@@ -95,20 +92,21 @@ class BaseController(Thread):
         self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
-        """Display given page in UI
+        """Display given page in UI.
 
-        Parameters
-        ----------
-        page_name : str
-            Name of page to show
+        Args:
+            page_name (str): The name of page to show
 
         """
         frame = self.frames[page_name]
         frame.tkraise()
 
     def _get_time(self):
-        """Retrieve current time and format it for screen display
+        """Retrieve current time and format it for screen display.
 
+        Returns:
+            str: The formatted time
+        
         """
         local_time = time.localtime()
 
@@ -130,7 +128,7 @@ class BaseController(Thread):
         return shours + ':' + smins + ':' + ssecs
 
     def _update(self):
-        """Execute core loop activities
+        """Execute core loop activities.
 
         Runs at 10 Hz (every 100 milliseconds)
 
@@ -149,9 +147,7 @@ class BaseController(Thread):
         self.window.after(100, self._update)
 
     def _update_strings(self):
-        """Update all the strings used in the UI readout
-
-        """
+        """Update all the strings used in the UI readout."""
         strg = f"Vids this run: {str(self.recorder.vid_count)}"
         self.vid_count_text.set(strg)
 
@@ -190,10 +186,7 @@ class BaseController(Thread):
         self.solar_text.set(solar_info)
 
     def _prep_fonts(self):
-        """Populate the dict of fonts used in UI
-
-        """
-
+        """Populate the dict of fonts used in UI."""
         scrn_height = self.window.winfo_screenheight()
         self.fonts['small'] = tkFont.Font(family='Courier New',
                                           size=-int(scrn_height/9))
@@ -211,7 +204,7 @@ class BaseController(Thread):
 
 
 class Controller(BaseController):
-    """DenCam UI Controller
+    """DenCam UI Controller.
 
     Extends BaseController to add mechanics for 1) fixing the duration
     of each recording using a value drawn from user configs (and
@@ -219,6 +212,7 @@ class Controller(BaseController):
     starting first recording after a user-configured wait period.
 
     """
+
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__(configs, recorder, state_list, state, airplane_mode)
 
@@ -237,7 +231,7 @@ class Controller(BaseController):
 
 
 class State():
-    """Class that implements a simple, linear state machine
+    """Class that implements a simple, linear state machine.
 
     The states available to the device are essentially which UI page
     is being displayed and is available for interaction.  This State
@@ -263,14 +257,13 @@ class State():
         Increment to next state
 
     """
+
     def __init__(self, num_states):
         self.value = 0
         self.num_states = num_states
 
     def goto_next(self):
-        """Increment to next state
-
-        """
+        """Increment to next state."""
         self.value += 1
         if self.value >= self.num_states:
             self.value = 0
@@ -396,7 +389,7 @@ class RecordingPage(tk.Frame):
 
 
 class NetworkPage(tk.Frame):
-    """UI page that displays info related to network connection
+    """UI page that displays info related to network connection.
 
     Displays:
     - hostname of device
@@ -410,6 +403,7 @@ class NetworkPage(tk.Frame):
     On this page, action button toggles airplane mode on and off.
 
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -472,9 +466,8 @@ class NetworkPage(tk.Frame):
 
 
 class BlankPage(tk.Frame):
-    """UI Page that is blank
+    """UI Page that is blank."""
 
-    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
@@ -506,7 +499,7 @@ class BlankPage(tk.Frame):
 
 
 class SolarPage(tk.Frame):
-    """UI Page that displays the solar data from charge controller
+    """UI Page that displays the solar data from charge controller.
 
     On this page, UI action button refreshes solar data (mechanics of
     the refresh might bear some more detail added here or in a
@@ -514,6 +507,7 @@ class SolarPage(tk.Frame):
     implemented)
 
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         fonts = controller.fonts
@@ -567,14 +561,14 @@ class SolarPage(tk.Frame):
         self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
 
 
-
 class ErrorScreen():
-    """Handles display of camera connection error information
+    """Handles display of camera connection error information.
 
     This class is used before core UI controller is even invoked as
     resolving this error supercedes all other functionality.
 
     """
+
     def __init__(self):
         self.screen = tk.Tk()
         self.screen.attributes('-fullscreen', True)
@@ -586,7 +580,5 @@ class ErrorScreen():
         self.screen.update()
 
     def hide(self):
-        """Destroy the error screen
-
-        """
+        """Destroy the error screen."""
         self.screen.destroy()
