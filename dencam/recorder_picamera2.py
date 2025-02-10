@@ -75,16 +75,7 @@ class Picamera2Recorder(Recorder):
         super().finish_setup()
 
     def update_timestamp(self):
-        self.camera.camera.pre_callback = self._pre_callback_wrapper
-
-    def _pre_callback_wrapper(self, request):
-        """ Wrapper function to call update_timestamp
-
-        Goal is to not need to change recorder.py, which doesn't
-        call the update_timestamp request with any parameters.
-
-        """
-        self.timestamp(request)
+        self.camera.camera.pre_callback = self.timestamp
 
     def timestamp(self, request):
         """Update timestamp on video and preview
