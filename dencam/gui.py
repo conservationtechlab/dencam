@@ -106,7 +106,7 @@ class BaseController(Thread):
 
         Returns:
             str: The formatted time
-        
+
         """
         local_time = time.localtime()
 
@@ -267,8 +267,8 @@ class State():
         self.value += 1
         if self.value >= self.num_states:
             self.value = 0
-            
-            
+
+
 class RecordingPage(tk.Frame):
     """UI Page that displays information related to DenCam recording.
 
