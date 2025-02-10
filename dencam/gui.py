@@ -484,7 +484,7 @@ class BlankPage(tk.Frame):
                                    font=fonts['smaller'],
                                    fg='yellow',
                                    bg='blue4')
-        self.page_label.pack(side=tk.TOP, fill=tk.X)
+        self.page_label.pack(side=tk.BOTTOM, fill=tk.X)
 
         # values set for buster, unneeded for now to be bookworm
 
