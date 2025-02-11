@@ -1,14 +1,15 @@
 #!/bin/sh
 
 ## ================
-## ffmpeg_dencam_convert.sh
+## ffmpeg_convert_video.sh
+## version 0.2
 ## 
 ## Convert Pi camera recordings from .h264 to .mp4
 ## either from individual files (/path/to/video.h264)
 ## or batch convert entire folders (/path/to/directory/)
 ##
 ## Start with:
-## >    ffmpeg_dencam_convert.sh --help
+## >    ffmpeg_convert_video.sh --help
 ##
 ## This script was developed using ffmpeg version 7.1
 ## and has not been tested on earlier versions.
@@ -49,9 +50,9 @@ usage() {
 	echo "    ffmpeg_batch_convert.sh [OPTIONS]"
 	echo "Command line examples:"
 	echo "    For a single video file"
-	echo "    >    ffmpeg_dencam_convert.sh --dry-run -m /path/to/video/folder/YYYY-MM-DD/video.h264"
+	echo "    >    ffmpeg_convert_video.sh --dry-run -m /path/to/video/folder/YYYY-MM-DD/video.h264"
 	echo "    For batch converting a directory:"
-	echo "    >    ffmpeg_dencam_convert.sh --dry-run -fpsi 15 -fpso 15 -m /path/to/video/folder/YYYY-MM-DD/"
+	echo "    >    ffmpeg_convert_video.sh --dry-run -fpsi 15 -fpso 15 -m /path/to/video/folder/YYYY-MM-DD/"
 	echo "Options:"
 	echo "    --dry-run        Enable dryrun_mode to check files but exit before processing"
 	echo "    -fpsi            Input video frame rate (integer, ex. default 25)"
