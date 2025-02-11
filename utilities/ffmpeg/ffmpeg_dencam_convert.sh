@@ -3,8 +3,12 @@
 ## ================
 ## ffmpeg_dencam_convert.sh
 ## 
-## Batch convert a folder of Pi camera recordings
-## from .h264 to .mp4
+## Convert Pi camera recordings from .h264 to .mp4
+## either from individual files (/path/to/video.h264)
+## or batch convert entire folders (/path/to/directory/)
+##
+## Start with:
+## >    ffmpeg_dencam_convert.sh --help
 ##
 ## This script was developed using ffmpeg version 7.1
 ## and has not been tested on earlier versions.
@@ -12,8 +16,19 @@
 ## Dependencies:
 ## *	[ffmpeg](https://www.ffmpeg.org/)
 ##
-## Start with:
-## >    ffmpeg_dencam_convert.sh --help
+
+
+## ================
+## TODO LIST
+## 
+## handle ffmpeg success/error codes separately
+## ex. we have received "Decoding error: Invalid data found when processing input"
+## 
+## handle directory paths with spaces/unusual characters
+## 
+## handle directory symbolic links
+## 
+
 
 ## ================
 ## DATA / FLAGS
@@ -21,6 +36,7 @@
 # default values and processing variables
 dryrun_mode=false
 verbose_mode=false
+force_overwrite=false
 mediasource=""
 mediasource_has_results=false
 next_mediasource=""
@@ -44,6 +60,8 @@ usage() {
 	echo "    -m, --media      (required)"
 	echo "                     Path to individual video (/path/to/video.h264)"
 	echo "                     or to directory for batch convert (/path/to/directory/)"
+	echo "    -o, --overwrite  Force overwrite of any existing converted file"
+	echo "                     (Default is to skip already converted files)"
 	echo "    -v, --verbose    Enable verbose mode"
 	echo "Outcome:"
 	echo "    ffmpeg will convert each video (filename.h264) to a new format (filename.mp4)"
@@ -100,6 +118,11 @@ handle_options() {
 				shift
 				;;
 
+			# enable force_overwrite
+			-o | --overwrite)
+				force_overwrite=true
+				;;
+
 			# enable verbose comments
 			-v | --verbose)
 				verbose_mode=true
@@ -153,32 +176,36 @@ convert_next_mediasource() {
 	printf "    $mediasource_shortname [√] file found";
 
 	# if a matching mp4 already exists then skip file
-	if [ -f "${destination_filepath}" ]
-	then
+	if [ -f "${destination_filepath}" ] && test "${force_overwrite}" = false ; then
 		printf " ... SKIP since mp4 file already exists \n";
-		return;
+		return 1;
+	fi;
+	# if force_overwrite matching mp4
+	if [ -f "${destination_filepath}" ] && test "${force_overwrite}" = true ; then
+		printf " ... force overwrite existing mp4";
 	fi;
 
 	# if dry-run mode enabled then stop before processing anything
 	if [ "$dryrun_mode" = true ] ; then
 		printf " ... SKIP - dry-run mode \n";
-		return;
+		return 1;
 	fi
 
-	# ================================
-	# CONVERT
-	#
-	# specify framerate of input with "-r" before "-i"
-	# specify framerate of output with "-r" after "-i"
-	# -an = no audio
-	# -f  = force format
-	# -y  = overwrite output
-	# -copyts = Copy timestamps from input to output
-	# -map_metadata
+	## ================================
+	## CONVERT
+	##
+	## specify framerate of input with "-r" before "-i"
+	## specify framerate of output with "-r" after "-i"
+	## -an = no audio
+	## -f  = force format
+	## -y  = overwrite output
+	## -copyts = Copy timestamps from input to output
+	## -map_metadata
 	
-	# hide ffmpeg logs by default, but show them if in verbose_mode
+	## hide ffmpeg logs by default
 	ffmpeg_hide_banner=" -hide_banner "
 	ffmpeg_loglevel=" -loglevel error "
+	## show ffmpeg logs if in verbose_mode
 	if [ "$verbose_mode" = true ] ; then
 	 	ffmpeg_hide_banner=""
 	 	ffmpeg_loglevel=""
@@ -221,14 +248,11 @@ fi
 # Review data
 
 # Check that mediasource is specified
-if [ -z "${mediasource}" ]
-then
+if [ -z "${mediasource}" ] ; then
 
-	echo "ERROR: Specify the media source for a single file with:"
-	echo ">    ffmpeg_batch_convert_directory.sh /path/to/video.h264"
-	echo "Or, batch convert a whole directory with:"
-	echo ">    ffmpeg_batch_convert_directory.sh /path/to/directory/"
-	exit 0
+	echo "ERROR: Specify the media source";
+	usage;
+	exit 0;
 
 else
 
@@ -241,8 +265,7 @@ fi
 
 # ----------------
 # Check if mediasource is a single file
-if [ -f "${mediasource}" ]
-then
+if [ -f "${mediasource}" ] ; then
 
 	# note that results were found
 	mediasource_has_results=true
@@ -254,15 +277,14 @@ then
 else
 
 	if [ "$verbose_mode" = true ] ; then
-		echo "WARNING: Media source is not a file. Checking for directory...";
+		echo "WARNING: Media source is not a file.";
 	fi
 
 fi
 
 # ----------------
 # Check if mediasource is a directory
-if [ -d "${mediasource}" ]
-then
+if [ -d "${mediasource}" ] ; then
 
 	echo "BATCH CONVERT ${mediasource}"
 	if [ "$verbose_mode" = true ] ; then
@@ -287,14 +309,15 @@ then
 else
 
 	if test "$verbose_mode" = true  && test "$mediasource_has_results" = false ; then
-		echo "WARNING: Media source is not a directory";
+		echo "WARNING: Media source is not a directory.";
 	fi
 
 fi
 
 
 if test "$mediasource_has_results" = false ; then
-	echo "ERROR:   Nothing could be converted";
+	echo "ERROR:   Nothing could be converted!";
+	echo "";
 fi
 
 exit;
