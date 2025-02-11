@@ -18,10 +18,9 @@ Dependencies:
 
 Gather data from your file structure:
 
-* avoid spaces in file names
-* if you are using a cloud storage service, make sure files are already synced locally
-
-Convert a single video to determine your intended frame rate and duration.
+* Avoid spaces in naming for folders and files
+* If you are using a cloud storage service, make sure files are already synced locally
+* Convert a single video to determine your intended frame rate and duration
 
 Use the ffmpeg's related tool "ffprobe" if you need to analyze video files:
 

@@ -29,6 +29,8 @@
 ## 
 ## handle directory symbolic links
 ## 
+## handle has_argument function with more system-agnostic code
+##
 
 
 ## ================
@@ -47,7 +49,7 @@ video_output_framerate=25
 # Display script usage
 usage() {
 	echo "Usage:"
-	echo "    ffmpeg_batch_convert.sh [OPTIONS]"
+	echo "    ffmpeg_convert_video.sh [OPTIONS]"
 	echo "Command line examples:"
 	echo "    For a single video file"
 	echo "    >    ffmpeg_convert_video.sh --dry-run -m /path/to/video/folder/YYYY-MM-DD/video.h264"
