@@ -167,16 +167,17 @@ convert_next_mediasource() {
 	# form destination filepath
 	destination_filepath="${mediasource_dirname}/${mediasource_shortname}.mp4"
 
-	if [ "$dryrun_mode" = true ] ; then
-		echo "Data processing review:"
+	printf "    $mediasource_shortname [√] file found";
+
+	if test "$dryrun_mode" = true ; then
+		printf "\n"
+		#echo "Data processing review:"
 		echo "    filepath              = ${next_mediasource}"
 		echo "    mediasource_dirname   = ${mediasource_dirname}"
 		echo "    mediasource_basename  = ${mediasource_basename}"
 		echo "    mediasource_shortname = ${mediasource_shortname}"
 		echo "    destination_filepath  = ${destination_filepath}"
 	fi
-
-	printf "    $mediasource_shortname [√] file found";
 
 	# if a matching mp4 already exists then skip file
 	if [ -f "${destination_filepath}" ] && test "${force_overwrite}" = false ; then
@@ -189,7 +190,7 @@ convert_next_mediasource() {
 	fi;
 
 	# if dry-run mode enabled then stop before processing anything
-	if [ "$dryrun_mode" = true ] ; then
+	if test "$dryrun_mode" = true ; then
 		printf " ... SKIP - dry-run mode \n";
 		return 1;
 	fi
@@ -209,7 +210,7 @@ convert_next_mediasource() {
 	ffmpeg_hide_banner=" -hide_banner "
 	ffmpeg_loglevel=" -loglevel error "
 	## show ffmpeg logs if in verbose_mode
-	if [ "$verbose_mode" = true ] ; then
+	if test "$verbose_mode" = true ; then
 	 	ffmpeg_hide_banner=""
 	 	ffmpeg_loglevel=""
 	fi;
@@ -243,7 +244,7 @@ convert_next_mediasource() {
 # Begin execution and handle main script commands
 handle_options "$@"
 
-if [ "$dryrun_mode" = true ] ; then
+if test "$dryrun_mode" = true ; then
 	echo "Beginning dry-run...";
 fi
 
@@ -259,7 +260,7 @@ if [ -z "${mediasource}" ] ; then
 
 else
 
-	if [ "$verbose_mode" = true ] ; then
+	if test "$verbose_mode" = true ; then
 		echo "Preparing to process media source:";
 		echo "    ${mediasource}";
 	fi
@@ -279,7 +280,7 @@ if [ -f "${mediasource}" ] ; then
 	
 else
 
-	if [ "$verbose_mode" = true ] ; then
+	if test "$verbose_mode" = true ; then
 		echo "WARNING: Media source is not a file.";
 	fi
 
@@ -290,7 +291,7 @@ fi
 if [ -d "${mediasource}" ] ; then
 
 	echo "BATCH CONVERT ${mediasource}"
-	if [ "$verbose_mode" = true ] ; then
+	if test "$verbose_mode" = true ; then
 		count=$(find "$mediasource" -type f -name "*.h264" | wc -l);
 		echo "FOUND:   Directory does exist, and matching .h264 file count = $count";
 	fi
