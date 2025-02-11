@@ -7,6 +7,8 @@ from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2, Preview, MappedArray
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import collections
+from scipy.ndimage import laplace
 
 from dencam.recorder import Recorder
 
@@ -25,6 +27,116 @@ class Picam2:
         self.camera.configure("preview")
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
+
+    def detect_blur(self, image_array):
+        """
+        Computes the blur variance for an image array using the
+        Laplacian method.
+
+        Args:
+            image_array (numpy.ndarray): Grayscale image array to analyze.
+
+        Returns:
+            float: Variance of the Laplacian, where a lower variance
+            indicates more blur.
+        """
+        laplacian_result = laplace(image_array)
+        return laplacian_result.var()
+
+
+    def update_frame(self, image_array, grid_dim, variance_history,
+                     font_size, font_transparency):
+        """
+        Updates each frame by calculating and overlaying blur
+        variance values for each cell in a grid.
+
+        Args:
+            image_array (numpy.ndarray): The PiCamera2 object for video capture.
+            grid_dim (int): Number of cells per row/column for the
+            grid overlay.
+            variance_history (list): 2D list of deque buffers storing
+            variance history for each grid cell.
+            font_size (int): Font size for the overlay text.
+            font_transparency (int): Alpha transparency for overlay text.
+
+        Returns:
+            numpy.ndarray: Updated overlay with the new blur
+            variance display.
+        """
+        gray_image = Image.fromarray(image_array).convert('L')
+
+        width, height = self.camera.camera_configuration()['main']['size']
+        block_height, block_width = height//grid_dim, width//grid_dim
+
+        overlay_img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(overlay_img)
+
+        # Load a default font with the specified text size
+        font = ImageFont.truetype(
+                   '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
+                   font_size)
+
+        for i in range(grid_dim):
+            for j in range(grid_dim):
+                gray_array = np.array(gray_image)
+                block = gray_array[i*block_height:(i+1)*block_height,
+                                   j*block_width:((j+1)*block_width)-1]
+
+                variance = self.detect_blur(block)
+
+                variance_history[i][j].append(variance)
+                avg_variance = np.mean(variance_history[i][j])
+
+                # Round variance to nearest ones digit
+                avg_variance = int(avg_variance)
+
+                x1_pos, y1_pos = j * block_width, i * block_height
+                x2_pos, y2_pos = x1_pos + block_width, y1_pos + block_height
+
+                color = (0, 0, 0)  # Change as needed for visible text
+                draw.rectangle([x1_pos, y1_pos, x2_pos - 1, y2_pos - 1],
+                               outline=color + (255,),
+                               width=1)
+
+                text = f"{avg_variance}"
+
+                # Position text in center of each box
+                center_x = x1_pos + block_width // 2
+                center_y = y1_pos + block_height // 2
+
+                draw.text(
+                    (center_x, center_y),
+                    text,
+                    fill=color + (font_transparency,),
+                    font=font,
+                    anchor="mm"
+                    )
+
+        return np.array(overlay_img)
+
+    def focus_score(self, focus_score_on):
+        """Toggle focus score overlay
+
+        """
+        grid_size = 5
+        text_size = 50
+        text_alpha = 150
+        resolution = (640, 480)
+        N=15
+        history_buffer = [[collections.deque(maxlen=N)
+                          for _ in range(grid_size)]
+                          for _ in range(grid_size)]
+
+        while focus_score_on == True:
+            image = self.camera.capture_array()
+
+            overlay = self.update_frame(image,
+                                        grid_size,
+                                        history_buffer,
+                                        text_size,
+                                        text_alpha)
+            self.camera.set_overlay(overlay)
+
 
     def start_preview(self):
         """Stop null preview, start QT preview and log

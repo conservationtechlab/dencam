@@ -109,14 +109,15 @@ class ButtonHandler(Thread):
         else:
             self.latch_record_button = False
 
-        # if not GPIO.input(RECORD_BUTTON):
-        #     if not self.latch_record_button:
-        #         if (self.recorder.initial_pause_complete
-        #             and self.state.value == 2):
-        #             self.recorder.toggle_recording()
-        #         self.latch_record_button = True
-        # else:
-        #     self.latch_record_button = False
+        if not GPIO.input(RECORD_BUTTON):
+            if not self.latch_preview_button:
+                if(self.recorder.initial_pause_complete
+                   and self.state.value ==
+                   self.STATE_LIST.index("BlankPage")):
+                    self.recorder.toggle_focus()
+                self.latch_preview_button = True
+        else:
+            self.latch_preview_button = False
 
         # if not GPIO.input(ZOOM_BUTTON):
         #     if not self.latch_zoom_button:

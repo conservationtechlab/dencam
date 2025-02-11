@@ -34,6 +34,7 @@ class BaseRecorder(ABC):
         self.initial_pause_complete = False
         self.zoom_on = False
         self.recording = False
+        self.focus_score_on = False
 
         self.record_start_time = time.time()  # also used in initial countdown
 
@@ -252,3 +253,10 @@ class Recorder(BaseRecorder):
         log.info('Ending current recording')
         self.recording = False
         self.camera.stop_recording()
+
+    def toggle_focus(self):
+        """Toggle focus score
+
+        """
+        self.camera.focus_score(self.focus_score_on)
+        self.focus_score_on = not self.focus_score_on
