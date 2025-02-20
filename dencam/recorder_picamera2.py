@@ -224,11 +224,15 @@ class Picamera2Recorder(Recorder):
         super().finish_setup()
 
     def update_timestamp(self):
-        self.camera.camera.pre_callback = self.timestamp
+        self.camera.camera.pre_callback = self._draw_overlay
 
-    def timestamp(self, request):
-        """Update timestamp on video and preview
+    def _draw_overlay(self, request):
+        """Render overlay on video and preview
 
+        Currently, only renders the timestamp onto the frames of the
+        video but can be used to do other rendering (which is
+        planned).
+        
         This method relies on the .pre_callback method
         from picamera2 docs, which applies the overlay onto
         all screens. This means the preview contains the same
