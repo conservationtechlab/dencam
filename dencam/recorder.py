@@ -254,9 +254,9 @@ class Recorder(BaseRecorder):
         self.recording = False
         self.camera.stop_recording()
 
-    def toggle_focus(self):
+    def toggle_focus_score_display(self):
         """Toggle focus score
 
         """
-        self.camera.focus_score(self.focus_score_on)
         self.focus_score_on = not self.focus_score_on
+        log.info("Toggle focus score display to %s", self.focus_score_on)

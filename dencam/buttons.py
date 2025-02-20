@@ -111,10 +111,9 @@ class ButtonHandler(Thread):
 
         if not GPIO.input(RECORD_BUTTON):
             if not self.latch_preview_button:
-                if(self.recorder.initial_pause_complete
-                   and self.state.value ==
+                if(self.state.value ==
                    self.STATE_LIST.index("BlankPage")):
-                    self.recorder.toggle_focus()
+                    self.recorder.toggle_focus_score_display()
                 self.latch_preview_button = True
         else:
             self.latch_preview_button = False
