@@ -428,7 +428,8 @@ class NetworkPage(tk.Frame):
                                       fg='yellow',
                                       bg='black')
         self.version_label.place(height=version_placement[0],
-                                 x=version_placement[1],
+                                 relx=1.0,
+                                 anchor="ne",
                                  y=version_placement[2])
 
         next_page_placement = placements.values['network_next_page']
