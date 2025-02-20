@@ -14,6 +14,27 @@ from dencam.recorder import Recorder
 
 log = logging.getLogger(__name__)
 
+GRID_SIZE = 5
+TEXT_SIZE = 50
+ALPHA_VALUE = 150
+HISTORY_LENGTH = 15
+
+
+def calculate_blur(image_array):
+    """Compute the blur variance for an image array using the
+    Laplacian method.
+
+    Args:
+        image_array (numpy.ndarray): Grayscale image array to analyze.
+
+    Returns:
+        float: Variance of the Laplacian, where a lower variance
+        indicates more blur.
+
+    """
+    laplacian_result = laplace(image_array)
+    return laplacian_result.var()
+
 
 def draw_timestamp(size, draw):
     """Draw current timestamp onto a frame
@@ -65,48 +86,31 @@ class Picam2:
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
 
-    def detect_blur(self, image_array):
-        """
-        Computes the blur variance for an image array using the
-        Laplacian method.
+    def draw_focus_score_display(self,
+                                 image,
+                                 draw,
+                                 grid_dim,
+                                 variance_history,
+                                 font_size,
+                                 font_transparency):
+        """Calculate focus scores for each grid element and render
+        their display onto image. 
 
         Args:
-            image_array (numpy.ndarray): Grayscale image array to analyze.
-
-        Returns:
-            float: Variance of the Laplacian, where a lower variance
-            indicates more blur.
-        """
-        laplacian_result = laplace(image_array)
-        return laplacian_result.var()
-
-
-    def update_frame(self, image_array, grid_dim, variance_history,
-                     font_size, font_transparency):
-        """
-        Updates each frame by calculating and overlaying blur
-        variance values for each cell in a grid.
-
-        Args:
-            image_array (numpy.ndarray): The PiCamera2 object for video capture.
-            grid_dim (int): Number of cells per row/column for the
-            grid overlay.
+            image (pillow.Image): The current frame
+            draw (pillow.ImageDraw.Draw): The drawing object 
+            grid_dim (int): The number of cells per row/column for the
+                grid overlay.
             variance_history (list): 2D list of deque buffers storing
-            variance history for each grid cell.
-            font_size (int): Font size for the overlay text.
-            font_transparency (int): Alpha transparency for overlay text.
+                variance history for each grid cell.
+            font_size (int): The font size for the score text.
+            font_transparency (int): The alpha transparency for overlay text.
 
-        Returns:
-            numpy.ndarray: Updated overlay with the new blur
-            variance display.
         """
-        gray_image = Image.fromarray(image_array).convert('L')
+        gray_image = image.convert('L')
 
         width, height = self.camera.camera_configuration()['main']['size']
         block_height, block_width = height//grid_dim, width//grid_dim
-
-        overlay_img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(overlay_img)
 
         # Load a default font with the specified text size
         font = ImageFont.truetype(
@@ -119,7 +123,7 @@ class Picam2:
                 block = gray_array[i*block_height:(i+1)*block_height,
                                    j*block_width:((j+1)*block_width)-1]
 
-                variance = self.detect_blur(block)
+                variance = calculate_blur(block)
 
                 variance_history[i][j].append(variance)
                 avg_variance = np.mean(variance_history[i][j])
@@ -148,32 +152,6 @@ class Picam2:
                     font=font,
                     anchor="mm"
                     )
-
-        return np.array(overlay_img)
-
-    def focus_score(self, focus_score_on):
-        """Toggle focus score overlay
-
-        """
-        grid_size = 5
-        text_size = 50
-        text_alpha = 150
-        resolution = (640, 480)
-        N=15
-        history_buffer = [[collections.deque(maxlen=N)
-                          for _ in range(grid_size)]
-                          for _ in range(grid_size)]
-
-        while focus_score_on == True:
-            image = self.camera.capture_array()
-
-            overlay = self.update_frame(image,
-                                        grid_size,
-                                        history_buffer,
-                                        text_size,
-                                        text_alpha)
-            self.camera.set_overlay(overlay)
-
 
     def start_preview(self):
         """Stop null preview, start QT preview and log
@@ -221,6 +199,12 @@ class Picamera2Recorder(Recorder):
         log.info('Set up camera per configurations')
         self.camera = Picam2(configs)
         self.configs = configs
+
+        self.history_buffer = [[collections.deque(maxlen=HISTORY_LENGTH)
+                                for _ in range(GRID_SIZE)]
+                               for _ in range(GRID_SIZE)]
+
+        
         super().finish_setup()
 
     def update_timestamp(self):
@@ -243,9 +227,18 @@ class Picamera2Recorder(Recorder):
         with MappedArray(request, "main") as streams:
             image = Image.fromarray(streams.array)
             draw = ImageDraw.Draw(image)
-            draw_timestamp(image.size, draw)
+            if self.focus_score_on:
+                self.camera.draw_focus_score_display(image,
+                                                     draw,
+                                                     GRID_SIZE,
+                                                     self.history_buffer,
+                                                     TEXT_SIZE,
+                                                     ALPHA_VALUE)
+            else:
+                draw_timestamp(image.size, draw)
             streams.array[:] = np.array(image)
 
+            
     def toggle_zoom(self):
         """Toggle zoom
 
