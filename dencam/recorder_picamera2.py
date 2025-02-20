@@ -15,6 +15,43 @@ from dencam.recorder import Recorder
 log = logging.getLogger(__name__)
 
 
+def draw_timestamp(size, draw):
+    """Draw current timestamp onto a frame
+
+    """
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    font_size = 30
+    text_color = (255, 255, 255)
+    font = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        font_size
+    )
+    bg_color = (0, 0, 0)
+
+    bbox = draw.textbbox((0, 0), timestamp, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
+    padding = 10
+    img_width, _ = size
+    text_x = (img_width - text_width) // 2
+    text_y = 10
+
+    draw.rectangle(
+        [text_x - padding // 2,
+         text_y,
+         text_x + text_width + padding // 2,
+         text_y + text_height + padding],
+        fill=bg_color
+    )
+
+    draw.text((text_x, text_y),
+              timestamp,
+              fill=text_color,
+              font=font)
+
+
 class Picam2:
     """Class for initializing picamera2 and following recorder.py api
 
@@ -199,38 +236,10 @@ class Picamera2Recorder(Recorder):
         if only one stream was to have an overlay.
 
         """
-        font_size = 30
-        text_color = (255, 255, 255)
-        font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-            font_size
-        )
-        bg_color = (0, 0, 0)
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-
         with MappedArray(request, "main") as streams:
             image = Image.fromarray(streams.array)
             draw = ImageDraw.Draw(image)
-
-            bbox = draw.textbbox((0, 0), timestamp, font=font)
-            text_width = bbox[2] - bbox[0]
-            text_height = bbox[3] - bbox[1]
-
-            padding = 10
-            img_width, _ = image.size
-            text_x = (img_width - text_width) // 2
-            text_y = 10
-
-            draw.rectangle(
-                [text_x - padding // 2,
-                 text_y,
-                 text_x + text_width + padding // 2,
-                 text_y + text_height + padding],
-                fill=bg_color
-            )
-
-            draw.text((text_x, text_y), timestamp, fill=text_color, font=font)
-
+            draw_timestamp(image.size, draw)
             streams.array[:] = np.array(image)
 
     def toggle_zoom(self):
