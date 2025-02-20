@@ -124,6 +124,10 @@ class BaseRecorder(ABC):
         """
         self.camera.stop_preview()
         self.preview_on = False
+        if self.focus_score_on:
+            self.focus_score_on = False
+            log.info("Preview screen exited with focus score display on. "
+                     + "Automatically turning it off.")
 
     def _video_path_selector(self):
         user = getpass.getuser()
