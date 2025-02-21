@@ -30,7 +30,7 @@ def draw_timestamp(size, draw):
 
     Args:
         size (tuple of int): The resolution of the frame
-        draw ():
+        draw (pillow.ImageDraw.Draw): The drawing object
     """
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -167,8 +167,8 @@ class Picam2:
         """Start recording and log.
 
         Args:
-            filename ():
-            quality ():
+            filename (str): The path to write the recording video to
+            quality (): NOT YET MADE USE OF
         """
         # pylint: disable=unused-argument
         self.camera.start_recording(self.encoder, filename)
@@ -208,9 +208,8 @@ class Picamera2Recorder(Recorder):
     def _draw_overlay(self, request):
         """Render overlay on video and preview.
 
-        Currently, only renders the timestamp onto the frames of the
-        video but can be used to do other rendering (which is
-        planned).
+        Renders the timestamp onto the frames of the video. Or, if
+        focus score display enabled, draws that display instead.
 
         This method relies on the .pre_callback method
         from picamera2 docs, which applies the overlay onto
@@ -237,7 +236,7 @@ class Picamera2Recorder(Recorder):
             streams.array[:] = np.array(image)
 
     def toggle_zoom(self):
-        """Toggle zoom."""
+        """Toggle cropping into video."""
         num_crop_steps = 25
 
         size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
