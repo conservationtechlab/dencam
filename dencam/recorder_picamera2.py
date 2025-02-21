@@ -1,4 +1,8 @@
-"""Redefining picamera2 class to fit into recorder.py
+"""Recorder classes for picamera2-based systems.
+
+Implements derived class from the recorder.Recorder class intended to
+work on systems (i.e. lesehest) using picamera2 instead of the
+original picamera.  Implements other pieces of related functionality.
 
 """
 import logging
@@ -21,7 +25,9 @@ HISTORY_LENGTH = 15
 
 
 def calculate_blur(image_array):
-    """Compute the blur variance for an image array using the
+    """Compute the blur variance for an image array.
+
+    Calculates the blur variance of an array of pixels using the
     Laplacian method.
 
     Args:
@@ -37,8 +43,11 @@ def calculate_blur(image_array):
 
 
 def draw_timestamp(size, draw):
-    """Draw current timestamp onto a frame
+    """Draw current timestamp onto a frame.
 
+    Args:
+        size (tuple of int): The resolution of the frame
+        draw ():
     """
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -74,9 +83,8 @@ def draw_timestamp(size, draw):
 
 
 class Picam2:
-    """Class for initializing picamera2 and following recorder.py api
+    """Class for initializing picamera2 and following recorder.py api."""
 
-    """
     def __init__(self, configs):
         self.configs = configs
         self.encoder = H264Encoder()
@@ -93,12 +101,15 @@ class Picam2:
                                  variance_history,
                                  font_size,
                                  font_transparency):
-        """Calculate focus scores for each grid element and render
-        their display onto image. 
+        """Calculate and render focus scores.
+
+        For each grid element in a grid laid out over the video frame,
+        calculates the focus score value (filtered over a frame
+        window) and renders their display onto image.
 
         Args:
             image (pillow.Image): The current frame
-            draw (pillow.ImageDraw.Draw): The drawing object 
+            draw (pillow.ImageDraw.Draw): The drawing object
             grid_dim (int): The number of cells per row/column for the
                 grid overlay.
             variance_history (list): 2D list of deque buffers storing
@@ -154,9 +165,7 @@ class Picam2:
                     )
 
     def start_preview(self):
-        """Stop null preview, start QT preview and log
-
-        """
+        """Stop null preview, start QT preview and log."""
         self.camera.stop_preview()
         self.camera.start_preview(Preview.QT,
                                   x=0,
@@ -166,16 +175,17 @@ class Picam2:
         log.info('Started Preview')
 
     def stop_preview(self):
-        """Stop preview, start null preview and log
-
-        """
+        """Stop preview, start null preview and log."""
         self.camera.stop_preview()
         self.camera.start_preview(Preview.NULL)
         log.info('Stopped Preview')
 
     def start_recording(self, filename, quality=None):
-        """Start recording and log
+        """Start recording and log.
 
+        Args:
+            filename ():
+            quality ():
         """
         # pylint: disable=unused-argument
         self.camera.start_recording(self.encoder, filename)
@@ -183,17 +193,14 @@ class Picam2:
         log.info(log_message)
 
     def stop_recording(self):
-        """Stop recording and log
-
-        """
+        """Stop recording and log."""
         self.camera.stop_recording()
         log.info('Stopped Recording"')
 
 
 class Picamera2Recorder(Recorder):
-    """Recorder that uses picamera2
+    """Recorder that uses picamera2."""
 
-    """
     def __init__(self, configs):
         super().__init__(configs)
         log.info('Set up camera per configurations')
@@ -204,24 +211,32 @@ class Picamera2Recorder(Recorder):
                                 for _ in range(GRID_SIZE)]
                                for _ in range(GRID_SIZE)]
 
-        
         super().finish_setup()
 
     def update_timestamp(self):
+        """Update timestamp display.
+
+        In reality other rendering onto preview and video is done in
+        this method but retains this name for legacy compatibility.
+
+        """
         self.camera.camera.pre_callback = self._draw_overlay
 
     def _draw_overlay(self, request):
-        """Render overlay on video and preview
+        """Render overlay on video and preview.
 
         Currently, only renders the timestamp onto the frames of the
         video but can be used to do other rendering (which is
         planned).
-        
+
         This method relies on the .pre_callback method
         from picamera2 docs, which applies the overlay onto
         all screens. This means the preview contains the same
         overlay. The entire implementation would need to change
         if only one stream was to have an overlay.
+
+        Args:
+            request ():
 
         """
         with MappedArray(request, "main") as streams:
@@ -238,11 +253,8 @@ class Picamera2Recorder(Recorder):
                 draw_timestamp(image.size, draw)
             streams.array[:] = np.array(image)
 
-            
     def toggle_zoom(self):
-        """Toggle zoom
-
-        """
+        """Toggle zoom."""
         num_crop_steps = 25
 
         size = self.camera.camera.capture_metadata()['ScalerCrop'][2:]
