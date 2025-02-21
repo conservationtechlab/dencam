@@ -7,14 +7,15 @@ original picamera.  Implements other pieces of related functionality.
 """
 import logging
 import time
+import collections
+
 from picamera2.encoders import H264Encoder
 from picamera2 import Picamera2, Preview, MappedArray
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-import collections
-from scipy.ndimage import laplace
 
 from dencam.recorder import Recorder
+from dencam.calculations import calculate_blur
 
 log = logging.getLogger(__name__)
 
@@ -22,24 +23,6 @@ GRID_SIZE = 5
 TEXT_SIZE = 50
 ALPHA_VALUE = 150
 HISTORY_LENGTH = 15
-
-
-def calculate_blur(image_array):
-    """Compute the blur variance for an image array.
-
-    Calculates the blur variance of an array of pixels using the
-    Laplacian method.
-
-    Args:
-        image_array (numpy.ndarray): Grayscale image array to analyze.
-
-    Returns:
-        float: Variance of the Laplacian, where a lower variance
-        indicates more blur.
-
-    """
-    laplacian_result = laplace(image_array)
-    return laplacian_result.var()
 
 
 def draw_timestamp(size, draw):
