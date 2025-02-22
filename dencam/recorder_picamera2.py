@@ -1,3 +1,4 @@
+
 """Redefining picamera2 class to fit into recorder.py
 
 """
@@ -22,7 +23,14 @@ class Picam2:
         self.encoder = H264Encoder()
 
         self.camera = Picamera2()
-        self.camera.configure("preview")
+        config = {
+            "main": {"size": (1920, 1080), "format": "XBGR8888"},
+            "lores": {"size": (640, 480), "format": "YUV420"},
+            "raw": {"size": (1920, 1080), "format": "SGBRG10_CSI2P"}     # Optional preview stream
+        }
+        video_config =  self.camera.create_video_configuration(main=config["main"])
+        video_config["lores"] = config["lores"]
+        self.camera.configure(video_config)
         self.camera.start_preview(Preview.NULL)
         self.camera.start()
 
