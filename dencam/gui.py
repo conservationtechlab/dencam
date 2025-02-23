@@ -482,21 +482,21 @@ class BlankPage(tk.Frame):
 
         # values set for buster, unneeded for now to be bookworm
 
-        self.page_label = tk.Label(self,
-                                   text="Next Page",
-                                   font=fonts['buttons'],
-                                   fg='yellow',
-                                   bg='black',
-                                   highlightthickness=2)
-        self.page_label.place(height=50, width=145, x=495, y=430)
+        # self.page_label = tk.Label(self,
+        #                            text="Next Page",
+        #                            font=fonts['buttons'],
+        #                            fg='yellow',
+        #                            bg='black',
+        #                            highlightthickness=2)
+        # self.page_label.place(height=50, width=145, x=495, y=430)
 
-        self.page_label = tk.Label(self,
-                                   text="Upper Button>Toggle Inspect",
-                                   font=fonts['buttons'],
-                                   fg='yellow',
-                                   bg='black',
-                                   highlightthickness=2)
-        self.page_label.place(height=50, width=440, x=0, y=430)
+        # self.page_label = tk.Label(self,
+        #                            text="Upper Button>Toggle Inspect",
+        #                            font=fonts['buttons'],
+        #                            fg='yellow',
+        #                            bg='black',
+        #                            highlightthickness=2)
+        # self.page_label.place(height=50, width=440, x=0, y=430)
 
 
 class SolarPage(tk.Frame):
