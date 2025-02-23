@@ -15,16 +15,16 @@ class BusterConfig:
         "recorder_time_label": [50, 0, 290],
         "recorder_error_label": [100, 200, 0, 430],
         "recorder_next_page": [50, 160, 0, 364],
-        "recorder_toggle_recording": [50, 260, 380, 310],
+        "recorder_toggle_recording": [50, 270, 0, 240],
         "network_ip_label": [0, 50],
         "network_version_label": [70, 0, 430],
         "network_next_page": [50, 160, 0, 364],
-        "network_airplane_mode": [50, 215, 425, 310],
+        "network_airplane_mode": [50, 220, 0, 240],
         "blank_next_page": [50, 160, 0, 364],
         "blank_toggle": [50, 440, 0, 430],
         "solar_solar_label": [0, 50],
         "solar_next_page": [50, 160, 0, 364],
-        "solar_update_data": [50, 180, 460, 310],
+        "solar_update_data": [50, 190, 0, 240],
     }
 
 
