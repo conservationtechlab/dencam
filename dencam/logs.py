@@ -6,6 +6,12 @@ from datetime import datetime
 
 
 def setup_logger(level, filename=None):
+    # Clear any existing logging handlers, possibly created by
+    # imported modules.  Specifically, in the Mimir system,
+    # `pyPS4Controller` was defining a handler and it was causing
+    # duplicate logging messages to the terminal.
+    logging.root.handlers.clear()
+
     logger = logging.getLogger()
     logger.setLevel(level)
 

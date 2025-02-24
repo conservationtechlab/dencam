@@ -25,8 +25,8 @@ from dencam.recorder_ptz import PTZRecorder
 from dencam.gui import Controller, State
 from dencam.networking import AirplaneMode
 
-log = setup_logger(logging.INFO)
-
+setup_logger(logging.INFO)
+log = logging.getLogger(__name__)
 
 def main():
     """Run main Mimir program
