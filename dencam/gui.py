@@ -1,4 +1,4 @@
-"""Graphical User Interface for DenCam
+"""Graphical User Interface for DenCam.
 
 This module contains the classes associated with the DenCam GUI
 displayed on the PiTFT screen that is attached to the Raspberry Pi's
@@ -20,9 +20,8 @@ log = logging.getLogger(__name__)
 
 
 class BaseController(Thread):
-    """DenCam UI controller base class
+    """DenCam UI controller base class."""
 
-    """
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__()
         self.recorder = recorder
@@ -51,9 +50,7 @@ class BaseController(Thread):
         self.window.mainloop()
 
     def _setup(self):
-        """Set up the Tkinter GUI
-
-        """
+        """Set up the Tkinter GUI."""
         self.window = tk.Tk()
         self.window.attributes('-fullscreen', True)
         self.window.title('DenCam Control')
@@ -95,19 +92,20 @@ class BaseController(Thread):
         self.show_frame('NetworkPage')
 
     def show_frame(self, page_name):
-        """Display given page in UI
+        """Display given page in UI.
 
-        Parameters
-        ----------
-        page_name : str
-            Name of page to show
+        Args:
+            page_name (str): The name of page to show
 
         """
         frame = self.frames[page_name]
         frame.tkraise()
 
     def _get_time(self):
-        """Retrieve current time and format it for screen display
+        """Retrieve current time and format it for screen display.
+
+        Returns:
+            str: The formatted time
 
         """
         local_time = time.localtime()
@@ -130,7 +128,7 @@ class BaseController(Thread):
         return shours + ':' + smins + ':' + ssecs
 
     def _update(self):
-        """Execute core loop activities
+        """Execute core loop activities.
 
         Runs at 10 Hz (every 100 milliseconds)
 
@@ -149,9 +147,7 @@ class BaseController(Thread):
         self.window.after(100, self._update)
 
     def _update_strings(self):
-        """Update all the strings used in the UI readout
-
-        """
+        """Update all the strings used in the UI readout."""
         strg = f"Vids this run: {str(self.recorder.vid_count)}"
         self.vid_count_text.set(strg)
 
@@ -190,10 +186,7 @@ class BaseController(Thread):
         self.solar_text.set(solar_info)
 
     def _prep_fonts(self):
-        """Populate the dict of fonts used in UI
-
-        """
-
+        """Populate the dict of fonts used in UI."""
         scrn_height = self.window.winfo_screenheight()
         self.fonts['small'] = tkFont.Font(family='Courier New',
                                           size=-int(scrn_height/9))
@@ -211,7 +204,7 @@ class BaseController(Thread):
 
 
 class Controller(BaseController):
-    """DenCam UI Controller
+    """DenCam UI Controller.
 
     Extends BaseController to add mechanics for 1) fixing the duration
     of each recording using a value drawn from user configs (and
@@ -219,6 +212,7 @@ class Controller(BaseController):
     starting first recording after a user-configured wait period.
 
     """
+
     def __init__(self, configs, recorder, state_list, state, airplane_mode):
         super().__init__(configs, recorder, state_list, state, airplane_mode)
 
@@ -237,7 +231,7 @@ class Controller(BaseController):
 
 
 class State():
-    """Class that implements a simple, linear state machine
+    """Class that implements a simple, linear state machine.
 
     The states available to the device are essentially which UI page
     is being displayed and is available for interaction.  This State
@@ -263,19 +257,18 @@ class State():
         Increment to next state
 
     """
+
     def __init__(self, num_states):
         self.value = 0
         self.num_states = num_states
 
     def goto_next(self):
-        """Increment to next state
-
-        """
+        """Increment to next state."""
         self.value += 1
         if self.value >= self.num_states:
             self.value = 0
-            
-            
+
+
 class RecordingPage(tk.Frame):
     """UI Page that displays information related to DenCam recording.
 
@@ -296,12 +289,7 @@ class RecordingPage(tk.Frame):
 
         fonts = controller.fonts
         placements = controller.placement_config
-
         self.configure(bg='black')
-        self.page_label = tk.Label(self, text="Recording Page",
-                                   font=fonts['smaller'],
-                                   fg='yellow', bg='DodgerBlue4')
-        self.page_label.pack(fill=tk.X)
 
         self.recording_label = tk.Label(self,
                                         textvariable=controller.recording_text,
@@ -318,8 +306,9 @@ class RecordingPage(tk.Frame):
                                         fg='yellow',
                                         bg='black')
         self.vid_count_label.place(height=vid_count_placement[0],
-                                   x=vid_count_placement[1],
-                                   y=vid_count_placement[2])
+                                   relx=1.0,
+                                   anchor="e",
+                                   y=vid_count_placement[1])
 
         device_placement = placements.values['recorder_device_label']
 
@@ -329,8 +318,9 @@ class RecordingPage(tk.Frame):
                                      fg='yellow',
                                      bg='black')
         self.device_label.place(height=device_placement[0],
-                                x=device_placement[1],
-                                y=device_placement[2])
+                                relx=1.0,
+                                anchor="e",
+                                y=device_placement[1])
 
         storage_placement = placements.values['recorder_storage_label']
 
@@ -340,8 +330,9 @@ class RecordingPage(tk.Frame):
                                       fg='yellow',
                                       bg='black')
         self.storage_label.place(height=storage_placement[0],
-                                 x=storage_placement[1],
-                                 y=storage_placement[2])
+                                 relx=1.0,
+                                 anchor="e",
+                                 y=storage_placement[1])
 
         time_placement = placements.values['recorder_time_label']
 
@@ -352,8 +343,9 @@ class RecordingPage(tk.Frame):
                                    bg='black',
                                    justify="left")
         self.time_label.place(height=time_placement[0],
-                              x=time_placement[1],
-                              y=time_placement[2])
+                              relx=1.0,
+                              anchor="e",
+                              y=time_placement[1])
 
         # todo: add the pixel values for error label
 
@@ -390,9 +382,14 @@ class RecordingPage(tk.Frame):
                               x=toggle_placement[2],
                               y=toggle_placement[3])
 
+        self.page_label = tk.Label(self, text="Recording Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow', bg='DodgerBlue4')
+        self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
+
 
 class NetworkPage(tk.Frame):
-    """UI page that displays info related to network connection
+    """UI page that displays info related to network connection.
 
     Displays:
     - hostname of device
@@ -406,20 +403,13 @@ class NetworkPage(tk.Frame):
     On this page, action button toggles airplane mode on and off.
 
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
         fonts = controller.fonts
         placements = controller.placement_config
         self.configure(bg='black')
-        self.page_label = tk.Label(self,
-                                   text="Network Page",
-                                   font=fonts['smaller'],
-                                   fg='yellow',
-                                   bg='midnight blue')
-        self.page_label.pack(fill=tk.X)
-
-        ip_placement = placements.values['network_ip_label']
 
         self.ip_label = tk.Label(self,
                                  textvariable=controller.ip_text,
@@ -427,8 +417,8 @@ class NetworkPage(tk.Frame):
                                  fg='yellow',
                                  bg='black',
                                  justify="left")
-        self.ip_label.place(x=ip_placement[0],
-                            y=ip_placement[1])
+        self.ip_label.place(relx=0.5,
+                            anchor="n")
 
         version_placement = placements.values['network_version_label']
 
@@ -438,7 +428,8 @@ class NetworkPage(tk.Frame):
                                       fg='yellow',
                                       bg='black')
         self.version_label.place(height=version_placement[0],
-                                 x=version_placement[1],
+                                 relx=1.0,
+                                 anchor="ne",
                                  y=version_placement[2])
 
         next_page_placement = placements.values['network_next_page']
@@ -467,11 +458,17 @@ class NetworkPage(tk.Frame):
                               x=airplane_placement[2],
                               y=airplane_placement[3])
 
+        self.page_label = tk.Label(self,
+                                   text="Network Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='midnight blue')
+        self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
+
 
 class BlankPage(tk.Frame):
-    """UI Page that is blank
+    """UI Page that is blank."""
 
-    """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.configure(bg='black')
@@ -481,29 +478,29 @@ class BlankPage(tk.Frame):
                                    font=fonts['smaller'],
                                    fg='yellow',
                                    bg='blue4')
-        self.page_label.pack(side=tk.TOP, fill=tk.X)
+        self.page_label.pack(side=tk.BOTTOM, fill=tk.X)
 
         # values set for buster, unneeded for now to be bookworm
 
-        self.page_label = tk.Label(self,
-                                   text="Next Page",
-                                   font=fonts['buttons'],
-                                   fg='yellow',
-                                   bg='black',
-                                   highlightthickness=2)
-        self.page_label.place(height=50, width=145, x=495, y=430)
+        # self.page_label = tk.Label(self,
+        #                            text="Next Page",
+        #                            font=fonts['buttons'],
+        #                            fg='yellow',
+        #                            bg='black',
+        #                            highlightthickness=2)
+        # self.page_label.place(height=50, width=145, x=495, y=430)
 
-        self.page_label = tk.Label(self,
-                                   text="Upper Button>Toggle Inspect",
-                                   font=fonts['buttons'],
-                                   fg='yellow',
-                                   bg='black',
-                                   highlightthickness=2)
-        self.page_label.place(height=50, width=440, x=0, y=430)
+        # self.page_label = tk.Label(self,
+        #                            text="Upper Button>Toggle Inspect",
+        #                            font=fonts['buttons'],
+        #                            fg='yellow',
+        #                            bg='black',
+        #                            highlightthickness=2)
+        # self.page_label.place(height=50, width=440, x=0, y=430)
 
 
 class SolarPage(tk.Frame):
-    """UI Page that displays the solar data from charge controller
+    """UI Page that displays the solar data from charge controller.
 
     On this page, UI action button refreshes solar data (mechanics of
     the refresh might bear some more detail added here or in a
@@ -511,17 +508,12 @@ class SolarPage(tk.Frame):
     implemented)
 
     """
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         fonts = controller.fonts
         placements = controller.placement_config
         self.configure(bg='black')
-        self.page_label = tk.Label(self,
-                                   text="Solar Page",
-                                   font=fonts['smaller'],
-                                   fg='yellow',
-                                   bg='SlateBlue4')
-        self.page_label.pack(fill=tk.X)
 
         label_placement = placements.values['solar_solar_label']
 
@@ -530,9 +522,11 @@ class SolarPage(tk.Frame):
                                     font=fonts['smaller'],
                                     fg='yellow',
                                     bg='black',
-                                    justify="left")
-        self.solar_label.place(x=label_placement[0],
-                               y=label_placement[1])
+                                    justify="right",
+                                    anchor="e")
+        self.solar_label.place(relx=1.0,
+                               anchor="ne",
+                               y=label_placement[0])
 
         next_page_placement = placements.values['solar_next_page']
 
@@ -560,14 +554,22 @@ class SolarPage(tk.Frame):
                               x=update_placement[2],
                               y=update_placement[3])
 
+        self.page_label = tk.Label(self,
+                                   text="Solar Page",
+                                   font=fonts['smaller'],
+                                   fg='yellow',
+                                   bg='SlateBlue4')
+        self.page_label.pack(fill=tk.X, side=tk.BOTTOM)
+
 
 class ErrorScreen():
-    """Handles display of camera connection error information
+    """Handles display of camera connection error information.
 
     This class is used before core UI controller is even invoked as
     resolving this error supercedes all other functionality.
 
     """
+
     def __init__(self):
         self.screen = tk.Tk()
         self.screen.attributes('-fullscreen', True)
@@ -579,7 +581,5 @@ class ErrorScreen():
         self.screen.update()
 
     def hide(self):
-        """Destroy the error screen
-
-        """
+        """Destroy the error screen."""
         self.screen.destroy()

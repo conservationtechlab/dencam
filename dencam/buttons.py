@@ -1,4 +1,4 @@
-"""PiTFT buttons handling
+"""PiTFT buttons handling.
 
 This module contains classes and functions for interfacing with the
 four buttons that are part of the PiTFT screen PCB.
@@ -15,10 +15,10 @@ from dencam import mppt
 log = logging.getLogger(__name__)
 
 # Button pin number mappings
-SCREEN_BUTTON = 27
-FUNCTION_BUTTON = 23
-RECORD_BUTTON = 22
-ZOOM_BUTTON = 17
+SCREEN_BUTTON = 17
+FUNCTION_BUTTON = 22
+RECORD_BUTTON = 23
+ZOOM_BUTTON = 27
 
 
 class ButtonHandler(Thread):
@@ -79,9 +79,7 @@ class ButtonHandler(Thread):
             self.screen_on = False
 
     def _handle_buttons(self):
-        """Handles button presses and the associated responses.
-
-        """
+        """Handle button presses and the associated responses."""
         if not GPIO.input(SCREEN_BUTTON):
             if not self.latch_screen_button:
                 self.latch_screen_button = True

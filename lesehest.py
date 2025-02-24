@@ -59,7 +59,7 @@ def main():
             try:
                 recorder = Picamera2Recorder(configs)
                 checking_camera = False
-            except RuntimeError as cam_error:
+            except IndexError as cam_error:
                 log.warning(cam_error)
                 if error_screen is None:
                     error_screen = ErrorScreen()

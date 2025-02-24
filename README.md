@@ -29,11 +29,14 @@ been encountered with Bullseye (specifically with interfacing with the
 picamera). Buster must be 32 bit and not 64 bit otherwise there is an issue
 with the libmmal.so library
 
-# Install from PyPI
+# Installation
+## Fenrir
+
+## Install from PyPI
 
     pip3 install dencam
 
-# Install from GitHub repository
+## Install from GitHub repository
 
 ## Install virtualenvwrapper
 
@@ -110,6 +113,115 @@ script will do the following:
 
 * Disable screen saver
 * Setup PiTFT screen
+
+## Lesehest
+Ensure you have Bookworm 64-bit and are sshed into the pi from your computer.
+
+## Install environment libraries
+
+    sudo apt install python3-virtualenv python3-virtualenvwrapper
+
+## Set up environment activation
+
+    echo -e "\n# Virtual environment setup" >> ~/.bashrc 
+    echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc 
+    echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc 
+    echo "source /usr/share/virtualenvwrapper/virtualenvwrapper.sh" >> ~/.bashrc 
+    source ~/.bashrc 
+
+## Create environment
+
+    mkvirtualenv dencam -p python3 --system-site-packages 
+    workon dencam
+
+## Disable screen blanking/screensaver
+
+    sudo tee -a /etc/xdg/lxsession/LXDE-pi/autostart > /dev/null << EOF
+    @xset s off
+    @xset -dpms
+    @xset s noblank
+    EOF
+
+## Install screen tools
+
+    cd ~ 
+    sudo apt-get update 
+    sudo apt-get install -y git python3-pip 
+    pip3 install --upgrade adafruit-python-shell click 
+    git clone https://github.com/adafruit/Raspberry-Pi-Installer-Scripts.git 
+    cd Raspberry-Pi-Installer-Scripts
+
+## Configure Screen
+
+    sudo -E env PATH=$PATH python3 adafruit-pitft.py --display=28r --rotation=270 --install-type=mirror 
+
+You will be prompted to reboot after this step, say yes and wait for the device to turn back on. You will see the desktop on the PiTFT screen now.
+
+## Disable taskbar
+
+    nano ~/.config/lxpanel/LXDE-pi/panels/panel
+
+In the global configs, line 14 sets 'autohide=0' set it to autohide=1 instead. Cntrl + X, Y, enter. 
+
+    lxpanelctl restart
+
+The taskbar on the screen should now be hidden.
+
+## Downloading the repo
+If you would like to download the most stable version, simply run:
+
+    workon dencam
+    git clone https://github.com/conservationtechlab/dencam.git
+
+If you would like to download the dev repo, where you can make changes and quickly update new changes, first link this pi to your github account by creating an SSH key and sharing it with your github settings, run:
+
+    ssh-keygen -t ed25519 -C "your_email@example.com"
+
+Press enter for all the prompts until its finished, then run:
+
+    cat ~/.ssh/id_ed25519.pub 
+
+Copy the entire output and paste it into 'SSH and GPG keys" in your github settings. Label it as the hostname of your pi. Then run:
+
+    git clone git@github.com:conservationtechlab/dencam.git 
+
+## Finish installation
+
+    cd dencam
+
+    pip install .
+
+## Usage 
+Change the config setting SOLAR_DIR: to reflect the username of the pi you are using. While you are sshed in, always run:
+
+    export DISPLAY=:0
+    workon dencam
+    cd dencam
+    
+To run lesehest:
+
+    python lesehest.py cfgs/example_config.yaml 
+
+## Possible bugs and how to fix
+### Screen is flipped 180* from button imagery to actual buttons
+
+    sudo nano /boot/firmware/config.txt
+
+On the last line, you will see a value of 'rotation=90' or 'rotation=270'. Depending which one you see, swap it with the other. If it says 'rotation=90' change it to 'rotation=270' and save the file. Cntrl + X, Y, enter. Reboot the pi.
+Rerun lesehest and the screen should be in the correct orientation.
+
+### Screen gui has things out of placed, smooshed, blocking, and buttons are in the center of the screen
+
+    nano /home/USER/dencam/dencam/gui.py
+
+Change line 44 from 'self.placement_config = BookwormConfig()' to 'self.placement_config = BusterConfig()' Cntrl + X, Y, enter.
+
+    nano /home/USER/dencam/dencam/recorder_picamera2.py
+
+Change line 23 from (320, 240) to (640, 480)
+Change line 36 from width=320 -> width=640 and line 37 from height=240 -> height=480. Cntrl + X, Y, enter. 
+
+Rerun lesehest and the pixels should be aligned properly. 
 
 # Usage
 
