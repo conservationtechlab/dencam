@@ -1,7 +1,17 @@
-"""Recorder class and related for PTZ camera
+"""Defines a PTZRecorder class and related components
 
-The classes needed for interfacing with a PTZ network surveillance
-camera as the recording device for a dencam.
+Implements the components needed for interfacing with a PTZ network
+surveillance camera as the recording device for a DenCam.
+
+For each camera type used in the different DenCam device confiratioms,
+we define a class that derives from the `Recorder` class that handles
+the particulars of that camera, usually by also implementing another
+class (one instance of which is an attribute of the relevant
+`Recorder` sub-class) that is a wrapper around the camera itself that
+implements the interface expected by the rest of the DenCam code. In
+this module we are defining those classes for DenCam systems that use
+a PTZ network surveillance camera.  At present, that is solely the
+Mimir system.
 
 """
 import os
@@ -32,10 +42,10 @@ WINDOW_NAME = "DenCam Mimir View"
 
 
 class MimirCamera:
-    """High-level PTZ camera class
+    """High-level PTZ camera class.
 
     Wraps a ptzipcam.camera.Camera to match API expected by rest of
-    DenCam
+    DenCam.
 
     """
     def __init__(self, configs):
@@ -57,9 +67,7 @@ class MimirCamera:
 
     @property
     def zoom(self):
-        """Getter for crop box tuple
-
-        """
+        """Get current crop box coordinate tuple."""
         return self._crop
 
     @zoom.setter
@@ -115,7 +123,13 @@ class MimirCamera:
         cam.release()
 
     def start_preview(self):
-        """Start display of camera stream to screen
+        """Start display of camera stream to screen.
+
+        Initiates display of the video stream from the camera to the
+        DenCam's screen.
+
+        Also initiates the control of the camera via manual joystick
+        control.
 
         """
         self.stop_display_event.clear()
@@ -131,14 +145,12 @@ class MimirCamera:
         joystick_worker.start()
 
     def stop_preview(self):
-        """Stop display of cam stream
-
-        """
+        """Stop display of cam stream."""
         self.stop_display_event.set()
         self.stop_joystick_event.set()
 
     def _check_resolution(self, resolution):
-        """Warn if a resolution doesn't match self.resolution
+        """Warn if a resolution doesn't match self.resolution.
 
         Unlike with Fenrir, as of now, we are not using the resolution
         configuration parameter to set the camera stream
@@ -205,30 +217,28 @@ class MimirCamera:
         worker.start()
 
     def stop_recording(self):
-        """Stop recording of camera video
-
-        """
+        """Stop recording of camera video."""
         self.stop_record_event.set()
 
     def release(self):
-        """Clean up any running processes
-
-        """
+        """Clean up any running processes."""
         log.info("MimirCamera releasing mp processes")
         self.stop_preview()
         self.stop_recording()
 
 
 class PTZRecorder(Recorder):
-    """Recorder that uses a pan-tilt-zoom network surveillance camera
+    """Recorder for a PTZ network surveillance camera.
+
+    For Mimir systems, the camera is a pan-tilt-zoom network
+    surveillance camera so we need a `Recorder` class that is designed
+    to use that (instead of, as with Fenrir systems, a PiCamera)
 
     """
     def __init__(self, configs):
         super().__init__(configs)
 
-        # camera setup
-        log.info('Set up camera per configurations')
-
+        log.info('Setting up camera per configurations')
         self.camera = MimirCamera(configs)
         # self.camera = PiCamera(framerate=configs['FRAME_RATE'])
         # text_size = int((1/20) * configs['CAMERA_RESOLUTION'][1])
@@ -239,7 +249,5 @@ class PTZRecorder(Recorder):
         super().finish_setup()
 
     def release(self):
-        """Release the MimirCamera object
-
-        """
+        """Release the MimirCamera object."""
         self.camera.release()
