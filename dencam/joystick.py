@@ -1,3 +1,13 @@
+"""Defines components for camera joystick interface.
+
+For manual aiming of the Mimir system's PTZ network surveillance
+camera, this module defines a pair of classes for interfacing with a
+joystick to effect that control.  The joystick in question is a PS4
+Controller but the decision is to refer to it as the "joystick" since
+the term "controller" is pretty overloaded in our code for the DenCam
+project what with their being the UI controller etc.
+
+"""
 import time
 import logging
 
@@ -23,7 +33,7 @@ CAM_ZOOM_MIN = 0
 
 
 class PTZController:
-    """Metaclass around Joystick class
+    """Metaclass around Joystick class.
 
     Handles setup of PTZ camera in prep for giving that over to the
     Joystick class.
@@ -48,9 +58,7 @@ class PTZController:
 
 
 class Joystick(Controller):
-    """Manages PTZ camera control via PS4 controller.
-
-    """
+    """Manages PTZ camera control via PS4 controller."""
 
     def __init__(self, ptz, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,11 +91,11 @@ class Joystick(Controller):
                  cmds['zoom'])
 
     def scale_joystick_value(self, v):
-        # scales joystick value to be within 0-1 range
+        """Scale joystick value to be within 0-1 range."""
         return v/35000
 
     def ready_for_next(self):
-        # checks timeout time to send new command
+        """Check timeout time to send new command."""
         return time.time() - self.t > self.timeout
 
     # Arrow Buttons - step pan/tilt
@@ -131,7 +139,8 @@ class Joystick(Controller):
     def on_up_down_arrow_release(self):
         pass
 
-    # Disable Joysticks
+    # Disable Joysticks by making the following callbacks have no
+    # effect:
     def on_L3_up(self, value):
         pass
 
@@ -217,9 +226,7 @@ class Joystick(Controller):
         pass
 
     def drive_ptz(self, cmds):
-        """Prep and send actual pan, tilt, zoom commands to camera
-
-        """
+        """Prep and send actual pan, tilt, zoom commands to camera."""
         def keep_in_bounds(command, minn, maxx):
             if command <= minn:
                 command = minn
