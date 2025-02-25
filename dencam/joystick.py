@@ -70,6 +70,13 @@ class Joystick(Controller):
         self.joystick_ignore = 10000
         self.t = time.time()  # Initialize time tracking for command delays
         self.timeout = 0.25  # Delay between commands
+        self.zoom_state = 0.0
+        pan, tilt, _ = self.ptz.get_position()
+        log.info("Zoom out when Joystick object constructed.")
+        self.ptz.absmove_w_zoom(pan,
+                                tilt,
+                                self.zoom_state)
+
 
     def _pan_ratio(self):
         zoom = self.ptz.get_position()[2]
@@ -77,10 +84,12 @@ class Joystick(Controller):
 
     def send_command(self, x_delta, y_delta, z_delta):
         cmds = {}
-        pan, tilt, zoom = self.ptz.get_position()
+        pan, tilt, _ = self.ptz.get_position()
         cmds['pan'] = pan + x_delta
         cmds['tilt'] = tilt + y_delta
-        cmds['zoom'] = zoom + z_delta
+        self.zoom_state = self.zoom_state + z_delta
+        cmds['zoom'] = self.zoom_state
+        log.info("Zoom state: %s", self.zoom_state)
         self.drive_ptz(cmds)
         self.display_status(cmds)
 
@@ -196,6 +205,7 @@ class Joystick(Controller):
         if self.ready_for_next():
             if self.toggleOn:
                 self.ptz.zoom_in_full()
+                self.zoom_state = 1.0
             else:
                 self.send_command(0, 0, Z_DELTA)
             self.t = time.time()
@@ -218,6 +228,7 @@ class Joystick(Controller):
         if self.ready_for_next():
             if self.toggleOn:
                 self.ptz.zoom_out_full()
+                self.zoom_state = 0.0
             else:
                 self.send_command(0, 0, -Z_DELTA)
             self.t = time.time()
