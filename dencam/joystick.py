@@ -64,11 +64,10 @@ class Joystick(Controller):
         super().__init__(*args, **kwargs)
         self.ptz = ptz
         self.fine_movement = False
-        self.toggleOn = False
-        self.focusMode = False
+        self.toggle_on = False
         self.yJoystickReleased = False
         self.joystick_ignore = 10000
-        self.t = time.time()  # Initialize time tracking for command delays
+        self.time = time.time()  # Initialize time tracking for command delays
         self.timeout = 0.25  # Delay between commands
         self.zoom_state = 0.0
         pan, tilt, _ = self.ptz.get_position()
@@ -76,7 +75,6 @@ class Joystick(Controller):
         self.ptz.absmove_w_zoom(pan,
                                 tilt,
                                 self.zoom_state)
-
 
     def _pan_ratio(self):
         zoom = self.ptz.get_position()[2]
@@ -94,18 +92,19 @@ class Joystick(Controller):
         self.display_status(cmds)
 
     def display_status(self, cmds):
+        """Write the pan, tilt, and zoom stored in cmds to logs."""
         log.info("Pan: %0.2f | Tilt: %0.2f | Zoom: %0.2f",
                  cmds['pan'],
                  cmds['tilt'],
                  cmds['zoom'])
 
-    def scale_joystick_value(self, v):
+    def scale_joystick_value(self, value):
         """Scale joystick value to be within 0-1 range."""
-        return v/35000
+        return value/35000
 
     def ready_for_next(self):
         """Check timeout time to send new command."""
-        return time.time() - self.t > self.timeout
+        return time.time() - self.time > self.timeout
 
     # Arrow Buttons - step pan/tilt
     # TODO: scale fine movement by zoom amount
@@ -115,7 +114,7 @@ class Joystick(Controller):
                 self.send_command(X_DELTA_FINE * self._pan_ratio(), 0, 0)
             else:
                 self.send_command(X_DELTA * self._pan_ratio(), 0, 0)
-            self.t = time.time()
+            self.time = time.time()
 
     def on_right_arrow_press(self):
         if self.ready_for_next():
@@ -123,7 +122,7 @@ class Joystick(Controller):
                 self.send_command(-X_DELTA_FINE * self._pan_ratio(), 0, 0)
             else:
                 self.send_command(-X_DELTA * self._pan_ratio(), 0, 0)
-            self.t = time.time()
+            self.time = time.time()
 
     def on_up_arrow_press(self):
         if self.ready_for_next():
@@ -131,16 +130,16 @@ class Joystick(Controller):
                 self.send_command(0, -Y_DELTA_FINE, 0)
             else:
                 self.send_command(0, -Y_DELTA, 0)
-            self.t = time.time()
+            self.time = time.time()
 
     def on_down_arrow_press(self):
         if self.ready_for_next():
             if self.fine_movement:
                 self.send_command(0, Y_DELTA_FINE, 0)
-                self.t = time.time()
+                self.time = time.time()
             else:
                 self.send_command(0, Y_DELTA, 0)
-                self.t = time.time()
+                self.time = time.time()
 
     def on_left_right_arrow_release(self):
         pass
@@ -195,20 +194,20 @@ class Joystick(Controller):
 
     # Exposure/Focus Toggle
     def on_R1_press(self):
-        self.toggleOn = True
+        self.toggle_on = True
 
     def on_R1_release(self):
-        self.toggleOn = False
+        self.toggle_on = False
 
     def on_triangle_press(self):
         # zoom in
         if self.ready_for_next():
-            if self.toggleOn:
+            if self.toggle_on:
                 self.ptz.zoom_in_full()
                 self.zoom_state = 1.0
             else:
                 self.send_command(0, 0, Z_DELTA)
-            self.t = time.time()
+            self.time = time.time()
 
     def on_triangle_release(self):
         pass
@@ -226,12 +225,12 @@ class Joystick(Controller):
     def on_x_press(self):
         # zoom out
         if self.ready_for_next():
-            if self.toggleOn:
+            if self.toggle_on:
                 self.ptz.zoom_out_full()
                 self.zoom_state = 0.0
             else:
                 self.send_command(0, 0, -Z_DELTA)
-            self.t = time.time()
+            self.time = time.time()
 
     def on_x_release(self):
         pass
