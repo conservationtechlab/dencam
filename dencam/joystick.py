@@ -22,6 +22,9 @@ Z_DELTA = .07
 X_DELTA_FINE = X_DELTA/3
 Y_DELTA_FINE = Y_DELTA/3
 Z_DELTA_FINE = Z_DELTA/3
+X_DELTA_FINEST = X_DELTA/9
+Y_DELTA_FINEST = Y_DELTA/9
+Z_DELTA_FINEST = Z_DELTA/9
 
 INFINITE_PAN = True
 CAM_PAN_MAX = 1.0
@@ -66,6 +69,7 @@ class Joystick(Controller):
         super().__init__(*args, **kwargs)
         self.ptz = ptz
         self.fine_movement = False
+        self.finest_movement = False
         self.toggle_on = False
         self.yJoystickReleased = False
         self.joystick_ignore = 10000
@@ -114,7 +118,6 @@ class Joystick(Controller):
         return time.time() - self.time > self.timeout
 
     # Arrow Buttons - step pan/tilt
-    # TODO: scale fine movement by zoom amount
     def on_left_arrow_press(self):
         """Respond to left arrow button press event.
 
@@ -127,6 +130,8 @@ class Joystick(Controller):
                 multiplier = -1
             if self.fine_movement:
                 command = multiplier * X_DELTA_FINE * self._pan_ratio()
+            elif self.finest_movement:
+                command = multiplier * X_DELTA_FINEST * self._pan_ratio()
             else:
                 command = multiplier * X_DELTA * self._pan_ratio()
 
@@ -145,6 +150,8 @@ class Joystick(Controller):
                 multiplier = -1
             if self.fine_movement:
                 command = multiplier * -X_DELTA_FINE * self._pan_ratio()
+            elif self.finest_movement:
+                command = multiplier * -X_DELTA_FINEST * self._pan_ratio()
             else:
                 command = multiplier * -X_DELTA * self._pan_ratio()
 
@@ -163,6 +170,8 @@ class Joystick(Controller):
                 multiplier = -1
             if self.fine_movement:
                 command = multiplier * -Y_DELTA_FINE
+            elif self.finest_movement:
+                command = multiplier * -Y_DELTA_FINEST
             else:
                 command = multiplier * -Y_DELTA
 
@@ -181,6 +190,8 @@ class Joystick(Controller):
                 multiplier = -1
             if self.fine_movement:
                 command = multiplier * Y_DELTA_FINE
+            elif self.finest_movement:
+                command = multiplier * Y_DELTA_FINEST
             else:
                 command = multiplier * Y_DELTA
 
@@ -237,6 +248,16 @@ class Joystick(Controller):
 
     def on_L1_release(self):
         self.fine_movement = False
+
+    def on_L2_press(self, value):
+        # log.info("L2 press. It's value is %s", value)
+        if value > 10000:
+            log.info("Toggling finest movement on.")
+            self.finest_movement = True
+
+    def on_L2_release(self):
+        log.info("Toggling finest movement off.")
+        self.finest_movement = False
 
     # Exposure/Focus Toggle
     def on_R1_press(self):
