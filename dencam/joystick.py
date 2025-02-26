@@ -31,6 +31,8 @@ CAM_TILT_MIN = -1.0
 CAM_ZOOM_MAX = 1.0
 CAM_ZOOM_MIN = 0
 
+CAMERA_DOME_DOWN = True
+
 
 class PTZController:
     """Metaclass around Joystick class.
@@ -109,37 +111,76 @@ class Joystick(Controller):
     # Arrow Buttons - step pan/tilt
     # TODO: scale fine movement by zoom amount
     def on_left_arrow_press(self):
+        """Respond to left arrow button press event.
+
+        Callback for a left arrow button press event. Will pan
+        camera to the left.
+
+        """
         if self.ready_for_next():
+            if CAMERA_DOME_DOWN:
+                multiplier = -1
             if self.fine_movement:
-                self.send_command(X_DELTA_FINE * self._pan_ratio(), 0, 0)
+                command = multiplier * X_DELTA_FINE * self._pan_ratio()
             else:
-                self.send_command(X_DELTA * self._pan_ratio(), 0, 0)
+                command = multiplier * X_DELTA * self._pan_ratio()
+
+            self.send_command(command, 0, 0)
             self.time = time.time()
 
     def on_right_arrow_press(self):
+        """Respond to right arrow button press event.
+
+        Callback for a right arrow button press event. Will pan
+        camera to the right.
+
+        """
         if self.ready_for_next():
+            if CAMERA_DOME_DOWN:
+                multiplier = -1
             if self.fine_movement:
-                self.send_command(-X_DELTA_FINE * self._pan_ratio(), 0, 0)
+                command = multiplier * -X_DELTA_FINE * self._pan_ratio()
             else:
-                self.send_command(-X_DELTA * self._pan_ratio(), 0, 0)
+                command = multiplier * -X_DELTA * self._pan_ratio()
+
+            self.send_command(command, 0, 0)
             self.time = time.time()
 
     def on_up_arrow_press(self):
+        """Respond to up arrow button press event.
+
+        Callback for an up arrow button press event. Will tilt the camera
+        up.
+
+        """
         if self.ready_for_next():
+            if CAMERA_DOME_DOWN:
+                multiplier = -1
             if self.fine_movement:
-                self.send_command(0, -Y_DELTA_FINE, 0)
+                command = multiplier * -Y_DELTA_FINE
             else:
-                self.send_command(0, -Y_DELTA, 0)
+                command = multiplier * -Y_DELTA
+
+            self.send_command(0, command, 0)
             self.time = time.time()
 
     def on_down_arrow_press(self):
+        """Respond to down arrow button press event.
+
+        Callback for a down arrow button press event. Will tilt camera
+        down.
+
+        """
         if self.ready_for_next():
+            if CAMERA_DOME_DOWN:
+                multiplier = -1
             if self.fine_movement:
-                self.send_command(0, Y_DELTA_FINE, 0)
-                self.time = time.time()
+                command = multiplier * Y_DELTA_FINE
             else:
-                self.send_command(0, Y_DELTA, 0)
-                self.time = time.time()
+                command = multiplier * Y_DELTA
+
+            self.send_command(0, command, 0)
+            self.time = time.time()
 
     def on_left_right_arrow_release(self):
         pass
