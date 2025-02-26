@@ -104,7 +104,7 @@ class Joystick(Controller):
 
     def display_status(self, cmds):
         """Write the pan, tilt, and zoom stored in cmds to logs."""
-        log.info("Pan: %0.2f | Tilt: %0.2f | Zoom: %0.2f",
+        log.info("Pan: %0.3f | Tilt: %0.3f | Zoom: %0.3f",
                  cmds['pan'],
                  cmds['tilt'],
                  cmds['zoom'])
