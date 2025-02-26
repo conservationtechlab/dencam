@@ -79,6 +79,19 @@ class Joystick(Controller):
                                 self.zoom_state)
 
     def _pan_ratio(self):
+        """Compute multiplier to reduce pan amount based on zoom level
+
+        Helper method that calculates a multiplier to apply to all pan
+        commands that reduces them in relation to how zoomed in the
+        camera is.  I.e. when you are zoomed out, you want each pan
+        step to be larger but when you are zoomed in, you want each
+        pan step to be smaller.  This is related to "proportional pan"
+        that the camera's do themselves.  We have to directly
+        implement it here as even when the camera is configured to do
+        proportional pan, the way we are controlling it here, that
+        won't have an effect.
+
+        """
         zoom = self.ptz.get_position()[2]
         return 1 / (1 + zoom * 5)
 
