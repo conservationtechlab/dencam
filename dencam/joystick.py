@@ -29,7 +29,7 @@ CAM_PAN_MIN = -1.0
 CAM_TILT_MAX = 1.0
 CAM_TILT_MIN = -1.0
 CAM_ZOOM_MAX = 1.0
-CAM_ZOOM_MIN = 0
+CAM_ZOOM_MIN = 0.1
 
 CAMERA_DOME_DOWN = True
 
@@ -71,12 +71,6 @@ class Joystick(Controller):
         self.joystick_ignore = 10000
         self.time = time.time()  # Initialize time tracking for command delays
         self.timeout = 0.25  # Delay between commands
-        self.zoom_state = 0.0
-        pan, tilt, _ = self.ptz.get_position()
-        log.info("Zoom out when Joystick object constructed.")
-        self.ptz.absmove_w_zoom(pan,
-                                tilt,
-                                self.zoom_state)
 
     def _pan_ratio(self):
         """Compute multiplier to reduce pan amount based on zoom level
@@ -97,12 +91,10 @@ class Joystick(Controller):
 
     def send_command(self, x_delta, y_delta, z_delta):
         cmds = {}
-        pan, tilt, _ = self.ptz.get_position()
+        pan, tilt, zoom = self.ptz.get_position()
         cmds['pan'] = pan + x_delta
         cmds['tilt'] = tilt + y_delta
-        self.zoom_state = self.zoom_state + z_delta
-        cmds['zoom'] = self.zoom_state
-        log.info("Zoom state: %s", self.zoom_state)
+        cmds['zoom'] = zoom + z_delta
         self.drive_ptz(cmds)
         self.display_status(cmds)
 
@@ -258,7 +250,6 @@ class Joystick(Controller):
         if self.ready_for_next():
             if self.toggle_on:
                 self.ptz.zoom_in_full()
-                self.zoom_state = 1.0
             else:
                 self.send_command(0, 0, Z_DELTA)
             self.time = time.time()
@@ -280,8 +271,12 @@ class Joystick(Controller):
         # zoom out
         if self.ready_for_next():
             if self.toggle_on:
-                self.ptz.zoom_out_full()
-                self.zoom_state = 0.0
+                pan, tilt, _ = self.ptz.get_position()
+                cmds = {}
+                cmds['pan'] = pan
+                cmds['tilt'] = tilt
+                cmds['zoom'] = CAM_ZOOM_MIN
+                self.drive_ptz(cmds)
             else:
                 self.send_command(0, 0, -Z_DELTA)
             self.time = time.time()
