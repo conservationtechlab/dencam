@@ -24,13 +24,15 @@ contribute to the DenCam project.
 
 # Operating System
 
-Currently, DenCam runs on Raspian Stretch and Buster. Problems have
-been encountered with Bullseye (specifically with interfacing with the
-picamera). Buster must be 32 bit and not 64 bit otherwise there is an issue
-with the libmmal.so library
+Currently, DenCam runs on Raspian Stretch and Buster with the fido.py executable. 
+Buster must be 32 bit version and not 64 bit otherwise there is an issue
+with the libmmal.so library. This OS is no longer supported by Raspberry Pi, but
+you may download the image using this command:
+
+    wget https://downloads.raspberrypi.org/raspios_full_armhf/images/raspios_full_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-full.zip
 
 # Installation
-## Fenrir
+## Fido
 
 ## Install from PyPI
 
@@ -237,7 +239,7 @@ and thus then run DenCam on a properly set up system (see Setup
 section above for how to set up system) via:
 
     Usage:
-        ./dencam.py cfgs/YOUR_CONFIG_FILE.yaml
+        ./fido.py cfgs/YOUR_CONFIG_FILE.yaml
 
 If you are connected to the Raspberry Pi via SSH, then first do:
 
@@ -256,7 +258,7 @@ Note: Filepaths to your virtual environments, dencam.py, and config file may be 
     echo '[Desktop Entry]' >> dencam.desktop
     echo 'Type=Application' >> dencam.desktop
     echo 'Name=DENCAM' >> dencam.desktop
-    echo 'Exec=/home/pi/.virtualenvs/dencam_env/bin/python3.7 /home/pi/dencam/dencam.py /home/dencam/cfgs/example_config.yaml' >> dencam.desktop
+    echo 'Exec=/home/pi/.virtualenvs/dencam_env/bin/python3.7 /home/pi/dencam/fido.py /home/dencam/cfgs/example_config.yaml' >> dencam.desktop
 
 To test: 
 
